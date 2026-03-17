@@ -1,4 +1,4 @@
-# DualSOM: Generic Vectorized Data Recognition using Sparse AE + DualSOM
+# DualSOM: Dual-mode software for clustering and classification using self-organising map
 
 ## 🕸️ Network Architecture
 
