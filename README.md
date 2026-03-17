@@ -145,3 +145,64 @@ Tweak the number of target clusters to 10 and re-evaluate instantly using the au
 ```bash
 python main.py --config params.json --force_train_ae 0 --run_mode unsupervised --n_clusters 10
 ```
+
+## 🎯 Generic Dataset Example: MNIST
+
+To demonstrate the framework's ability to handle standard generic vectorized data, here is a complete walkthrough using the MNIST dataset.
+
+### Step 1: Prepare the Data
+Run this quick python snippet to download MNIST and flatten the $28 \times 28$ images into 784-dimensional generic feature vectors:
+
+```python
+import torchvision
+import numpy as np
+import os
+
+# Download MNIST via torchvision
+train_set = torchvision.datasets.MNIST(root='./data', train=True, download=True)
+test_set = torchvision.datasets.MNIST(root='./data', train=False, download=True)
+
+# Flatten (N, 28, 28) to (N, 784)
+X_train = train_set.data.numpy().reshape(-1, 28 * 28)
+y_train = train_set.targets.numpy()
+X_test = test_set.data.numpy().reshape(-1, 28 * 28)
+y_test = test_set.targets.numpy()
+
+# Save as standard .npy files
+os.makedirs('./data/mnist_npy', exist_ok=True)
+np.save('./data/mnist_npy/train_data.npy', X_train)
+np.save('./data/mnist_npy/train_labels.npy', y_train)
+np.save('./data/mnist_npy/test_data.npy', X_test)
+np.save('./data/mnist_npy/test_labels.npy', y_test)
+print("MNIST generic .npy vectors successfully generated!")
+```
+
+### Step 2: Configure `params.json`
+Point the framework to the generated `.npy` files and set the dataset name to `generic`. Because MNIST has 60,000 training samples and 10 classes, we increase the `ae_batch_size` and set `n_clusters` to 10:
+
+```json
+{
+  "dataset_name": "generic",
+  "data_format": "npy",
+  "train_path": "./data/mnist_npy/train_data.npy",
+  "train_label_path": "./data/mnist_npy/train_labels.npy",
+  "test_path": "./data/mnist_npy/test_data.npy",
+  "test_label_path": "./data/mnist_npy/test_labels.npy",
+  "output_dir": "./results_mnist",
+  "reduction_factor": 1,
+  "ae_batch_size": 256,
+  "ae_epochs": 50,
+  "force_train_ae": 1,
+  "som_epochs": 10,
+  "som_enable_validation": 1,
+  "run_mode": "supervised",
+  "n_clusters": 10
+}
+```
+
+### Step 3: Run the Pipeline
+Once configured, simply execute the main script. The framework will automatically detect the 784-dim input, adapt the Sparse Autoencoder, and extract features for DualSOM clustering:
+
+```bash
+python main.py --config params.json
+```
