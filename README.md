@@ -188,3 +188,18 @@ Once configured, simply execute the main script. The framework will automaticall
 ```bash
 python main.py --config params.json
 ```
+
+## 📜 Reference
+If you find our work useful, please consider citing:
+
+```bibtex
+@ARTICLE{10608412,
+  author={He, Xin and Zielinska, Teresa and Dutta, Vibekananda and Matsumaru, Takafumi and Sitnik, Robert},
+  journal={IEEE Robotics and Automation Letters}, 
+  title={From Seeing to Recognising–An Extended Self-Organizing Map for Human Postures Identification}, 
+  year={2024},
+  volume={9},
+  number={9},
+  pages={7899-7906},
+  doi={10.1109/LRA.2024.3433201}
+}
