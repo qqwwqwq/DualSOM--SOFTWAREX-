@@ -1,0 +1,25 @@
+{
+    "dataset_name": "generic",
+    "data_format": "npy",
+
+    "train_path": "./data/mnist_npy/train_data.npy",
+    "train_label_path": "./data/mnist_npy/train_labels.npy",
+    "test_path": "./data/mnist_npy/test_data.npy",
+    "test_label_path": "./data/mnist_npy/test_labels.npy",
+
+    "output_dir": "./results",
+    "reduction_factor": 1,
+
+    "ae_batch_size": 256,
+    "ae_epochs": 50,
+    "force_train_ae": 1,
+
+    "som_size_index": 10.0,
+    "som_epochs": 10,
+    "som_sigma": 4.0,
+    "som_lr": 0.1,
+    "som_enable_validation": 1,
+
+    "run_mode": "supervised",
+    "n_clusters": 10
+}
