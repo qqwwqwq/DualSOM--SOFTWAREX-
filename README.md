@@ -3,7 +3,7 @@
 ## 🕸️ Network Architecture
 
 <p align="center">
-  <img src="./assets/overall_structure.png" width="800">
+  <img src="./assets/Outline.png" width="800">
 </p>
 
 ## 📂 Data Preparation
