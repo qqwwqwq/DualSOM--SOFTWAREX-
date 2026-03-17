@@ -39,12 +39,6 @@ DualSOM/
 └── ...
 ```
 
-### 3. Data Processing
-You don't need to manually preprocess the skeleton coordinates. The pipeline automatically handles it:
-1. **Raw Data Merging:** Scans and merges all raw `.csv` files.
-2. **Feature Cleaning:** Imputes missing values and performs **L2 Normalization**.
-3. **Label Encoding:** Dynamically maps string labels to numeric IDs.
-4. **Smart Caching:** Saves cleaned data into `Preprocessed_data/`. On subsequent runs, the script instantly loads these cached files, drastically speeding up execution.
 
 ---
 
