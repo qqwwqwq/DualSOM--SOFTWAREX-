@@ -8,7 +8,7 @@
 
 ## 📂 Data Preparation
 
-### Supported Datasets
+### Tested Datasets
 Our framework is highly flexible. It supports standard vectorized data (`.npy`, `.csv`) and has built-in pipelines specifically tailored and heavily evaluated on two skeleton-based human posture datasets:
 * **WUT** (Warsaw University of Technology Dataset)
 * **PKU-MMD** (Peking University Dataset)
