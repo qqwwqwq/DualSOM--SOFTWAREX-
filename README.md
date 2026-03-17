@@ -81,8 +81,8 @@ Here is a template of the configuration file and the detailed explanation of eac
 | `data_format` | String | File format for generic data. Options: `"npy"`, `"csv"`. |
 | `train_path` | String | Path to the training features file or raw dataset folder. |
 | `test_path` | String | Path to the testing features file or raw dataset folder. |
-| `train_label_path` | String | Paths to the training label files (used only when `dataset_name` is `"generic"`). |
-| `test_label_path` | String | Paths to the testing label files (used only when `dataset_name` is `"generic"`). |
+| `train_label_path` | String | Paths to the training label files. |
+| `test_label_path` | String | Paths to the testing label files. |
 | `output_dir` | String | Directory where evaluation visualizations and metric logs are saved. |
 | `reduction_factor` | Int | Subsamples the dataset by this factor (e.g., `2` uses half the data). Useful for quick code debugging. |
 | **Sparse Autoencoder** | | |
