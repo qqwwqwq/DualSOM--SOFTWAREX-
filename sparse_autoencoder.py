@@ -62,17 +62,18 @@ class SparseAutoencoder(nn.Module):
 # --- Global State Dictionary ---
 # Maintains scaler states and neural network weights between Train and Test pipeline calls
 # to prevent data leakage and ensure transform consistency.
+# Note: The numerical values here are defaults, which can be modified via params.json
 _ae_state = {
     'model': None,
     'input_scaler': MinMaxScaler(),
     'feature_scaler': StandardScaler(),
     'device': 'cuda' if torch.cuda.is_available() else 'cpu',
-    'epochs': 150,
-    'batch_size': 32,
-    'ae_lr': 0.001,
-    'ae_reg_param': 0.001,
-    'load_model': False,
-    'model_path': 'weight/sparse_ae.pth'
+    'epochs': 150,           # Default epochs, modifiable via "ae_epochs" in params.json
+    'batch_size': 32,        # Default batch size, modifiable via "ae_batch_size" in params.json
+    'ae_lr': 0.001,          # Default learning rate, modifiable via "ae_lr" in params.json
+    'ae_reg_param': 0.001,   # Default L1 penalty coefficient, modifiable via "ae_reg_param" in params.json
+    'load_model': False,     # Default loading flag, modifiable via "ae_load_model" in params.json
+    'model_path': 'weight/sparse_ae.pth' # Default save path, modifiable via "ae_model_path" in params.json
 }
 
 def set_ae_args(parameters):
@@ -83,6 +84,7 @@ def set_ae_args(parameters):
     Args:
         parameters (dict): The configuration dictionary loaded in main.py.
     """
+    # Fallback default values are provided here (e.g., 150, 32, 0.001) in case they are missing from params.json
     _ae_state['device'] = parameters.get('device', 'cuda' if torch.cuda.is_available() else 'cpu')
     _ae_state['epochs'] = parameters.get('ae_epochs', 150)
     _ae_state['batch_size'] = parameters.get('ae_batch_size', 32)
