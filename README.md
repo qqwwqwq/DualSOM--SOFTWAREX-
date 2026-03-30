@@ -24,19 +24,21 @@ After downloading and extracting, please arrange the raw data into the following
 DualSOM/
 ├── Datas/
 │   ├── WUT/
-│   │   ├── WUT_data_train/      # Training csv files
-│   │   ├── WUT_data_test/       # Testing csv files
-│   │   └── Preprocessed_data/   # Auto-generated cache
+│   │   ├── train_data.csv       # Preprocessed training features & labels
+│   │   ├── test_data.csv        # Preprocessed testing features & labels
+│   │   └── wut_label_map.json   # Auto-generated label mapping
 │   └── PKU/
-│       ├── PKU_data_train/      # Training csv files
-│       ├── PKU_data_test/       # Testing csv files
-│       └── Preprocessed_data/   # Auto-generated cache
-├── Daulmap.py
-├── sparse_autoencoder.py
-├── preprocessing.py
-├── main.py
-├── params.json                  # Hyperparameter Configuration
-└── ...
+│       ├── train_data.csv       # Preprocessed training features & labels
+│       ├── test_data.csv        # Preprocessed testing features & labels
+│       └── pku_label_map.json   # Auto-generated label mapping
+├── Daulmap.py                   # Core mathematical SOM and clusterer
+├── sparse_autoencoder.py        # PyTorch Mini-Batch Autoencoder module
+├── preprocessing.py             # Data ingestion and generic loader
+├── main.py                      # Main 5-stage execution pipeline
+├── params.json                  # All-in-one configuration file
+└── weight/                      # Auto-generated directory for cached models
+    ├── sparse_ae.pth
+    └── som_weights.npy
 ```
 
 
@@ -50,25 +52,31 @@ Here is a template of the configuration file and the detailed explanation of eac
 
 ```json
 {
-  "dataset_name": "generic",
-  "data_format": "npy",
-  "train_path": "./data/train_data.npy",
-  "train_label_path": "./data/train_labels.npy",
-  "test_path": "./data/test_data.npy",
-  "test_label_path": "./data/test_labels.npy",
-  "output_dir": "./results",
-  "reduction_factor": 1,
-  "ae_batch_size": 32,
-  "ae_epochs": 150,
-  "device": "cuda",
-  "force_train_ae": 1,
-  "som_size_index": 10.0,
-  "som_epochs": 50,
-  "som_sigma": 4.0,
-  "som_lr": 0.1,
-  "som_enable_validation": 1,
-  "run_mode": "supervised",
-  "n_clusters": 5
+    "dataset_name": "wut",
+    "run_mode": "supervised",
+    "device": "cuda",
+    "train_data_path": "data/train_data.csv",
+    "test_data_path": "data/test_data.csv",
+    "som_size_index": 10.0,
+    "som_epochs": 50,
+    "som_sigma": 4.0,
+    "som_sigma_target": 0.01,
+    "som_lr": 0.1,
+    "som_lr_target": 0.001,
+    "activation_distance": "angular",
+    "som_enable_validation": 1,
+    "som_load_model": false,
+    "som_model_path": "weight/som_weights.npy",
+    "n_clusters": 10,
+    "kmeans_max_iter": 100,
+    "kmeans_threshold": 0.0001,
+    "ae_batch_size": 32,
+    "ae_epochs": 150,
+    "ae_lr": 0.001,
+    "ae_reg_param": 0.001,
+    "ae_load_model": false,
+    "ae_model_path": "weight/sparse_ae.pth",
+    "reduction_factor": 1
 }
 ```
 
