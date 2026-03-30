@@ -120,7 +120,7 @@ if __name__ == "__main__":
     set_ae_args(parameters)
 
     # --- Step 2: Read  and encode data ---
-    train_data = get_dataset(train_data_path, is_train=True, dataset_name=dataset_name)
+    train_data = get_dataset(train_data_path)
     coded_data = encode_decode(train_data)
 
     # --- Step 3: Create and train DualSOM model (weight adjustment) ---
@@ -143,7 +143,7 @@ if __name__ == "__main__":
     evaluate_and_print(y_train, y_pred_train, run_mode, dataset_name, "TRAINING")
 
     # --- Step 1: Read and encode test data ---
-    test_data = get_dataset(test_data_path, is_train=False, dataset_name=dataset_name)
+    test_data = get_dataset(test_data_path)
     coded_test = encode_decode(test_data)
     X_test, y_test = coded_test
      # --- Step 2a: Clustering (unsupervised) ---
