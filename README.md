@@ -117,59 +117,64 @@ If this file is missing, running `python main.py` will automatically generate a 
 
 ## 🚀 Execution and Caching
 
-The pipeline is completely JSON-driven. The script will sequentially process all 5 stages of the workflow described in the paper：
+The pipeline is completely JSON-driven. When executing `python main.py`, the script sequentially processes the workflow exactly as described in the paper. Below is the core logic mapped directly to the implementation:
 
-#### Stage 1 & 2: Data Preprocessing & Latent Representation Learning
-The raw feature matrix and labels are loaded from the specified CSV files, dynamically handling structural validations and generic formatting. The high-dimensional raw features are then passed through the PyTorch-based Sparse Autoencoder, minimizing a combined MSE reconstruction loss and an L1 sparsity penalty to extract a highly condensed, low-dimensional latent code.
+### Step 1: Load Parameters
+The script parses command-line arguments and loads the comprehensive configuration dictionary from the JSON file, propagating settings to the Autoencoder and SOM modules.
 ```python
-# --- Stage 1 & 2: Data preprocessing & Latent representation learning ---
-train_data = get_dataset(train_data_path, is_train=True, dataset_name=dataset_name)
-coded_data = encode_decode(train_data)
+    # --- Step 1: Load parameters
+    parser = argparse.ArgumentParser(description="Dual-mode SOM Pipeline with JSON config")
+    parser.add_argument('--config', type=str, default='params.json', help="Path to the JSON configuration file")
+    args = parser.parse_args()
+    create_default_params(args.config)
+    parameters = read_parameters(args.config)
 ```
 
-#### Stage 3: Topological Mapping (DualSOM Training)
+### Step 2: Read and Encode Data 
+The raw feature matrix and labels are loaded from the specified CSV files, dynamically handling structural validations. The high-dimensional features are then passed through the PyTorch-based Sparse Autoencoder, minimizing a combined MSE reconstruction loss and an L1 sparsity penalty to extract a highly condensed, low-dimensional latent code.
+```python
+    train_data = get_dataset(train_data_path, is_train=True, dataset_name=dataset_name)
+    coded_data = encode_decode(train_data)
+```
+
+### Step 3: Create and Train DualSOM Model 
 The latent codes are fed into the mathematical core. The SOM dynamically calculates its optimal grid size internally, initializes weights via PCA for rapid convergence, and adjusts its spatial topology using an exponential attention mechanism.
 ```python
-# --- Stage 3: SOM weight adjustment ---
-# The map initializes itself, automatically calculating the optimal grid size internally.
-model = DualSOM(parameters, coded_data)
-model.fit(coded_data)
+    model = DualSOM(parameters, coded_data)
+    model.fit(coded_data)
 ```
 
-#### Stage 4: Mode-Specific Tuning (Training Set)
-Depending on the `run_mode` configured in the JSON file, the framework branches into two distinct operational modes. In **Supervised Mode**, the map constructs a voting dictionary (`_winmap`), assigning each physical neuron to the majority class of the training samples that map to it. In **Unsupervised Mode**, the specialized `SOMClusterer` applies a customized K-Means algorithm using angular distances directly on the SOM's converged weight vectors, grouping the neurons into `n_clusters`.
+### Step 4: Mode-Specific Implementation (Paper Stage 4)
+Depending on the `run_mode` configured in the JSON file, the framework branches into two distinct operational modes. In **Supervised Mode**, the map constructs a voting dictionary, assigning each physical neuron to the majority class of the training samples that map to it. In **Unsupervised Mode**, a specialized clusterer groups the neurons into `n_clusters`.
 ```python
-# --- Stage 4: Mode-specific training ---
-X_train, y_train = coded_data
-
-if run_mode == 'unsupervised':
-    print("\n>>> Executing Stage 4a: Clustering Training Phase...")
-    y_pred_train = model.predict(coded_data, mode='clustering')
-else:
-    print("\n>>> Executing Stage 4b: Classification Training Phase...")
-    y_pred_train = model.predict(coded_data, mode='classification')
-    
-# 1. Output Training Metrics (Evaluates representation capacity)
-evaluate_and_print(y_train, y_pred_train, run_mode, dataset_name, "TRAINING")
+    # --- Step 4: Mode-specific implement---
+    X_train, y_train = coded_data
+    # --- Step 4a: Clustering (unsupervised) ---
+    if run_mode == 'unsupervised':
+        print("\n>>> Executing Stage 4a: Clustering Training Phase...")
+        y_pred_train = model.predict(coded_data, mode='clustering')
+    # --- Step 4b: Classification (supervised, labels available) ---
+    else:
+        print("\n>>> Executing Stage 4b: Classification Training Phase...")
+        y_pred_train = model.predict(coded_data, mode='classification')
 ```
 
-#### Stage 5: Generalization & Inference (Testing Set)
+### Testing Phase: Prediction on New Data 
 The held-out testing data is ingested, transformed using the *frozen* Autoencoder and preserved scalers, and finally projected onto the converged SOM grid to retrieve the predicted classes or cluster IDs.
 ```python
-# --- Stage 5: Prediction on new data ---
-test_data = get_dataset(test_data_path, is_train=False, dataset_name=dataset_name)
-coded_test = encode_decode(test_data)
-X_test, y_test = coded_test
-
-if run_mode == 'unsupervised':
-    print("\n>>> Executing Stage 5a: Clustering Testing Phase...")
-    y_pred_test = model.predict(coded_test, mode='clustering')
-else:
-    print("\n>>> Executing Stage 5b: Classification Testing Phase...")
-    y_pred_test = model.predict(coded_test, mode='classification')
-
-# 2. Output Testing Metrics (Evaluates generalization capacity)
-evaluate_and_print(y_test, y_pred_test, run_mode, dataset_name, "TESTING")
+    # --- Step 1: Read and encode test data ---
+    test_data = get_dataset(test_data_path, is_train=False, dataset_name=dataset_name)
+    coded_test = encode_decode(test_data)
+    X_test, y_test = coded_test
+     # --- Step 2a: Clustering (unsupervised) ---
+    if run_mode == 'unsupervised':
+        print("\n>>> Executing Stage 5a: Clustering Testing Phase...")
+        y_pred_test = model.predict(coded_test, mode='clustering')
+        # use the same encoder as in training
+     # --- Step 2b: Classification (supervised, labels available) ---
+    else:
+        print("\n>>> Executing Stage 5b: Classification Testing Phase...")
+        y_pred_test = model.predict(coded_test, mode='classification')
 ```
 
 ### 1. Standard Training
