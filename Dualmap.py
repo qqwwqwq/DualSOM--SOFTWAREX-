@@ -15,6 +15,7 @@ from collections import defaultdict, Counter
 from sklearn.metrics import accuracy_score
 from tqdm import tqdm
 
+# The default value 10.0 can be modified via "som_size_index" in params.json
 def thumb_rule(data_len, som_size_index=10.0):
     """
     Calculates the optimal grid size for the SOM based on dataset volume.
@@ -46,25 +47,33 @@ class DualSOM:
             coded_data (tuple): A tuple of (X_features, y_labels).
         """
         self.parameters = parameters
+        # 'supervised' is the default; can be modified via "run_mode" in params.json
         self.run_mode = parameters.get('run_mode', 'supervised')
 
-        # IO Parameters for model persistence
+        # IO Parameters for model persistence. Defaults can be modified in params.json
         self.load_model = parameters.get('som_load_model', False)
         self.model_path = parameters.get('som_model_path', 'weight/som_weights.npy')
 
         X, _ = coded_data
 
         # Calculate the optimal grid size internally
+        # 10.0 is the default; can be modified via "som_size_index" in params.json
         som_size_index = parameters.get('som_size_index', 10.0)
         self.grid_size = thumb_rule(len(X), som_size_index)
         print(f"   [SOM Init] Automatically determined Grid Size: {self.grid_size}x{self.grid_size}")
 
+        # Initialize the base SOM with parameters fetched from JSON (or their fallbacks)
         self.som = BaseDualSom(
             self.grid_size, self.grid_size, input_len=X.shape[1],
+            # 4.0 is the default; can be modified via "som_sigma" in params.json
             sigma=parameters.get('som_sigma', 4.0),
+            # 0.01 is the default; can be modified via "som_sigma_target" in params.json
             sigma_target=parameters.get('som_sigma_target', 0.01),
+            # 0.1 is the default; can be modified via "som_lr" in params.json
             learning_rate=parameters.get('som_lr', 0.1),
+            # 0.001 is the default; can be modified via "som_lr_target" in params.json
             lr_target=parameters.get('som_lr_target', 0.001),
+            # 'angular' is the default metric; can be modified via "activation_distance" in params.json
             activation_distance=parameters.get('activation_distance', 'angular')
         )
         self.clusterer = None
@@ -95,9 +104,11 @@ class DualSOM:
             # Initialize weights utilizing PCA to accelerate topological convergence
             self.som.pca_weights_init(X)
 
+            # 50 is the default epochs multiplier; can be modified via "som_epochs" in params.json
             max_iter = self.parameters.get('som_epochs', 50) * len(X)
 
             # Short-circuit validation to save time if operating in unsupervised mode
+            # 1 (True) is the default; can be modified via "som_enable_validation" in params.json
             enable_val = bool(self.parameters.get('som_enable_validation', 1))
             if self.run_mode == 'unsupervised':
                 enable_val = False
@@ -124,8 +135,11 @@ class DualSOM:
         if mode == 'clustering':
             # Initialize and fit the weight-space K-Means clusterer if not already trained
             if self.clusterer is None:
+                # 5 is the default cluster count; can be modified via "n_clusters" in params.json
                 n_clusters = self.parameters.get('n_clusters', 5)
+                # 100 is the default max iterations; can be modified via "kmeans_max_iter" in params.json
                 max_iter = self.parameters.get('kmeans_max_iter', 100)
+                # 1e-4 is the default threshold; can be modified via "kmeans_threshold" in params.json
                 threshold = self.parameters.get('kmeans_threshold', 1e-4)
 
                 self.clusterer = SOMClusterer(n_clusters=n_clusters, max_iter=max_iter, threshold=threshold)
@@ -157,6 +171,7 @@ class SOMClusterer:
     Self-Organizing Map neuron weight vectors. Utilizes angular distance matrices.
     """
 
+    # Initialization defaults (100 and 1e-4) are controlled by the wrapper using params.json
     def __init__(self, n_clusters, max_iter=100, threshold=1e-4):
         """
         Args:
@@ -247,6 +262,7 @@ class BaseDualSom(object):
     an exponential attention mechanism for robust weight updates.
     """
 
+    # Initialization defaults (sigma, learning_rate, etc.) are controlled by the wrapper using params.json
     def __init__(self, x, y, input_len, sigma=1.0, sigma_target=0.01,
                  learning_rate=0.5, lr_target=0.001, activation_distance='angular'):
         """
@@ -363,6 +379,7 @@ class BaseDualSom(object):
             for j, c2 in enumerate(np.linspace(-1, 1, len(self._neigy))):
                 self._weights[i, j] = c1 * pc[:, pc_order[0]] + c2 * pc[:, pc_order[1]]
 
+    # The max_iter default (1000) is overridden during runtime by the som_epochs parameter from params.json
     def train_batch(self, data, Y_train=None, X_test=None, Y_test=None, max_iter=1000, verbose=False,
                     enable_validation=True):
         """
