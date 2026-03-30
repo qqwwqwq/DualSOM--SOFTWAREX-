@@ -31,7 +31,7 @@ DualSOM/
 │       ├── train_data.csv       # Preprocessed training features & labels
 │       ├── test_data.csv        # Preprocessed testing features & labels
 │       └── pku_label_map.json   # Auto-generated label mapping
-│   └── Mnist/
+│   └── MNIST/
 │       ├── train_data.csv       # Preprocessed training features & labels
 │       ├── test_data.csv        # Preprocessed testing features & labels
 │       └── pku_label_map.json   # Auto-generated label mapping
