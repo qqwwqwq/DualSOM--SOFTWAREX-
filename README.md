@@ -31,6 +31,10 @@ DualSOM/
 │       ├── train_data.csv       # Preprocessed training features & labels
 │       ├── test_data.csv        # Preprocessed testing features & labels
 │       └── pku_label_map.json   # Auto-generated label mapping
+│   └── Mnist/
+│       ├── train_data.csv       # Preprocessed training features & labels
+│       ├── test_data.csv        # Preprocessed testing features & labels
+│       └── pku_label_map.json   # Auto-generated label mapping
 ├── Daulmap.py                   # Core mathematical SOM and clusterer
 ├── sparse_autoencoder.py        # PyTorch Mini-Batch Autoencoder module
 ├── preprocessing.py             # Data ingestion and generic loader
