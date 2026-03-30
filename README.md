@@ -41,6 +41,45 @@ DualSOM/
     └── som_weights.npy
 ```
 
+---
+
+## ⚙️ Configuration (`params.json`)
+
+To ensure absolute experimental reproducibility, **all hyperparameters, paths, hardware settings, and operational modes are exclusively controlled via a single `params.json` file**. 
+
+If this file is missing, running `python main.py` will automatically generate a template.
+
+### Configuration Template
+
+```json
+{
+    "dataset_name": "wut",
+    "run_mode": "supervised",
+    "device": "cuda",
+    "train_data_path": "Datas/WUT/train_data.csv",
+    "test_data_path": "Datas/WUT/test_data.csv",
+    "som_size_index": 10.0,
+    "som_epochs": 50,
+    "som_sigma": 4.0,
+    "som_sigma_target": 0.01,
+    "som_lr": 0.1,
+    "som_lr_target": 0.001,
+    "activation_distance": "angular",
+    "som_enable_validation": 1,
+    "som_load_model": false,
+    "som_model_path": "weight/som_weights.npy",
+    "n_clusters": 10,
+    "kmeans_max_iter": 100,
+    "kmeans_threshold": 0.0001,
+    "ae_batch_size": 32,
+    "ae_epochs": 150,
+    "ae_lr": 0.001,
+    "ae_reg_param": 0.001,
+    "ae_load_model": false,
+    "ae_model_path": "weight/sparse_ae.pth",
+    "reduction_factor": 1
+}
+```
 
 ---
 
