@@ -1,4 +1,5 @@
 # DualSOM: Dual-mode software for clustering and classification using self-organising map
+
 ![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=flat-square&logo=python&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.10.0-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)
 ![NumPy](https://img.shields.io/badge/NumPy-2.4.2-013243?style=flat-square&logo=numpy&logoColor=white)
@@ -7,7 +8,6 @@
 ![Qiskit](https://img.shields.io/badge/Qiskit-2.3.0-6929C4?style=flat-square&logo=qiskit&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 ![Status](https://img.shields.io/badge/Status-Research--Ready-brightgreen?style=flat-square)
-
 
 ## 📖 Table of Contents
 
@@ -21,7 +21,8 @@
 * [Benchmarking with Generic Datasets](#benchmarking-with-generic-datasets)
 * [Reference](#reference)
 
-* 
+---
+
 ## ✨ Introduction
 
 **DualSOM** is an open-source software framework for unsupervised clustering and supervised classification of high-dimensional data. 
@@ -38,12 +39,12 @@ The software combines sparse autoencoding for dimensionality reduction with a se
 * **Latent Representation Learning:** Projects high-dimensional data into a compact latent space using a sparse autoencoder, reducing computational complexity.
 * **Highly Configurable:** Users can configure grid size, latent dimensionality, learning-rate schedules, neighbourhood decay parameters, and distance metrics.
 
-
 ## 🕸️ Network Architecture
 
 <p align="center">
   <img src="./assets/Outline.png" width="800">
 </p>
+
 ## 🛠️ Installation & Environment
 
 To ensure all mathematical and deep learning dependencies are correctly configured, we recommend using a virtual environment (Conda or venv).
@@ -75,8 +76,10 @@ This framework has been strictly verified with the following versions:
 Our framework is highly flexible. It supports standard vectorized data (`.npy`, `.csv`) and has built-in pipelines specifically tailored and evaluated on two skeleton-based human posture datasets:
 * **WUT** (Warsaw University of Technology Dataset)
 * **PKU-MMD** (Peking University Dataset)
+
 One image dataset:
 * **MNIST** (Standard benchmark dataset of 28x28 grayscale handwritten digits)
+
 One signal dataset:
 * **FordA** (Automotive engine noise and vibration sensor time-series dataset from the UCR archive)
   
@@ -96,18 +99,18 @@ DualSOM/
 │   │   ├── train_data.csv       # Preprocessed training features & labels
 │   │   ├── test_data.csv        # Preprocessed testing features & labels
 │   │   └── wut_label_map.json   # Auto-generated label mapping
-│   └── PKU/
-│       ├── train_data.csv       # Preprocessed training features & labels
-│       ├── test_data.csv        # Preprocessed testing features & labels
-│       └── pku_label_map.json   # Auto-generated label mapping
-│   └── MNIST/
-│       ├── train_data.csv       # Preprocessed training features & labels
-│       ├── test_data.csv        # Preprocessed testing features & labels
-│       └── pku_label_map.json   # Auto-generated label mapping
+│   ├── PKU/
+│   │   ├── train_data.csv       # Preprocessed training features & labels
+│   │   ├── test_data.csv        # Preprocessed testing features & labels
+│   │   └── pku_label_map.json   # Auto-generated label mapping
+│   ├── MNIST/
+│   │   ├── train_data.csv       # Preprocessed training features & labels
+│   │   ├── test_data.csv        # Preprocessed testing features & labels
+│   │   └── mnist_label_map.json # Auto-generated label mapping
 │   └── FordA/
 │       ├── train_data.csv       # Preprocessed training features & labels
 │       ├── test_data.csv        # Preprocessed testing features & labels
-│       └── pku_label_map.json   # Auto-generated label mapping
+│       └── forda_label_map.json # Auto-generated label mapping
 ├── Daulmap.py                   # Core mathematical SOM and clusterer
 ├── sparse_autoencoder.py        # PyTorch Mini-Batch Autoencoder module
 ├── preprocessing.py             # Data ingestion and generic loader
@@ -158,14 +161,12 @@ If this file is missing, running `python main.py` will automatically generate a 
 }
 ```
 
----
-
 ### Parameter Dictionary
 
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
 | **Workflow & Paths** | | |
-| `dataset_name` | String | Dataset identifier (e.g., `"wut"`, `"pku"`，`"mnist"`，`"forda"`).|
+| `dataset_name` | String | Dataset identifier (e.g., `"wut"`, `"pku"`, `"mnist"`, `"forda"`).|
 | `run_mode` | String | `"supervised"` (classification) or `"unsupervised"` (clustering). |
 | `device` | String | Hardware accelerator. Options: `"cuda"`, `"cpu"`. |
 | `train_data_path` | String | Local path to the training CSV file. |
@@ -226,10 +227,12 @@ Depending on the `run_mode` configured in the JSON file, the framework branches 
 ```python
     # --- Step 4: Mode-specific implement---
     X_train, y_train = coded_data
+    
     # --- Step 4a: Clustering (unsupervised) ---
     if run_mode == 'unsupervised':
         print("\n>>> Executing Stage 4a: Clustering Training Phase...")
         y_pred_train = model.predict(coded_data, mode='clustering')
+        
     # --- Step 4b: Classification (supervised, labels available) ---
     else:
         print("\n>>> Executing Stage 4b: Classification Training Phase...")
@@ -243,32 +246,33 @@ The held-out testing data is ingested, transformed using the *frozen* Autoencode
     test_data = get_dataset(test_data_path, is_train=False, dataset_name=dataset_name)
     coded_test = encode_decode(test_data)
     X_test, y_test = coded_test
-     # --- Step 2a: Clustering (unsupervised) ---
+    
+    # --- Step 2a: Clustering (unsupervised) ---
     if run_mode == 'unsupervised':
         print("\n>>> Executing Stage 5a: Clustering Testing Phase...")
         y_pred_test = model.predict(coded_test, mode='clustering')
-        # use the same encoder as in training
-     # --- Step 2b: Classification (supervised, labels available) ---
+        
+    # --- Step 2b: Classification (supervised, labels available) ---
     else:
         print("\n>>> Executing Stage 5b: Classification Testing Phase...")
         y_pred_test = model.predict(coded_test, mode='classification')
 ```
 
-### 1. Standard Training
-Configure your dataset paths in `params.json`, ensure `ae_load_model` and `som_load_model` are set to `false`, and run:
+### Quick Start Commands
 
+#### 1. Standard Training
+Configure your dataset paths in `params.json`, ensure `ae_load_model` and `som_load_model` are set to `false`, and run:
 ```bash
 python main.py
 ```
 
-### 2. Instant Re-evaluation (Using Cached Models)
-Our framework explicitly separates training from inference. After the first run, model weights are saved to the `weight/` directory. To rapidly test a different scenario (e.g., switching to `"unsupervised"` mode with `n_clusters: (desired number of clusters)`):
-
-1. Set `"run_mode": "unsupervised"` and `"n_clusters": (desired number of clusters)` in `params.json`.
+#### 2. Instant Re-evaluation (Using Cached Models)
+Our framework explicitly separates training from inference. After the first run, model weights are saved to the `weight/` directory. To rapidly test a different scenario (e.g., switching to `"unsupervised"` mode):
+1. Set `"run_mode": "unsupervised"` and `"n_clusters": <desired_number>` in `params.json`.
 2. Set `"ae_load_model": true` and `"som_load_model": true`.
 3. Run `python main.py`.
 
-*The pipeline will bypass training bars and output clustering metrics in seconds.*
+*The pipeline will bypass training blocks and output clustering metrics in seconds.*
 
 ---
 
@@ -281,14 +285,14 @@ To evaluate the pipeline on standard benchmarks, use the provided preparation sc
 2. **Update Configuration**: In `params.json`, point the data paths to the new files:
    - `"train_data_path": "Datas/MNIST/train_data.csv"`
    - `"test_data_path": "Datas/MNIST/test_data.csv"`
-3. **Run**: `python main.py`.
+3. **Run**: `python main.py`
 
 ### 2. FordA (1D Signal Data)
 1. **Generate Data**: Run `python prepare_ucr_forda.py`. This will fetch and format the 500-dimensional sensor time-series into `Datas/FordA/`.
-2. **Update Configuration**: In `params.json`, set the paths to the FordA CSV files：
+2. **Update Configuration**: In `params.json`, set the paths to the FordA CSV files:
    - `"train_data_path": "Datas/FordA/train_data.csv"`
    - `"test_data_path": "Datas/FordA/test_data.csv"`
-4. **Run**: `python main.py`.
+3. **Run**: `python main.py`
 
 *The framework will ingest these prepared CSVs, compress the high-dimensional signals/pixels through the Sparse Autoencoder, and project them onto the DualSOM grid automatically.*
 
