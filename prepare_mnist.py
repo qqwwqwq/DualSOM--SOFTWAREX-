@@ -1,36 +1,52 @@
-import torchvision
-import numpy as np
+"""
+Standalone script to download, preprocess, and format the MNIST dataset.
+
+This script downloads the standard MNIST benchmark, scales the pixel values,
+splits the data into training and testing sets, and saves them as CSV files
+compatible with the generic DualSOM preprocessing module.
+"""
+
 import os
+import pandas as pd
+import numpy as np
+from sklearn.datasets import fetch_openml
+from sklearn.model_selection import train_test_split
 
 
-def prepare_mnist():
-    print("正在下载并加载 MNIST 数据集...")
-    # 使用 torchvision 下载训练集和测试集
-    train_set = torchvision.datasets.MNIST(root='./data', train=True, download=True)
-    test_set = torchvision.datasets.MNIST(root='./data', train=False, download=True)
+def prepare_mnist(output_dir="Datas/MNIST"):
+    """Downloads MNIST, preprocesses it, and saves to CSV."""
+    print(">>> Downloading MNIST dataset from OpenML (this may take a minute)...")
+    X, y = fetch_openml('mnist_784', version=1, return_X_y=True, as_frame=False)
 
-    # 将 28x28 的图像展平为 784 维的向量
-    # train_set.data 形状是 (60000, 28, 28) -> (60000, 784)
-    X_train = train_set.data.numpy().reshape(-1, 28 * 28)
-    y_train = train_set.targets.numpy()
+    print(">>> Normalizing pixel values to [0, 1]...")
+    X = X.astype(np.float32) / 255.0
+    y = y.astype(int)
 
-    # test_set.data 形状是 (10000, 28, 28) -> (10000, 784)
-    X_test = test_set.data.numpy().reshape(-1, 28 * 28)
-    y_test = test_set.targets.numpy()
+    print(">>> Splitting into training (10,000) and testing (2,000) sets...")
+    # Static train/test split to guarantee experimental reproducibility
+    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=10000, test_size=2000, random_state=42)
 
-    # 创建保存目录
-    save_dir = './data/mnist_npy'
-    os.makedirs(save_dir, exist_ok=True)
+    # Create output directory mapping to the DualSOM standard structure
+    os.makedirs(output_dir, exist_ok=True)
+    print(f">>> Saving formatted CSVs to {output_dir}/...")
 
-    # 保存为通用的 .npy 格式
-    np.save(os.path.join(save_dir, 'train_data.npy'), X_train)
-    np.save(os.path.join(save_dir, 'train_labels.npy'), y_train)
-    np.save(os.path.join(save_dir, 'test_data.npy'), X_test)
-    np.save(os.path.join(save_dir, 'test_labels.npy'), y_test)
+    # Combine features and labels into DataFrames (label MUST be the last column)
 
-    print(f"✅ MNIST 数据已成功保存到 {save_dir}/ 目录下！")
-    print(f"训练集特征形状: {X_train.shape}, 标签形状: {y_train.shape}")
-    print(f"测试集特征形状: {X_test.shape}, 标签形状: {y_test.shape}")
+    # 1. Train Data
+    train_df = pd.DataFrame(X_train)
+    train_df['label'] = y_train
+    train_csv_path = os.path.join(output_dir, "train_data.csv")
+    train_df.to_csv(train_csv_path, index=False)
+    print(f"    Saved {train_csv_path} (Shape: {train_df.shape})")
+
+    # 2. Test Data
+    test_df = pd.DataFrame(X_test)
+    test_df['label'] = y_test
+    test_csv_path = os.path.join(output_dir, "test_data.csv")
+    test_df.to_csv(test_csv_path, index=False)
+    print(f"    Saved {test_csv_path} (Shape: {test_df.shape})")
+
+    print("\n>>> MNIST preparation complete! You can now use these CSVs in DualSOM.")
 
 
 if __name__ == "__main__":
