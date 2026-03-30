@@ -214,6 +214,7 @@ The script parses command-line arguments and loads the comprehensive configurati
 The raw feature matrix and labels are loaded from the specified CSV files, dynamically handling structural validations. The high-dimensional features are then passed through the PyTorch-based Sparse Autoencoder, minimizing a combined MSE reconstruction loss and an L1 sparsity penalty to extract a highly condensed, low-dimensional latent code.
 ```python
     train_data = get_dataset(train_data_path)
+    set_ae_args(parameters)
     coded_data = encode_decode(train_data)
 ```
 
