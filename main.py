@@ -116,11 +116,12 @@ if __name__ == "__main__":
     train_data_path = parameters.get('train_data_path', 'data/train_data.csv')
     test_data_path = parameters.get('test_data_path', 'data/test_data.csv')
 
-    # Propagate parsed parameters to the Autoencoder module's global state
-    set_ae_args(parameters)
+    
 
     # --- Step 2: Read  and encode data ---
     train_data = get_dataset(train_data_path)
+    # Propagate parsed parameters to the Autoencoder module's global state
+    set_ae_args(parameters)
     coded_data = encode_decode(train_data)
 
     # --- Step 3: Create and train DualSOM model (weight adjustment) ---
