@@ -5,6 +5,30 @@
 <p align="center">
   <img src="./assets/Outline.png" width="800">
 </p>
+## 🛠️ Installation & Environment
+
+To ensure all mathematical and deep learning dependencies are correctly configured, we recommend using a virtual environment (Conda or venv).
+
+### 1. Install Dependencies
+Clone the repository and install the required packages using the provided `requirements.txt`:
+
+```bash
+# Optional: Create and activate a virtual environment
+# conda create -n dualsom python=3.7
+# conda activate dualsom
+
+pip install -r requirements.txt
+```
+
+### 2. Verified Environment
+This framework has been strictly verified with the following versions:
+* **Deep Learning**: `torch==2.10.0`, `torchvision==0.25.0`
+* **Data Science**: `numpy==2.4.2`, `pandas==3.0.0`, `scipy==1.17.0`
+* **Machine Learning**: `scikit-learn==1.4.2`
+* **Quantum Computing**: `qiskit==2.3.0`
+* **Visualization & Utilities**: `matplotlib==3.8.4`, `tqdm==4.66.4`
+
+---
 
 ## 📂 Data Preparation
 
