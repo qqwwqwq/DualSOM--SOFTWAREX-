@@ -137,6 +137,9 @@ if __name__ == "__main__":
     else:
         print("\n>>> Executing Stage 4b: Classification Training Phase...")
         y_pred_train = model.predict(coded_data, mode='classification')
+        
+     # 1. Output Training Metrics (Evaluates representation capacity)
+    evaluate_and_print(y_train, y_pred_train, run_mode, dataset_name, "TRAINING")
 
     # --- Stage 5: Prediction on new data ---
     test_data = get_dataset(test_data_path, is_train=False, dataset_name=dataset_name)
@@ -154,8 +157,7 @@ if __name__ == "__main__":
     # Post-processing Metrics Output
     # ==========================================================
 
-    # 1. Output Training Metrics (Evaluates representation capacity)
-    evaluate_and_print(y_train, y_pred_train, run_mode, dataset_name, "TRAINING")
+   
 
     # 2. Output Testing Metrics (Evaluates generalization capacity)
     evaluate_and_print(y_test, y_pred_test, run_mode, dataset_name, "TESTING")
