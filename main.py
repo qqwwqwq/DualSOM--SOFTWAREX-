@@ -17,7 +17,7 @@ from sklearn.metrics import accuracy_score, classification_report, precision_sco
 
 from preprocessing import get_dataset
 from sparse_autoencoder import encode_decode, set_ae_args
-from Daulmap import DualSOM
+from Dualmap import DualSOM
 
 # ==========================================
 # Comprehensive Parameters List (All-in-JSON)
