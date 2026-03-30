@@ -73,7 +73,9 @@ This framework has been strictly verified with the following versions:
 ## <a id="data-preparation"></a>📂 Data Preparation
 
 ### Tested Datasets
-Our framework is highly flexible. It supports standard vectorized data (`.npy`, `.csv`) and has built-in pipelines specifically tailored and evaluated on two skeleton-based human posture datasets:
+Our framework is highly flexible. It supports standard vectorized data (`.npy`, `.csv`) and has built-in pipelines specifically tailored and evaluated on 
+
+Two skeleton-based human posture datasets:
 * **WUT** (Warsaw University of Technology Dataset)
 * **PKU-MMD** (Peking University Dataset)
 
