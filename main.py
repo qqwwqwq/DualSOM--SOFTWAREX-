@@ -29,8 +29,8 @@ SUGGESTED_PARAMETERS = {
     "device": "cuda",               # Hardware acceleration: 'cuda' or 'cpu'
 
     # Data Paths
-    "train_data_path": "WUT/train_data.csv",
-    "test_data_path": "WUT/test_data.csv",
+    "train_data_path": "Datas/WUT/train_data.csv",
+    "test_data_path": "Datas/WUT/test_data.csv",
 
     # SOM Hyperparameters
     "som_size_index": 10.0,         # Multiplier for the grid size heuristic calculation
