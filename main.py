@@ -99,7 +99,7 @@ def evaluate_and_print(y_true, y_pred, mode, dataset, stage_label):
 
 if __name__ == "__main__":
     # ==========================================================
-    # Example Workflow (Mapped exactly to the 5 paper stages)
+    # Example Workflow 
     # ==========================================================
     # --- Step 1: Load parameters
     parser = argparse.ArgumentParser(description="Dual-mode SOM Pipeline with JSON config")
