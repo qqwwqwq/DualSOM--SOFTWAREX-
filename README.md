@@ -23,7 +23,7 @@
 
 ---
 
-## ✨ Introduction
+## <a id="introduction"></a>✨ Introduction
 
 **DualSOM** is an open-source software framework for unsupervised clustering and supervised classification of high-dimensional data. 
 
@@ -31,7 +31,7 @@ Learning-based recognition systems typically rely on large, manually annotated d
 
 The software combines sparse autoencoding for dimensionality reduction with a self-organising map (SOM) trained using distance-based learning. It is designed for researchers and engineers who require interpretable data representations, low computational overhead, and real-time performance.
 
-## 🚀 Key Features
+## <a id="key-features"></a>🚀 Key Features
 
 * **Unified Dual-Mode Pipeline:** Supports both automatic clustering and label-based classification without changes to the model structure. Both modes operate on the same trained SOM weights.
 * **Unsupervised Clustering:** Includes automatic selection of the optimal number of clusters from a user-defined range using a modified K-Means algorithm.
@@ -39,13 +39,13 @@ The software combines sparse autoencoding for dimensionality reduction with a se
 * **Latent Representation Learning:** Projects high-dimensional data into a compact latent space using a sparse autoencoder, reducing computational complexity.
 * **Highly Configurable:** Users can configure grid size, latent dimensionality, learning-rate schedules, neighbourhood decay parameters, and distance metrics.
 
-## 🕸️ Network Architecture
+## <a id="network-architecture"></a>🕸️ Network Architecture
 
 <p align="center">
   <img src="./assets/Outline.png" width="800">
 </p>
 
-## 🛠️ Installation & Environment
+## <a id="installation--environment"></a>🛠️ Installation & Environment
 
 To ensure all mathematical and deep learning dependencies are correctly configured, we recommend using a virtual environment (Conda or venv).
 
@@ -54,7 +54,7 @@ Clone the repository and install the required packages using the provided `requi
 
 ```bash
 # Optional: Create and activate a virtual environment
-# conda create -n dualsom python=3.7
+# conda create -n dualsom python=3.8
 # conda activate dualsom
 
 pip install -r requirements.txt
@@ -70,7 +70,7 @@ This framework has been strictly verified with the following versions:
 
 ---
 
-## 📂 Data Preparation
+## <a id="data-preparation"></a>📂 Data Preparation
 
 ### Tested Datasets
 Our framework is highly flexible. It supports standard vectorized data (`.npy`, `.csv`) and has built-in pipelines specifically tailored and evaluated on two skeleton-based human posture datasets:
@@ -123,7 +123,7 @@ DualSOM/
 
 ---
 
-## ⚙️ Configuration (`params.json`)
+## <a id="configuration-paramsjson"></a>⚙️ Configuration (`params.json`)
 
 To ensure absolute experimental reproducibility, **all hyperparameters, paths, hardware settings, and operational modes are exclusively controlled via a single `params.json` file**. 
 
@@ -193,7 +193,7 @@ If this file is missing, running `python main.py` will automatically generate a 
 
 ---
 
-## 🚀 Execution and Caching
+## <a id="execution-and-caching"></a>🚀 Execution and Caching
 
 The pipeline is completely JSON-driven. When executing `python main.py`, the script sequentially processes the workflow exactly as described in the paper. Below is the core logic mapped directly to the implementation:
 
@@ -276,7 +276,7 @@ Our framework explicitly separates training from inference. After the first run,
 
 ---
 
-## 🎯 Benchmarking with Generic Datasets
+## <a id="benchmarking-with-generic-datasets"></a>🎯 Benchmarking with Generic Datasets
 
 To evaluate the pipeline on standard benchmarks, use the provided preparation scripts to generate standardized CSV files. Once the data is prepared, the generic pipeline treats them as standard feature vectors.
 
@@ -298,7 +298,7 @@ To evaluate the pipeline on standard benchmarks, use the provided preparation sc
 
 ---
 
-## 📜 Reference
+## <a id="reference"></a>📜 Reference
 If you find our work useful, please consider citing:
 
 ```bibtex
