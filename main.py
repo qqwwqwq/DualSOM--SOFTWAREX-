@@ -98,6 +98,10 @@ def evaluate_and_print(y_true, y_pred, mode, dataset, stage_label):
         print(f"{k.capitalize()}: {v:.4f}")
 
 if __name__ == "__main__":
+    # ==========================================================
+    # Example Workflow (Mapped exactly to the 5 paper stages)
+    # ==========================================================
+    # --- Step 1: Load parameters
     parser = argparse.ArgumentParser(description="Dual-mode SOM Pipeline with JSON config")
     parser.add_argument('--config', type=str, default='params.json', help="Path to the JSON configuration file")
     args = parser.parse_args()
@@ -115,25 +119,22 @@ if __name__ == "__main__":
     # Propagate parsed parameters to the Autoencoder module's global state
     set_ae_args(parameters)
 
-    # ==========================================================
-    # Example Workflow (Mapped exactly to the 5 paper stages)
-    # ==========================================================
-
-    # --- Stage 1 & 2: Data preprocessing & Latent representation learning ---
+    # --- Step 2: Read  and encode data ---
     train_data = get_dataset(train_data_path, is_train=True, dataset_name=dataset_name)
     coded_data = encode_decode(train_data)
 
-    # --- Stage 3: SOM weight adjustment ---
+    # --- Step 3: Create and train DualSOM model (weight adjustment) ---
     # The map initializes itself, automatically calculating the optimal grid size internally.
     model = DualSOM(parameters, coded_data)
     model.fit(coded_data)
 
-    # --- Stage 4: Mode-specific training ---
+    # --- Step 4: Mode-specific implement---
     X_train, y_train = coded_data
-
+    # --- Step 4a: Clustering (unsupervised) ---
     if run_mode == 'unsupervised':
         print("\n>>> Executing Stage 4a: Clustering Training Phase...")
         y_pred_train = model.predict(coded_data, mode='clustering')
+    # --- Step 4b: Classification (supervised, labels available) ---
     else:
         print("\n>>> Executing Stage 4b: Classification Training Phase...")
         y_pred_train = model.predict(coded_data, mode='classification')
@@ -141,14 +142,16 @@ if __name__ == "__main__":
      # 1. Output Training Metrics (Evaluates representation capacity)
     evaluate_and_print(y_train, y_pred_train, run_mode, dataset_name, "TRAINING")
 
-    # --- Stage 5: Prediction on new data ---
+    # --- Step 1: Read and encode test data ---
     test_data = get_dataset(test_data_path, is_train=False, dataset_name=dataset_name)
     coded_test = encode_decode(test_data)
     X_test, y_test = coded_test
-
+     # --- Step 2a: Clustering (unsupervised) ---
     if run_mode == 'unsupervised':
         print("\n>>> Executing Stage 5a: Clustering Testing Phase...")
         y_pred_test = model.predict(coded_test, mode='clustering')
+        # use the same encoder as in training
+     # --- Step 2b: Classification (supervised, labels available) ---
     else:
         print("\n>>> Executing Stage 5b: Classification Testing Phase...")
         y_pred_test = model.predict(coded_test, mode='classification')
