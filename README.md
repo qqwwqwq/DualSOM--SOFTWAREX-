@@ -44,152 +44,71 @@ DualSOM/
 
 ---
 
-## ⚙️ Configuration (`params.json`)
-
-To make experiment tracking easier and command-line execution cleaner, all hyperparameters, paths, and training modes are controlled via a single `params.json` file. 
-
-Here is a template of the configuration file and the detailed explanation of each parameter:
-
-```json
-{
-    "dataset_name": "wut",
-    "run_mode": "supervised",
-    "device": "cuda",
-    "train_data_path": "data/train_data.csv",
-    "test_data_path": "data/test_data.csv",
-    "som_size_index": 10.0,
-    "som_epochs": 50,
-    "som_sigma": 4.0,
-    "som_sigma_target": 0.01,
-    "som_lr": 0.1,
-    "som_lr_target": 0.001,
-    "activation_distance": "angular",
-    "som_enable_validation": 1,
-    "som_load_model": false,
-    "som_model_path": "weight/som_weights.npy",
-    "n_clusters": 10,
-    "kmeans_max_iter": 100,
-    "kmeans_threshold": 0.0001,
-    "ae_batch_size": 32,
-    "ae_epochs": 150,
-    "ae_lr": 0.001,
-    "ae_reg_param": 0.001,
-    "ae_load_model": false,
-    "ae_model_path": "weight/sparse_ae.pth",
-    "reduction_factor": 1
-}
-```
-
 ### Parameter Dictionary
 
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
-| **Data & Paths** | | |
-| `dataset_name` | String | Dataset selector. Use `"wut"` or `"pku"` to trigger skeleton-specific preprocessing. Use `"generic"` for standard vector matrices. |
-| `data_format` | String | File format for generic data. Options: `"npy"`, `"csv"`. |
-| `train_path` | String | Path to the training features file or raw dataset folder. |
-| `test_path` | String | Path to the testing features file or raw dataset folder. |
-| `train_label_path` | String | Paths to the training label files. |
-| `test_label_path` | String | Paths to the testing label files. |
-| `output_dir` | String | Directory where evaluation visualizations and metric logs are saved. |
-| `reduction_factor` | Int | Subsamples the dataset by this factor (e.g., `2` uses half the data). Useful for quick code debugging. |
-| **Sparse Autoencoder** | | |
-| `ae_batch_size` | Int | Batch size for training the autoencoder. |
-| `ae_epochs` | Int | Total number of training epochs for the autoencoder. |
+| **Workflow & Paths** | | |
+| `dataset_name` | String | Dataset identifier (e.g., `"wut"`, `"pku"`). Set to `"mnist"` for auto-download. |
+| `run_mode` | String | `"supervised"` (classification) or `"unsupervised"` (clustering). |
 | `device` | String | Hardware accelerator. Options: `"cuda"`, `"cpu"`. |
-| `force_train_ae` | Int | `1`: Force retrain the autoencoder from scratch. `0`: Automatically load pre-trained `.pth` weights if available. |
+| `train_data_path` | String | Local path to the training CSV file. |
+| `test_data_path` | String | Local path to the testing CSV file. |
+| **Sparse Autoencoder (SAE)** | | |
+| `ae_batch_size` | Int | Mini-batch size for optimal gradient convergence. |
+| `ae_epochs` | Int | Total number of training epochs for the SAE. |
+| `ae_lr` | Float | Learning rate for the Adam optimizer. |
+| `ae_reg_param` | Float | Coefficient for the L1 sparsity penalty applied to the latent space. |
+| `ae_load_model` | Bool | `true`: Load pre-trained `.pth` weights. `false`: Train from scratch. |
+| `ae_model_path` | String | Filepath for saving/loading SAE weights. |
 | **DualSOM** | | |
-| `som_size_index` | Float | Controls the map resolution. The grid size is calculated dynamically based on sample size. |
+| `som_size_index` | Float | Resolution multiplier. Grid size ($N \times N$) is calculated dynamically. |
 | `som_epochs` | Int | Number of epochs for topological training. |
-| `som_sigma` | Float | Initial neighborhood radius (spread) for the activation function. |
-| `som_lr` | Float | Initial learning rate. Both learning rate and sigma decay exponentially. |
-| `som_enable_validation` | Int | `1` (Standard Mode): Calculates accuracy periodically to plot training curves. `0` (Fast Mode): Disables intermediate evaluation for maximum speed. |
-| **Evaluation Mode** | | |
-| `run_mode` | String | `"supervised"`: Maps neurons to labels and calculates Accuracy/F1. `"unsupervised"`: Uses Algorithm 2 to regroup neurons without labels. |
-| `n_clusters` | Int | The target number of clusters used exclusively in `unsupervised` mode (Algorithm 2). |
+| `som_sigma` / `lr` | Float | Initial values for neighborhood radius and learning rate. |
+| `activation_distance`| String | Routing metric. Options: `"angular"`, `"euclidean"`, `"cosine"`. |
+| `som_enable_validation`| Int | `1`: Prints periodic accuracy. `0`: Disables prints for max speed. *(Auto-disabled in unsupervised mode)*. |
+| `som_load_model` | Bool | `true`: Load converged map weights. `false`: Train from scratch. |
+| `som_model_path` | String | Filepath for saving/loading the SOM weight matrix (`.npy`). |
+| **Clustering** | | |
+| `n_clusters` | Int | Target number of clusters ($K$) for weight-space K-Means. |
+| `kmeans_max_iter` | Int | Maximum iterations for K-Means convergence. |
+| `kmeans_threshold`| Float | Convergence threshold (centroid shift) for K-Means. |
 
 ---
 
-## 🚀 Training and Evaluation
+## 🚀 Execution and Caching
 
-With the JSON configuration in place, executing the entire pipeline (Data Loading $\rightarrow$ Sparse Autoencoder $\rightarrow$ DualSOM) is incredibly simple. 
+The pipeline is completely JSON-driven. The script will sequentially process all 5 stages of the workflow described in the paper.
 
-### 1. Standard Execution
-Ensure your `params.json` is configured correctly, then run:
-
-```bash
-python main.py --config params.json
-```
-
-### 2. Command-Line Override (Dynamic Tuning)
-The framework allows **command-line arguments to seamlessly override JSON configurations**. This is highly useful for hyperparameter tuning or switching modes without editing the file.
-
-**Scenario A: Switch Evaluation Branches**
-If your JSON is set to `"supervised"`, but you want to instantly evaluate the unsupervised regrouping (Algorithm 2) into 8 clusters:
+### 1. Standard Training
+Configure your dataset paths in `params.json`, ensure `ae_load_model` and `som_load_model` are set to `false`, and run:
 
 ```bash
-python main.py --config params.json --run_mode unsupervised --n_clusters 8
+python main.py
 ```
 
-**Scenario B: Rapid Prototyping (Fast Mode)**
-If you want to train from scratch at maximum speed (skipping periodic validation) for a quick test:
+### 2. Instant Re-evaluation (Using Cached Models)
+Our framework explicitly separates training from inference. After the first run, model weights are saved to the `weight/` directory. To rapidly test a different scenario (e.g., switching to `"unsupervised"` mode with `n_clusters: 8`):
 
-```bash
-python main.py --config params.json --som_enable_validation 0 --force_train_ae 1
-```
+1. Set `"run_mode": "unsupervised"` and `"n_clusters": 8` in `params.json`.
+2. Set `"ae_load_model": true` and `"som_load_model": true`.
+3. Run `python main.py`.
 
-### 3. Checkpointing & Auto-Loading
-To prevent redundant and time-consuming training, our framework automatically saves the trained autoencoder models into the `weight/` directory. By default (if `force_train_ae` is `0`), the script detects existing weights, **instantly loads them**, and skips the autoencoder training phase entirely.
+*The pipeline will bypass training bars and output clustering metrics in seconds.*
 
-**Instant Re-evaluation Example:**
-Tweak the number of target clusters to 10 and re-evaluate instantly using the auto-loaded model:
-
-```bash
-python main.py --config params.json --force_train_ae 0 --run_mode unsupervised --n_clusters 10
-```
+---
 
 ## 🎯 Generic Dataset Example: MNIST
 
-To demonstrate the framework's ability to handle standard generic vectorized data, here is a complete walkthrough using the MNIST dataset.
+The `preprocessing.py` module includes an automated intercept for the MNIST dataset for zero-setup benchmarking.
 
-### Step 1: Prepare the Data
-Run the provided `prepare_mnist.py` script to automatically download the MNIST dataset and flatten the $28 \times 28$ images into 784-dimensional generic feature vectors:
+1. Set `"dataset_name": "mnist"` in `params.json`.
+2. Increase `"ae_batch_size"` to `256` and set `"n_clusters"` to `10`.
+3. Run `python main.py`.
 
-```bash
-python prepare_mnist.py
-```
+*The framework will download MNIST, normalize the 784-dim pixels, and project them onto the DualSOM grid automatically.*
 
-This will generate the standard `.npy` feature and label matrices inside the `./data/mnist_npy/` directory.
-
-### Step 2: Configure `params.json`
-Point the framework to the generated `.npy` files and set the dataset name to `generic`. Because MNIST has 60,000 training samples and 10 classes, we increase the `ae_batch_size` and set `n_clusters` to 10:
-
-```json
-{
-  "dataset_name": "generic",
-  "data_format": "npy",
-  "train_path": "./data/mnist_npy/train_data.npy",
-  "train_label_path": "./data/mnist_npy/train_labels.npy",
-  "test_path": "./data/mnist_npy/test_data.npy",
-  "test_label_path": "./data/mnist_npy/test_labels.npy",
-  "output_dir": "./results_mnist",
-  "reduction_factor": 1,
-  "ae_batch_size": 256,
-  "ae_epochs": 50,
-  "force_train_ae": 1,
-  "som_epochs": 10,
-  "som_enable_validation": 1,
-  "run_mode": "supervised",
-  "n_clusters": 10
-}
-```
-
-### Step 3: Run the Pipeline
-Once configured, simply execute the main script. The framework will automatically detect the 784-dim input, adapt the Sparse Autoencoder, and extract features for DualSOM clustering:
-
-```bash
-python main.py --config params.json
-```
+---
 
 ## 📜 Reference
 If you find our work useful, please consider citing:
@@ -205,3 +124,4 @@ If you find our work useful, please consider citing:
   pages={7899-7906},
   doi={10.1109/LRA.2024.3433201}
 }
+```
