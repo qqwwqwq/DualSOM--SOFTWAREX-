@@ -7,6 +7,24 @@
 ![Qiskit](https://img.shields.io/badge/Qiskit-2.3.0-6929C4?style=flat-square&logo=qiskit&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 ![Status](https://img.shields.io/badge/Status-Research--Ready-brightgreen?style=flat-square)
+
+## ✨ Introduction
+
+**DualSOM** is an open-source software framework for unsupervised clustering and supervised classification of high-dimensional data. 
+
+Learning-based recognition systems typically rely on large, manually annotated datasets, which limits scalability and adaptability in real-world applications. This software addresses these limitations by providing a unified framework that enables the automatic discovery of meaningful structures in high-dimensional data while allowing a seamless transition to recognition when labelled data are available.
+
+The software combines sparse autoencoding for dimensionality reduction with a self-organising map (SOM) trained using distance-based learning. It is designed for researchers and engineers who require interpretable data representations, low computational overhead, and real-time performance.
+
+## 🚀 Key Features
+
+* **Unified Dual-Mode Pipeline:** Supports both automatic clustering and label-based classification without changes to the model structure. Both modes operate on the same trained SOM weights.
+* **Unsupervised Clustering:** Includes automatic selection of the optimal number of clusters from a user-defined range using a modified K-Means algorithm.
+* **Supervised Classification:** Constructs a neuron label map based on labelled training samples.
+* **Latent Representation Learning:** Projects high-dimensional data into a compact latent space using a sparse autoencoder, reducing computational complexity.
+* **Highly Configurable:** Users can configure grid size, latent dimensionality, learning-rate schedules, neighbourhood decay parameters, and distance metrics.
+
+
 ## 🕸️ Network Architecture
 
 <p align="center">
