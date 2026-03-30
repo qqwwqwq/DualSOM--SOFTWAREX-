@@ -8,6 +8,20 @@
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 ![Status](https://img.shields.io/badge/Status-Research--Ready-brightgreen?style=flat-square)
 
+
+## 📖 Table of Contents
+
+* [Introduction](#introduction)
+* [Key Features](#key-features)
+* [Network Architecture](#network-architecture)
+* [Installation & Environment](#installation--environment)
+* [Data Preparation](#data-preparation)
+* [Configuration (`params.json`)](#configuration-paramsjson)
+* [Execution and Caching](#execution-and-caching)
+* [Benchmarking with Generic Datasets](#benchmarking-with-generic-datasets)
+* [Reference](#reference)
+
+* 
 ## ✨ Introduction
 
 **DualSOM** is an open-source software framework for unsupervised clustering and supervised classification of high-dimensional data. 
