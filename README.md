@@ -9,13 +9,19 @@
 ## 📂 Data Preparation
 
 ### Tested Datasets
-Our framework is highly flexible. It supports standard vectorized data (`.npy`, `.csv`) and has built-in pipelines specifically tailored and heavily evaluated on two skeleton-based human posture datasets:
+Our framework is highly flexible. It supports standard vectorized data (`.npy`, `.csv`) and has built-in pipelines specifically tailored and evaluated on two skeleton-based human posture datasets:
 * **WUT** (Warsaw University of Technology Dataset)
 * **PKU-MMD** (Peking University Dataset)
-
+One image dataset:
+* **MNIST** (Standard benchmark dataset of 28x28 grayscale handwritten digits)
+One signal dataset:
+* **FordA** (Automotive engine noise and vibration sensor time-series dataset from the UCR archive)
+  
 ### 1. Download Datasets
 * **WUT Dataset**: Download the skeleton-only dataset from [Link](#).
 * **PKU Dataset**: Download the skeleton-only dataset from [Link](#).
+* **MNIST Dataset**: Run `python prepare_mnist.py` to automatically download, normalize, and format the image data into compatible CSV files.
+* **FordA Dataset**: Run `python prepare_ucr_forda.py` to automatically download and process the 1D sensor time-series data into compatible CSV files.
 
 ### 2. Directory Structure
 After downloading and extracting, please arrange the raw data into the following directory structure before training:
@@ -96,7 +102,7 @@ If this file is missing, running `python main.py` will automatically generate a 
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
 | **Workflow & Paths** | | |
-| `dataset_name` | String | Dataset identifier (e.g., `"wut"`, `"pku"`). Set to `"mnist"` for auto-download. |
+| `dataset_name` | String | Dataset identifier (e.g., `"wut"`, `"pku"`，`"mnist"`，`"forda"`).|
 | `run_mode` | String | `"supervised"` (classification) or `"unsupervised"` (clustering). |
 | `device` | String | Hardware accelerator. Options: `"cuda"`, `"cpu"`. |
 | `train_data_path` | String | Local path to the training CSV file. |
@@ -203,15 +209,25 @@ Our framework explicitly separates training from inference. After the first run,
 
 ---
 
-## 🎯 Generic Dataset Example: MNIST
+## 🎯 Benchmarking with Generic Datasets
 
-The `preprocessing.py` module includes an automated intercept for the MNIST dataset for zero-setup benchmarking.
+To evaluate the pipeline on standard benchmarks, use the provided preparation scripts to generate standardized CSV files. Once the data is prepared, the generic pipeline treats them as standard feature vectors.
 
-1. Set `"dataset_name": "mnist"` in `params.json`.
-2. Increase `"ae_batch_size"` to `256` and set `"n_clusters"` to `10`.
-3. Run `python main.py`.
+### 1. MNIST (Image Data)
+1. **Generate Data**: Run `python prepare_mnist.py`. This will create normalized 784-dimensional feature CSVs in `Datas/MNIST/`.
+2. **Update Configuration**: In `params.json`, point the data paths to the new files:
+   - `"train_data_path": "Datas/MNIST/train_data.csv"`
+   - `"test_data_path": "Datas/MNIST/test_data.csv"`
+3. **Run**: `python main.py`.
 
-*The framework will download MNIST, normalize the 784-dim pixels, and project them onto the DualSOM grid automatically.*
+### 2. FordA (1D Signal Data)
+1. **Generate Data**: Run `python prepare_ucr_forda.py`. This will fetch and format the 500-dimensional sensor time-series into `Datas/FordA/`.
+2. **Update Configuration**: In `params.json`, set the paths to the FordA CSV files：
+   - `"train_data_path": "Datas/FordA/train_data.csv"`
+   - `"test_data_path": "Datas/FordA/test_data.csv"`
+4. **Run**: `python main.py`.
+
+*The framework will ingest these prepared CSVs, compress the high-dimensional signals/pixels through the Sparse Autoencoder, and project them onto the DualSOM grid automatically.*
 
 ---
 
