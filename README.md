@@ -1,4 +1,4 @@
-# DualSOM: Dual-mode software for clustering and classification using self-organising map
+# DualSOM: Dual-mode software for clustering and classification using Self-Organising Map
 
 ![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=flat-square&logo=python&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.10.0-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)
