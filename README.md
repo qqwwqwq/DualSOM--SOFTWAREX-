@@ -127,9 +127,9 @@ python main.py
 ```
 
 ### 2. Instant Re-evaluation (Using Cached Models)
-Our framework explicitly separates training from inference. After the first run, model weights are saved to the `weight/` directory. To rapidly test a different scenario (e.g., switching to `"unsupervised"` mode with `n_clusters: 8`):
+Our framework explicitly separates training from inference. After the first run, model weights are saved to the `weight/` directory. To rapidly test a different scenario (e.g., switching to `"unsupervised"` mode with `n_clusters: (desired number of clusters)`):
 
-1. Set `"run_mode": "unsupervised"` and `"n_clusters": 8` in `params.json`.
+1. Set `"run_mode": "unsupervised"` and `"n_clusters": (desired number of clusters)` in `params.json`.
 2. Set `"ae_load_model": true` and `"som_load_model": true`.
 3. Run `python main.py`.
 
