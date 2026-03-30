@@ -211,7 +211,7 @@ The script parses command-line arguments and loads the comprehensive configurati
 ### Step 2: Read and Encode Data 
 The raw feature matrix and labels are loaded from the specified CSV files, dynamically handling structural validations. The high-dimensional features are then passed through the PyTorch-based Sparse Autoencoder, minimizing a combined MSE reconstruction loss and an L1 sparsity penalty to extract a highly condensed, low-dimensional latent code.
 ```python
-    train_data = get_dataset(train_data_path, is_train=True, dataset_name=dataset_name)
+    train_data = get_dataset(train_data_path)
     coded_data = encode_decode(train_data)
 ```
 
@@ -243,7 +243,7 @@ Depending on the `run_mode` configured in the JSON file, the framework branches 
 The held-out testing data is ingested, transformed using the *frozen* Autoencoder and preserved scalers, and finally projected onto the converged SOM grid to retrieve the predicted classes or cluster IDs.
 ```python
     # --- Step 1: Read and encode test data ---
-    test_data = get_dataset(test_data_path, is_train=False, dataset_name=dataset_name)
+    test_data = get_dataset(test_data_path)
     coded_test = encode_decode(test_data)
     X_test, y_test = coded_test
     
