@@ -138,7 +138,6 @@ pip install -r requirements.txt
 * `torch >= 2.10`
 * `torchvision >= 0.25`
 * `tqdm >= 4.66`
-* `qiskit >= 2.3` *(optional, for quantum experiments if applicable)*
 
 ### 4. Optional: GPU Support
 
