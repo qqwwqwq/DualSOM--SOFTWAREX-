@@ -27,6 +27,7 @@
 * [Cluster Number Selection (`Selection.py`)](#optimal-cluster-selection)
 * [Benchmarking with Generic Datasets](#benchmarking-with-generic-datasets)
 * [Reference](#reference)
+* [License](#license)
 
 ---
 
@@ -396,3 +397,9 @@ To evaluate the pipeline on standard benchmarks, use the provided preparation sc
   doi={10.1109/LRA.2024.3433201}
 }
 ```
+
+---
+
+## <a id="license"></a>📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
