@@ -92,27 +92,70 @@ DualSOM is designed as a flexible framework for human posture and activity recog
 3. **Feature Extraction:** Sparse Autoencoder transforms data into latent space.
 4. **SOM Training:** DualSOM organizes latent features onto a 2D map, learning topology-preserving representations.
 
-## <a id="installation--environment"></a>🛠️ Installation & Environment
+## <a id="installation--environment"></a>🛠️ Installation Guide
 
-To ensure all mathematical and deep learning dependencies are correctly configured, we recommend using a virtual environment (Conda or venv).
+Follow these steps to set up DualSOM on your system.
 
-### 1. Install Dependencies
-Clone the repository and install the required packages using the provided `requirements.txt`:
+### 1. Clone the Repository
 
 ```bash
-# Optional: Create and activate a virtual environment
-# conda create -n dualsom python=3.8
-# conda activate dualsom
+git clone [https://github.com/your-org/DualSOM.git](https://github.com/your-org/DualSOM.git)
+cd DualSOM
+```
 
+### 2. Create a Python Environment
+
+It is recommended to use `conda` or `venv` to isolate dependencies:
+
+**Using conda:**
+```bash
+conda create -n dualsom python=3.11
+conda activate dualsom
+```
+
+**Using venv:**
+```bash
+python -m venv dualsom_env
+source dualsom_env/bin/activate  # Linux/macOS
+dualsom_env\Scripts\activate     # Windows
+```
+
+### 3. Install Dependencies
+
+Install required Python packages using `pip` and the `requirements.txt` file:
+
+```bash
+pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 2. Verified Environment
-This framework has been strictly verified with the following versions:
-* **Deep Learning**: `torch>=2.10.0`
-* **Data Science**: `numpy>=2.4.2`, `pandas>=3.0.0`, `scipy>=1.17.0`
-* **Machine Learning**: `scikit-learn>=1.4.2`
-* **Visualization & Utilities**: `matplotlib>=3.8.4`, `tqdm>=4.66.4`
+**Minimum Recommended Versions:**
+* `numpy >= 1.24`
+* `pandas >= 3.0`
+* `matplotlib >= 3.8`
+* `scikit-learn >= 1.3`
+* `scipy >= 1.17`
+* `torch >= 2.10`
+* `torchvision >= 0.25`
+* `tqdm >= 4.66`
+* `qiskit >= 2.3` *(optional, for quantum experiments if applicable)*
+
+### 4. Optional: GPU Support
+
+If a CUDA-compatible GPU is available, ensure PyTorch is installed with GPU support to accelerate Sparse Autoencoder training:
+
+```bash
+# Example for CUDA 12.2
+pip install torch==2.10.0+cu122 torchvision==0.25.0+cu122 -f [https://download.pytorch.org/whl/torch_stable.html](https://download.pytorch.org/whl/torch_stable.html)
+```
+
+### 5. Verify Installation
+
+Run a quick test to confirm the environment is correctly set up:
+
+```bash
+python -c "import torch, numpy, pandas, matplotlib; print('Environment OK')"
+```
 
 ---
 
