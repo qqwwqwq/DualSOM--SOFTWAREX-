@@ -109,7 +109,7 @@ It is recommended to use `conda` or `venv` to isolate dependencies:
 
 **Using conda:**
 ```bash
-conda create -n dualsom python=3.11
+conda create -n dualsom python=3.8
 conda activate dualsom
 ```
 
