@@ -167,16 +167,6 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-**Minimum Recommended Versions:**
-* `numpy >= 1.24`
-* `pandas >= 3.0`
-* `matplotlib >= 3.8`
-* `scikit-learn >= 1.3`
-* `scipy >= 1.17`
-* `torch >= 2.10`
-* `torchvision >= 0.25`
-* `tqdm >= 4.66`
-
 ### 4. Optional: GPU Support
 
 If a CUDA-compatible GPU is available, ensure PyTorch is installed with GPU support to accelerate Sparse Autoencoder training:
