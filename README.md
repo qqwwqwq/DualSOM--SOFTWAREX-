@@ -92,6 +92,40 @@ DualSOM is designed as a flexible framework for human posture and activity recog
 3. **Feature Extraction:** Sparse Autoencoder transforms data into latent space.
 4. **SOM Training:** DualSOM organizes latent features onto a 2D map, learning topology-preserving representations.
 
+## 💻 System Requirements
+
+### 1. Software Requirements
+* **Python:** 3.11 (recommended)
+* **Python Libraries:**
+  * `numpy >= 1.24`
+  * `pandas >= 3.0`
+  * `matplotlib >= 3.8`
+  * `scikit-learn >= 1.3`
+  * `scipy >= 1.17`
+  * `torch >= 2.10`
+  * `torchvision >= 0.25`
+  * `tqdm >= 4.66`
+
+### 2. Hardware Requirements
+* **CPU:** Standard multi-core processor (recommended)
+* **RAM:** Minimum 8 GB (16 GB recommended for large datasets)
+* **GPU (optional):** CUDA-compatible GPU recommended for faster Sparse Autoencoder training
+
+### 3. Operating Systems
+* Linux (recommended)
+* macOS
+* Windows
+
+### 4. Input Data Requirements
+* Tabular format (e.g., `.csv`)
+* Each sample represented as a feature vector
+* Optional labels for supervised classification mode
+
+### 5. Notes
+* GPU acceleration is only required for efficient training on large datasets; the framework can run entirely on CPU.
+* The software is designed to be lightweight and can operate on moderate hardware for small to medium datasets.
+* Performance depends primarily on dataset size, latent dimensionality, and SOM grid configuration.
+* 
 ## <a id="installation--environment"></a>🛠️ Installation Guide
 
 Follow these steps to set up DualSOM on your system.
