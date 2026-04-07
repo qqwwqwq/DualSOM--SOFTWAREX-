@@ -5,7 +5,7 @@
 ¹ *Waseda University, Japan*
 ² *Warsaw University of Technology, Poland*
 
-![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.8-3776AB?style=flat-square&logo=python&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.10.0-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)
 ![NumPy](https://img.shields.io/badge/NumPy-2.4.2-013243?style=flat-square&logo=numpy&logoColor=white)
 ![Pandas](https://img.shields.io/badge/Pandas-3.0.0-150458?style=flat-square&logo=pandas&logoColor=white)
@@ -97,7 +97,7 @@ DualSOM is designed as a flexible framework for human posture and activity recog
 ## <a id="system-requirements"></a>💻 System Requirements
 
 ### 1. Software Requirements
-* **Python:** 3.11 (recommended)
+* **Python:** 3.8 (recommended)
 * **Python Libraries:**
   * `numpy >= 1.24`
   * `pandas >= 3.0`
@@ -147,7 +147,7 @@ It is recommended to use `conda` or `venv` to isolate dependencies:
 
 **Using conda:**
 ```bash
-conda create -n dualsom python=3.11
+conda create -n dualsom python=3.8
 conda activate dualsom
 ```
 
