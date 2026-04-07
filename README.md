@@ -5,7 +5,6 @@
 ![NumPy](https://img.shields.io/badge/NumPy-2.4.2-013243?style=flat-square&logo=numpy&logoColor=white)
 ![Pandas](https://img.shields.io/badge/Pandas-3.0.0-150458?style=flat-square&logo=pandas&logoColor=white)
 ![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-1.4.2-F7931E?style=flat-square&logo=scikitlearn&logoColor=white)
-![Qiskit](https://img.shields.io/badge/Qiskit-2.3.0-6929C4?style=flat-square&logo=qiskit&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 ![Status](https://img.shields.io/badge/Status-Research--Ready-brightgreen?style=flat-square)
 
@@ -18,6 +17,7 @@
 * [Data Preparation](#data-preparation)
 * [Configuration (`params.json`)](#configuration-paramsjson)
 * [Execution and Caching](#execution-and-caching)
+* [Optimal Cluster Selection (`Selection.py`)](#optimal-cluster-selection)
 * [Benchmarking with Generic Datasets](#benchmarking-with-generic-datasets)
 * [Reference](#reference)
 
@@ -62,10 +62,9 @@ pip install -r requirements.txt
 
 ### 2. Verified Environment
 This framework has been strictly verified with the following versions:
-* **Deep Learning**: `torch==2.10.0`, `torchvision==0.25.0`
+* **Deep Learning**: `torch==2.10.0`
 * **Data Science**: `numpy==2.4.2`, `pandas==3.0.0`, `scipy==1.17.0`
 * **Machine Learning**: `scikit-learn==1.4.2`
-* **Quantum Computing**: `qiskit==2.3.0`
 * **Visualization & Utilities**: `matplotlib==3.8.4`, `tqdm==4.66.4`
 
 ---
@@ -117,6 +116,7 @@ DualSOM/
 ├── sparse_autoencoder.py        # PyTorch Mini-Batch Autoencoder module
 ├── preprocessing.py             # Data ingestion and generic loader
 ├── main.py                      # Main 5-stage execution pipeline
+├── Selection.py                 # Tool for finding the optimal cluster number
 ├── params.json                  # All-in-one configuration file
 └── weight/                      # Auto-generated directory for cached models
     ├── sparse_ae.pth
@@ -199,68 +199,6 @@ If this file is missing, running `python main.py` will automatically generate a 
 
 The pipeline is completely JSON-driven. When executing `python main.py`, the script sequentially processes the workflow exactly as described in the paper. Below is the core logic mapped directly to the implementation:
 
-### Step 1: Load Parameters
-The script parses command-line arguments and loads the comprehensive configuration dictionary from the JSON file, propagating settings to the Autoencoder and SOM modules.
-```python
-    # --- Step 1: Load parameters
-    parser = argparse.ArgumentParser(description="Dual-mode SOM Pipeline with JSON config")
-    parser.add_argument('--config', type=str, default='params.json', help="Path to the JSON configuration file")
-    args = parser.parse_args()
-    create_default_params(args.config)
-    parameters = read_parameters(args.config)
-```
-
-### Step 2: Read and Encode Data 
-The raw feature matrix and labels are loaded from the specified CSV files, dynamically handling structural validations. The high-dimensional features are then passed through the PyTorch-based Sparse Autoencoder, minimizing a combined MSE reconstruction loss and an L1 sparsity penalty to extract a highly condensed, low-dimensional latent code.
-```python
-    train_data = get_dataset(train_data_path)
-    set_ae_args(parameters)
-    coded_data = encode_decode(train_data)
-```
-
-### Step 3: Create and Train DualSOM Model 
-The latent codes are fed into the mathematical core. The SOM dynamically calculates its optimal grid size internally, initializes weights via PCA for rapid convergence, and adjusts its spatial topology using an exponential attention mechanism.
-```python
-    model = DualSOM(parameters, coded_data)
-    model.fit(coded_data)
-```
-
-### Step 4: Mode-Specific Implementation (Paper Stage 4)
-Depending on the `run_mode` configured in the JSON file, the framework branches into two distinct operational modes. In **Supervised Mode**, the map constructs a voting dictionary, assigning each physical neuron to the majority class of the training samples that map to it. In **Unsupervised Mode**, a specialized clusterer groups the neurons into `n_clusters`.
-```python
-    # --- Step 4: Mode-specific implement---
-    X_train, y_train = coded_data
-    
-    # --- Step 4a: Clustering (unsupervised) ---
-    if run_mode == 'unsupervised':
-        print("\n>>> Executing Stage 4a: Clustering Training Phase...")
-        y_pred_train = model.predict(coded_data, mode='clustering')
-        
-    # --- Step 4b: Classification (supervised, labels available) ---
-    else:
-        print("\n>>> Executing Stage 4b: Classification Training Phase...")
-        y_pred_train = model.predict(coded_data, mode='classification')
-```
-
-### Testing Phase: Prediction on New Data 
-The held-out testing data is ingested, transformed using the *frozen* Autoencoder and preserved scalers, and finally projected onto the converged SOM grid to retrieve the predicted classes or cluster IDs.
-```python
-    # --- Step 1: Read and encode test data ---
-    test_data = get_dataset(test_data_path)
-    coded_test = encode_decode(test_data)
-    X_test, y_test = coded_test
-    
-    # --- Step 2a: Clustering (unsupervised) ---
-    if run_mode == 'unsupervised':
-        print("\n>>> Executing Stage 5a: Clustering Testing Phase...")
-        y_pred_test = model.predict(coded_test, mode='clustering')
-        
-    # --- Step 2b: Classification (supervised, labels available) ---
-    else:
-        print("\n>>> Executing Stage 5b: Classification Testing Phase...")
-        y_pred_test = model.predict(coded_test, mode='classification')
-```
-
 ### Quick Start Commands
 
 #### 1. Standard Training
@@ -276,6 +214,30 @@ Our framework explicitly separates training from inference. After the first run,
 3. Run `python main.py`.
 
 *The pipeline will bypass training blocks and output clustering metrics in seconds.*
+
+---
+
+## <a id="optimal-cluster-selection"></a>🔎 Optimal Cluster Selection (`Selection.py`)
+
+When operating in **unsupervised mode**, selecting the optimal number of clusters ($K$) can be challenging. To assist with this, we provide `Selection.py`, a dedicated utility tool that mathematically determines the best $K_m$ using the Angular Distance Criterion $\Delta L(k)$ introduced in our framework.
+
+### How It Works
+`Selection.py` acts as a dry-run evaluator. It **bypasses any training** by forcibly loading the pre-trained weights from `main.py`, evaluates a user-defined range of $k$ values via spherical K-Means, and plots the absolute difference metric $\Delta L(k) = |L(k) - L(k-1)|$. The optimal cluster number minimizes this difference.
+
+### Usage
+**Prerequisite:** You must have run `main.py` at least once so that the model weights are successfully saved in the `weight/` directory.
+
+Run the script from the terminal, specifying the minimum and maximum range of clusters you want to evaluate:
+```bash
+python Selection.py --k_min 2 --k_max 25
+```
+
+### Workflow Integration
+1. Train your model using `main.py`.
+2. Run `python Selection.py --k_min 5 --k_max 30`.
+3. Check the terminal output and the generated visual plot for the **"Recommended Optimal Cluster Number (Km)"**.
+4. Update the `"n_clusters"` field in your `params.json` with this recommended $K_m$.
+5. Run `main.py` in `"unsupervised"` mode to get the final clustered outputs.
 
 ---
 
