@@ -5,7 +5,7 @@
 ¹ *Waseda University, Japan*
 ² *Warsaw University of Technology, Poland*
 
-![Python](https://img.shields.io/badge/Python-3.8-3776AB?style=flat-square&logo=python&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.10.0-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)
 ![NumPy](https://img.shields.io/badge/NumPy-2.4.2-013243?style=flat-square&logo=numpy&logoColor=white)
 ![Pandas](https://img.shields.io/badge/Pandas-3.0.0-150458?style=flat-square&logo=pandas&logoColor=white)
@@ -136,36 +136,36 @@ Follow these steps to set up DualSOM on your system.
 
 ### 1. Clone the Repository
 
-~~~bash
+```bash
 git clone https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git
 cd DualSOM--SOFTWAREX-
-~~~
+```
 
 ### 2. Create a Python Environment
 
 It is recommended to use `conda` or `venv` to isolate dependencies:
 
 **Using conda:**
-~~~bash
-conda create -n dualsom python=3.8
+```bash
+conda create -n dualsom python=3.11
 conda activate dualsom
-~~~
+```
 
 **Using venv:**
-~~~bash
+```bash
 python -m venv dualsom_env
 source dualsom_env/bin/activate  # Linux/macOS
 dualsom_env\Scripts\activate     # Windows
-~~~
+```
 
 ### 3. Install Dependencies
 
 Install required Python packages using `pip` and the `requirements.txt` file:
 
-~~~bash
+```bash
 pip install --upgrade pip
 pip install -r requirements.txt
-~~~
+```
 
 **Minimum Recommended Versions:**
 * `numpy >= 1.24`
@@ -181,18 +181,18 @@ pip install -r requirements.txt
 
 If a CUDA-compatible GPU is available, ensure PyTorch is installed with GPU support to accelerate Sparse Autoencoder training:
 
-~~~bash
+```bash
 # Example for CUDA 11.7
 pip install torch==2.10.0+cu117 torchvision==0.25.0+cu117 -f https://download.pytorch.org/whl/torch_stable.html
-~~~
+```
 
 ### 5. Verify Installation
 
 Run a quick test to confirm the environment is correctly set up:
 
-~~~bash
+```bash
 python -c "import torch, numpy, pandas, matplotlib; print('Environment OK')"
-~~~
+```
 
 ---
 
@@ -220,7 +220,7 @@ One signal dataset:
 ### 2. Directory Structure
 After downloading and extracting, please arrange the raw data into the following directory structure before training:
 
-~~~text
+```text
 DualSOM/
 ├── Datas/
 │   ├── WUT/
@@ -248,7 +248,7 @@ DualSOM/
 └── weight/                      # Auto-generated directory for cached models
     ├── sparse_ae.pth
     └── som_weights.npy
-~~~
+```
 
 ---
 
@@ -260,7 +260,7 @@ If this file is missing, running `python main.py` will automatically generate a 
 
 ### Configuration Template
 
-~~~json
+```json
 {
     "dataset_name": "wut",
     "run_mode": "supervised",
@@ -288,7 +288,7 @@ If this file is missing, running `python main.py` will automatically generate a 
     "ae_model_path": "weight/sparse_ae.pth",
     "reduction_factor": 1
 }
-~~~
+```
 
 ### Parameter Dictionary
 
@@ -330,9 +330,9 @@ The pipeline is completely JSON-driven. When executing `python main.py`, the scr
 
 #### 1. Standard Training
 Configure your dataset paths in `params.json`, ensure `ae_load_model` and `som_load_model` are set to `false`, and run:
-~~~bash
+```bash
 python main.py
-~~~
+```
 
 #### 2. Instant Re-evaluation (Using Cached Models)
 Our framework explicitly separates training from inference. After the first run, model weights are saved to the `weight/` directory. To rapidly test a different scenario (e.g., switching to `"unsupervised"` mode):
@@ -355,9 +355,9 @@ When operating in **unsupervised mode**, selecting the optimal number of cluster
 **Prerequisite:** You must have run `main.py` at least once so that the model weights are successfully saved in the `weight/` directory.
 
 Run the script from the terminal, specifying the minimum and maximum range of clusters you want to evaluate:
-~~~bash
+```bash
 python Selection.py --k_min 2 --k_max 12
-~~~
+```
 
 ### Workflow Integration
 1. Train your model using `main.py`.
@@ -394,7 +394,7 @@ To evaluate the pipeline on standard benchmarks, use the provided preparation sc
 
 [1] Xin He, Teresa Zielinska, Vibekananda Dutta, Takafumi Matsumaru, and Robert Sitnik. "From Seeing to Recognising–An Extended Self-Organizing Map for Human Postures Identification." *IEEE Robotics and Automation Letters*, vol. 9, no. 9, pp. 7899-7906, 2024.
 
-~~~bibtex
+```bibtex
 @ARTICLE{10608412,
   author={He, Xin and Zielinska, Teresa and Dutta, Vibekananda and Matsumaru, Takafumi and Sitnik, Robert},
   journal={IEEE Robotics and Automation Letters}, 
@@ -405,4 +405,4 @@ To evaluate the pipeline on standard benchmarks, use the provided preparation sc
   pages={7899-7906},
   doi={10.1109/LRA.2024.3433201}
 }
-~~~
+```
