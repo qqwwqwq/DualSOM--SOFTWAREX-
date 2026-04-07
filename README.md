@@ -137,7 +137,7 @@ Follow these steps to set up DualSOM on your system.
 ### 1. Clone the Repository
 
 ~~~bash
-git clone [https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git](https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git)
+git clone https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git
 cd DualSOM--SOFTWAREX-
 ~~~
 
@@ -183,7 +183,7 @@ If a CUDA-compatible GPU is available, ensure PyTorch is installed with GPU supp
 
 ~~~bash
 # Example for CUDA 11.7
-pip install torch==2.10.0+cu117 torchvision==0.25.0+cu117 -f [https://download.pytorch.org/whl/torch_stable.html](https://download.pytorch.org/whl/torch_stable.html)
+pip install torch==2.10.0+cu117 torchvision==0.25.0+cu117 -f https://download.pytorch.org/whl/torch_stable.html
 ~~~
 
 ### 5. Verify Installation
