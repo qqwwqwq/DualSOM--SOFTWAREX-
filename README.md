@@ -67,6 +67,31 @@ The framework is domain-independent; however, it has been **demonstrated on huma
   <img src="./assets/Outline.png" width="800">
 </p>
 
+## <a id="how-the-system-works"></a>⚙️ How the System Works
+
+DualSOM is designed as a flexible framework for human posture and activity recognition, supporting both **supervised classification** and **unsupervised clustering**. The system combines a **Sparse Autoencoder (SAE)** for feature extraction with an **Extended Self-Organizing Map (SOM)** for structured data representation and clustering.
+
+### 1. Sparse Autoencoder (SAE)
+* **Purpose:** Reduces high-dimensional input data (e.g., skeleton coordinates) to a compact latent representation while preserving essential spatial and relational information.
+* **Operation:** Takes raw or preprocessed feature vectors as input and learns an embedding that captures meaningful patterns in the data.
+* **Output:** Latent features that serve as input to the DualSOM.
+
+### 2. DualSOM
+* **Core Component:** An Extended Self-Organizing Map that processes latent features.
+* **Functionality:**
+  * **Supervised Mode:** Maps neurons to known class labels, enabling accurate posture classification and evaluation using standard metrics (Accuracy, F1, Precision, Recall).
+  * **Unsupervised Mode (Algorithm 2):** Performs K-Means-style regrouping of SOM neurons using angular distance, enabling clustering without labels. Clustering quality is evaluated with metrics like NMI, AMI, Homogeneity, and Completeness.
+
+### 3. Two Training Modes
+* **Standard Mode:** Periodic validation is performed during SOM training, producing an accuracy curve to monitor learning progress.
+* **Fast Mode:** Skips validation checks for quicker execution, suitable for large datasets or rapid experimentation.
+
+### 4. Data Flow
+1. **Load Data:** Reads tabular input data (.csv), optionally with labels.
+2. **Preprocess:** Normalizes features, imputes missing values, and encodes labels (if available).
+3. **Feature Extraction:** Sparse Autoencoder transforms data into latent space.
+4. **SOM Training:** DualSOM organizes latent features onto a 2D map, learning topology-preserving representations.
+
 ## <a id="installation--environment"></a>🛠️ Installation & Environment
 
 To ensure all mathematical and deep learning dependencies are correctly configured, we recommend using a virtual environment (Conda or venv).
