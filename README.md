@@ -99,8 +99,8 @@ Follow these steps to set up DualSOM on your system.
 ### 1. Clone the Repository
 
 ```bash
-git clone [https://github.com/your-org/DualSOM.git](https://github.com/your-org/DualSOM.git)
-cd DualSOM
+git clone [https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git](https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git)
+cd DualSOM--SOFTWAREX-
 ```
 
 ### 2. Create a Python Environment
