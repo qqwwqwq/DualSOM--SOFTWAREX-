@@ -30,11 +30,13 @@
 
 ## <a id="introduction"></a>✨ Introduction
 
-**DualSOM** is an open-source software framework for unsupervised clustering and supervised classification of high-dimensional data. 
+DualSOM is an open-source, general-purpose software framework for **unsupervised clustering** and **supervised classification** of high-dimensional data within a unified pipeline. The framework combines sparse autoencoding for dimensionality reduction with a self-organising map (SOM) trained using distance-based learning.
 
-Learning-based recognition systems typically rely on large, manually annotated datasets, which limits scalability and adaptability in real-world applications. This software addresses these limitations by providing a unified framework that enables the automatic discovery of meaningful structures in high-dimensional data while allowing a seamless transition to recognition when labelled data are available.
+A central feature of DualSOM is its **dual-mode operation**, which enables seamless transition between clustering and classification without modifying the model structure. The same trained representation and SOM grid can be used for exploratory data analysis or for label-based recognition, ensuring consistency and reproducibility across tasks.
 
-The software combines sparse autoencoding for dimensionality reduction with a self-organising map (SOM) trained using distance-based learning. It is designed for researchers and engineers who require interpretable data representations, low computational overhead, and real-time performance.
+The software is designed as a **modular and extensible system**, allowing users to configure latent dimensionality, SOM topology, learning schedules, neighbourhood functions, and distance metrics. This flexibility makes it applicable to a wide range of domains involving structured or high-dimensional data, including robotics, human–computer interaction, and multimodal perception.
+
+The framework is domain-independent; however, it has been **demonstrated on human posture recognition from RGB-D skeletal data**, following our previous work presented in RA-L/ICRA 2025 [[1]](#reference) . In this context, posture recognition serves as an example application rather than the primary scope of the software.
 
 ## <a id="key-features"></a>🚀 Key Features
 
@@ -269,7 +271,8 @@ To evaluate the pipeline on standard benchmarks, use the provided preparation sc
 ---
 
 ## <a id="reference"></a>📜 Reference
-If you find our work useful, please consider citing:
+
+[1] Xin He, Teresa Zielinska, Vibekananda Dutta, Takafumi Matsumaru, and Robert Sitnik. "From Seeing to Recognising–An Extended Self-Organizing Map for Human Postures Identification." *IEEE Robotics and Automation Letters*, vol. 9, no. 9, pp. 7899-7906, 2024.
 
 ```bibtex
 @ARTICLE{10608412,
@@ -282,4 +285,3 @@ If you find our work useful, please consider citing:
   pages={7899-7906},
   doi={10.1109/LRA.2024.3433201}
 }
-```
