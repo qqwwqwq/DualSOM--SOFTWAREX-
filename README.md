@@ -222,19 +222,19 @@ Our framework explicitly separates training from inference. After the first run,
 When operating in **unsupervised mode**, selecting the optimal number of clusters ($K$) can be challenging. To assist with this, we provide `Selection.py`, a dedicated utility tool that mathematically determines the best $K_m$ using the Angular Distance Criterion $\Delta L(k)$ introduced in our framework.
 
 ### How It Works
-`Selection.py` acts as a dry-run evaluator. It **bypasses any training** by forcibly loading the pre-trained weights from `main.py`, evaluates a user-defined range of $k$ values via spherical K-Means, and plots the absolute difference metric $\Delta L(k) = |L(k) - L(k-1)|$. The optimal cluster number minimizes this difference.
+`Selection.py` acts as a dry-run evaluator. It **bypasses any training** by loading the pre-trained weights from `main.py`, evaluates a user-defined range of $k$ values via spherical K-Means, and plots the absolute difference metric $\Delta L(k) = |L(k) - L(k-1)|$. The optimal cluster number minimizes this difference.
 
 ### Usage
 **Prerequisite:** You must have run `main.py` at least once so that the model weights are successfully saved in the `weight/` directory.
 
 Run the script from the terminal, specifying the minimum and maximum range of clusters you want to evaluate:
 ```bash
-python Selection.py --k_min 2 --k_max 25
+python Selection.py --k_min 2 --k_max 12
 ```
 
 ### Workflow Integration
 1. Train your model using `main.py`.
-2. Run `python Selection.py --k_min 5 --k_max 30`.
+2. Run `python Selection.py --k_min 2 --k_max 12`.
 3. Check the terminal output and the generated visual plot for the **"Recommended Optimal Cluster Number (Km)"**.
 4. Update the `"n_clusters"` field in your `params.json` with this recommended $K_m$.
 5. Run `main.py` in `"unsupervised"` mode to get the final clustered outputs.
