@@ -144,8 +144,8 @@ pip install -r requirements.txt
 If a CUDA-compatible GPU is available, ensure PyTorch is installed with GPU support to accelerate Sparse Autoencoder training:
 
 ```bash
-# Example for CUDA 12.2
-pip install torch==2.10.0+cu122 torchvision==0.25.0+cu122 -f [https://download.pytorch.org/whl/torch_stable.html](https://download.pytorch.org/whl/torch_stable.html)
+# Example for CUDA 11.7
+pip install torch==2.10.0+cu117 torchvision==0.25.0+cu117 -f [https://download.pytorch.org/whl/torch_stable.html](https://download.pytorch.org/whl/torch_stable.html)
 ```
 
 ### 5. Verify Installation
