@@ -62,10 +62,10 @@ pip install -r requirements.txt
 
 ### 2. Verified Environment
 This framework has been strictly verified with the following versions:
-* **Deep Learning**: `torch==2.10.0`
-* **Data Science**: `numpy==2.4.2`, `pandas==3.0.0`, `scipy==1.17.0`
-* **Machine Learning**: `scikit-learn==1.4.2`
-* **Visualization & Utilities**: `matplotlib==3.8.4`, `tqdm==4.66.4`
+* **Deep Learning**: `torch>=2.10.0`
+* **Data Science**: `numpy>=2.4.2`, `pandas>=3.0.0`, `scipy>=1.17.0`
+* **Machine Learning**: `scikit-learn>=1.4.2`
+* **Visualization & Utilities**: `matplotlib>=3.8.4`, `tqdm>=4.66.4`
 
 ---
 
