@@ -38,7 +38,7 @@ A central feature of DualSOM is its **dual-mode operation**, which enables seaml
 
 The software is designed as a **modular and extensible system**, allowing users to configure latent dimensionality, SOM topology, learning schedules, neighbourhood functions, and distance metrics. This flexibility makes it applicable to a wide range of domains involving structured or high-dimensional data, including robotics, human–computer interaction, and multimodal perception.
 
-The framework is domain-independent; however, it has been **demonstrated on human posture recognition from RGB-D skeletal data**, following our previous work published in RA-L 2024 [[1]] (#reference) and presented in ICRA-2025. In this context, posture recognition serves as an example application rather than the primary scope of the software.
+The framework is domain-independent; however, it has been **demonstrated on human posture recognition from RGB-D skeletal data**, following our previous work published in RA-L 2024 [[1]](#reference) and presented in ICRA-2025. In this context, posture recognition serves as an example application rather than the primary scope of the software.
 
 ## <a id="key-features"></a>🚀 Key Features
 
