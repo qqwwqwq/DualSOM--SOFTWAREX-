@@ -17,7 +17,7 @@
 * [Data Preparation](#data-preparation)
 * [Configuration (`params.json`)](#configuration-paramsjson)
 * [Execution and Caching](#execution-and-caching)
-* [Optimal Cluster Selection (`Selection.py`)](#optimal-cluster-selection)
+* [Cluster Number Selection (`Selection.py`)](#optimal-cluster-selection)
 * [Benchmarking with Generic Datasets](#benchmarking-with-generic-datasets)
 * [Reference](#reference)
 
@@ -217,7 +217,7 @@ Our framework explicitly separates training from inference. After the first run,
 
 ---
 
-## <a id="optimal-cluster-selection"></a>🔎 Optimal Cluster Selection (`Selection.py`)
+## <a id="optimal-cluster-selection"></a>🔎 Cluster number Selection (`Selection.py`)
 
 When operating in **unsupervised mode**, selecting the optimal number of clusters ($K$) can be challenging. To assist with this, we provide `Selection.py`, a dedicated utility tool that mathematically determines the best $K_m$ using the Angular Distance Criterion $\Delta L(k)$ introduced in our framework.
 
