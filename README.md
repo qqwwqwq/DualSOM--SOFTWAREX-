@@ -40,11 +40,26 @@ The framework is domain-independent; however, it has been **demonstrated on huma
 
 ## <a id="key-features"></a>🚀 Key Features
 
-* **Unified Dual-Mode Pipeline:** Supports both automatic clustering and label-based classification without changes to the model structure. Both modes operate on the same trained SOM weights.
-* **Unsupervised Clustering:** Includes automatic selection of the optimal number of clusters from a user-defined range using a modified K-Means algorithm.
-* **Supervised Classification:** Constructs a neuron label map based on labelled training samples.
-* **Latent Representation Learning:** Projects high-dimensional data into a compact latent space using a sparse autoencoder, reducing computational complexity.
-* **Highly Configurable:** Users can configure grid size, latent dimensionality, learning-rate schedules, neighbourhood decay parameters, and distance metrics.
+* **Dual-mode learning (clustering and classification)**
+  A unified framework that supports both **unsupervised clustering** and **supervised classification** within the same model, without requiring any structural changes.
+* **Shared representation and model reuse**
+  The same latent representation and trained self-organising map (SOM) are used for both modes, enabling seamless transition from exploratory analysis to recognition tasks.
+* **Dimensionality reduction via sparse autoencoder**
+  High-dimensional input data are transformed into compact and informative latent representations, reducing computational complexity while preserving essential structure.
+* **Flexible self-organising map (SOM)**
+  Configurable SOM architecture with support for different grid sizes, initialization strategies, and **user-defined distance metrics**, allowing adaptation to diverse data types.
+* **Automatic clustering capability**
+  Built-in mechanism for selecting the optimal number of clusters from a user-defined range using a modified K-Means approach applied to SOM neurons.
+* **Supervised label mapping for classification**
+  Efficient classification through neuron-based label maps, where each neuron stores class information derived from training samples.
+* **Modular and extensible design**
+  Clearly separated components (data handling, encoding, SOM training, post-processing) enable easy customization, extension, and integration into larger systems.
+* **Reproducible and configurable pipeline**
+  All key parameters (latent dimensionality, learning rates, neighbourhood functions, distance metrics) are explicitly configurable, ensuring reproducibility across experiments.
+* **Real-time and low-complexity operation**
+  Designed with computational efficiency in mind, making the framework suitable for real-time or resource-constrained applications.
+* **Application-independent framework**
+  Although demonstrated on human posture recognition from skeletal data, the software is applicable to any structured or high-dimensional dataset, including sensor data, motion capture, and multimodal inputs.
 
 ## <a id="network-architecture"></a>🕸️ Network Architecture
 
