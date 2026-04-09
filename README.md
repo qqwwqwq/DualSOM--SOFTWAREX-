@@ -402,52 +402,129 @@ To evaluate the pipeline on standard benchmarks, use the provided preparation sc
 *The framework will ingest these prepared CSVs, compress the high-dimensional signals/pixels through the Sparse Autoencoder, and project them onto the DualSOM grid automatically.*
 
 ---
-# 🧠 Dual-SOM API
+# 📚 DualSOM & Sparse Autoencoder API Reference
 
-Object-oriented Python API for Latent Representation Learning (PyTorch Sparse Autoencoder) and Topological Clustering/Classification (NumPy Dual-SOM).
+This document provides a comprehensive guide on how to use the integrated `Dualmap_api.py` module. This module encapsulates the core mathematical engine of the Dual-mode Self-Organizing Map (DualSOM) and the PyTorch-based Sparse Autoencoder for latent feature extraction.
 
-## 📖 API Reference
+## 🚀 Quick Start
 
-### 1. `SparseAutoencoderAPI`
-Handles dimensionality reduction and latent feature extraction.
+The API is designed to be easily integrated into any Python script. Here is a minimal example of how to use the pipeline:
 
-**Constructor:** `SparseAutoencoderAPI(**kwargs)`
+```python
+import json
+from Dualmap_api import DualSOM, encode_decode, set_ae_args
 
-**Parameters:**
-* **`device`** *(str, default='cpu')* — Computation device (`'cpu'` or `'cuda'`).
-* **`epochs`** *(int, default=50)* — Number of training epochs.
-* **`batch_size`** *(int, default=64)* — Batch size for the PyTorch DataLoader.
-* **`learning_rate`** *(float, default=1e-3)* — Optimizer learning rate.
-* **`reg_param`** *(float, default=1e-4)* — L1 sparsity regularization penalty parameter.
-* **`load_model`** *(bool, default=False)* — If `True`, attempts to load an existing model from disk instead of training from scratch.
-* **`model_path`** *(str, default='ae_model.pth')* — File path to save/load the PyTorch model weights.
+# 1. Load parameters
+with open('params.json', 'r') as f:
+    parameters = json.load(f)
 
-**Methods:**
-* **`fit_transform(X)`** $\rightarrow$ `np.ndarray`: Fits the internal scalers, trains the autoencoder, and returns the standardized, low-dimensional latent features.
-* **`transform(X)`** $\rightarrow$ `np.ndarray`: Projects new input data into the latent space using pre-trained weights and pre-fitted scalers.
+# 2. Setup Autoencoder and Encode Data
+set_ae_args(parameters)
+# Assume 'train_data' is a tuple of (X_features_numpy, y_labels_numpy)
+coded_train_data = encode_decode(train_data) 
+
+# 3. Initialize and Train DualSOM
+som_model = DualSOM(parameters, coded_train_data)
+som_model.fit(coded_train_data)
+
+# 4. Predict
+# For unsupervised mode (clustering)
+cluster_labels = som_model.predict(coded_test_data, mode='clustering')
+
+# For supervised mode (classification)
+predicted_classes = som_model.predict(coded_test_data, mode='classification')
+```
 
 ---
 
-### 2. `DualSOM_API`
-A high-level wrapper that fulfills programmatic initialization for the Dual-SOM clustering and classification engine.
+## 🧩 Module Components
 
-**Constructor:** `DualSOM_API(params: dict)`
+### 1. Autoencoder Global Configuration (`set_ae_args`)
 
-**Parameters (Dictionary Keys):**
-* **`run_mode`** *(str, default='clustering')* — Target workflow: `'clustering'` or `'classification'`.
-* **`n_clusters`** *(int, default=2)* — Target number of clusters for the internal K-Means algorithm (clustering mode only).
-* **`epochs`** *(int, default=100)* — Number of training epochs for the SOM grid.
-* **`activation_distance`** *(str, default='euclidean')* — Routing metric. Options: `'euclidean'` (general-purpose), `'angular'` (directional data), or `'cosine'` (sparse data).
-* **`som_size_index`** *(float, default=2.0)* — Heuristic multiplier used to dynamically calculate the grid dimensions based on the dataset size.
-* **`load_model`** *(bool, default=False)* — If `True`, attempts to load an existing SOM weight matrix from disk.
-* **`model_path`** *(str, default='som_model.npy')* — File path to save/load the NumPy weight matrix.
+Before encoding or decoding any data, you must initialize the global state of the Sparse Autoencoder using your configuration dictionary.
 
-**Methods:**
-* **`fit(X, y=None)`**: Instantiates the underlying mathematical engine and trains the SOM grid. `y` (target labels) is required only if `run_mode='classification'`.
-* **`predict(X, mode='clustering')`** $\rightarrow$ `np.ndarray`: Maps data to the trained SOM grid and returns an array of predicted cluster IDs or class labels.
+```python
+def set_ae_args(parameters: dict):
+```
+* **Description:** Extracts necessary hyperparameters from the provided dictionary and updates the internal state for the Autoencoder module.
+* **Required Keys in `parameters`:**
+  * `device` (str): Hardware accelerator (`'cuda'`, `'cpu'`, `'mps'`).
+  * `ae_epochs` (int): Number of training epochs.
+  * `ae_batch_size` (int): Mini-batch size.
+  * `ae_lr` (float): Learning rate.
+  * `ae_reg_param` (float): L1 sparsity penalty coefficient.
+  * `ae_load_model` (bool): Whether to load pre-trained weights.
+  * `ae_model_path` (str): Path to save/load the `.pth` model file.
 
+---
 
+### 2. Feature Extraction Pipeline (`encode_decode`)
 
+Handles data scaling, model training (or loading), and latent space projection.
+
+```python
+def encode_decode(data: tuple) -> tuple:
+```
+* **Description:** * If called for the first time (training phase), it fits the `MinMaxScaler` and `StandardScaler`, initializes the PyTorch model, and trains it using the specified configuration.
+  * If called subsequently (testing phase), it applies the fitted scalers and runs inference strictly in `eval()` mode with `torch.no_grad()`.
+* **Arguments:**
+  * `data` (tuple): A tuple containing `(X_raw_features, y_labels)`. Both should be numpy arrays.
+* **Returns:**
+  * `tuple`: `(X_latent_encoded, y_labels)`, where `X_latent_encoded` is the lower-dimensional, standardized feature set ready for the SOM.
+
+---
+
+### 3. DualSOM Core Engine (`DualSOM`)
+
+The unified high-level wrapper that manages the topological grid and the weight-space K-Means clusterer.
+
+#### Initialization
+```python
+class DualSOM:
+    def __init__(self, parameters: dict, coded_data: tuple):
+```
+* **Description:** Initializes the map. It automatically calculates the optimal grid size ($N \times N$) using the heuristic formula based on the sample size of `coded_data` and the `som_size_index` parameter.
+* **Required Keys in `parameters`:**
+  * `run_mode` (str): `'supervised'` or `'unsupervised'`.
+  * `som_load_model` (bool): Whether to load pre-trained weights.
+  * `som_model_path` (str): Path to save/load the `.npy` weight matrix.
+  * `som_size_index` (float): Multiplier for grid size heuristic.
+  * `som_sigma` (float): Initial neighborhood radius.
+  * `som_sigma_target` (float): Asymptotic target for radius decay.
+  * `som_lr` (float): Initial learning rate.
+  * `som_lr_target` (float): Asymptotic target for learning rate decay.
+  * `activation_distance` (str): BMU distance metric (`'angular'`, `'euclidean'`, `'cosine'`).
+
+#### Training
+```python
+    def fit(self, coded_data: tuple):
+```
+* **Description:** Executes the topological training of the SOM. If `som_load_model` is True, it bypasses training and loads the specified numpy array.
+* **Arguments:**
+  * `coded_data` (tuple): `(X_train_encoded, y_train)`.
+
+#### Prediction & Mapping
+```python
+    def predict(self, coded_data: tuple, mode: str = 'clustering') -> np.ndarray:
+```
+* **Description:** Maps the input data to the trained SOM grid and assigns labels based on the specified operational mode.
+* **Arguments:**
+  * `coded_data` (tuple): `(X_test_encoded, y_test)`.
+  * `mode` (str): 
+    * `'clustering'`: Fits the `SOMClusterer` to the converged weight matrix and groups the data into `n_clusters`.
+    * `'classification'`: Constructs a label voting map based on the Best Matching Units (BMUs) and assigns the majority class to new samples.
+* **Returns:**
+  * `np.ndarray`: An array of predicted class labels or cluster IDs.
+
+---
+
+## 📐 Advanced Use: Distance Metrics
+
+The SOM supports three mathematical distance metrics for computing neuron activations, configurable via the `activation_distance` parameter:
+
+* **`angular` (Default):** Calculates the angle between vectors. Excellent for skeletal or directional data where magnitude is less important than relative orientation.
+* **`euclidean`:** Standard L2 norm. Best for general-purpose dense tabular datasets.
+* **`cosine`:** Uses $1 - \text{Cosine Similarity}$. Useful for high-dimensional, sparse feature spaces.
 
 ### <a id="limitations"></a>⚠️ Limitations
 
