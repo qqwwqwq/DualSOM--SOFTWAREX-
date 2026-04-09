@@ -42,7 +42,7 @@ SUGGESTED_PARAMETERS = {
     "som_sigma_target": 0.01,       # Asymptotic target for radius decay [Range: 0.001 - 0.1, Suggested: 0.01]
     "som_lr": 0.1,                  # Initial learning rate [Range: 0.01 - 1.0, Suggested: 0.1 - 0.5]
     "som_lr_target": 0.001,         # Asymptotic target for LR decay [Range: 0.0001 - 0.01, Suggested: 0.001]
-    "activation_distance": "angular", # BMU distance metric [Values: 'angular', 'euclidean', 'cosine']
+    "activation_distance": "angular", # BMU distance metric [Values: 'angular':  best for directional / skeletal data, 'euclidean': general-purpose, 'cosine': best for high-dimensional sparse dat]
     "som_enable_validation": 1,     # Enable/disable periodic validation prints [Values: 1 (True) or 0 (False)]
     "som_load_model": False,        # Switch to bypass training and load a pre-trained SOM [Values: True, False]
     "som_model_path": "weight/som_weights.npy",  # Filepath for saving/loading the SOM weight matrix
