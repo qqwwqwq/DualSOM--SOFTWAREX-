@@ -29,7 +29,7 @@ SUGGESTED_PARAMETERS = {
     # Workflow Selection
     "dataset_name": "wut",          # Target dataset identifier [Values: 'wut', 'pku', 'mnist', etc.]
     "run_mode": "supervised",       # Execution mode [Values: 'supervised' or 'unsupervised']
-    "device": "cuda",               # Hardware acceleration [Values: 'cuda', 'cpu', or 'mps']
+    "device": "cuda",               # Hardware acceleration [Values: 'cuda', 'cpu']
 
     # Data Paths
     "train_data_path": "Datas/WUT/train_data.csv",
