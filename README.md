@@ -369,27 +369,39 @@ Our framework explicitly separates training from inference. After the first run,
 
 ---
 
-## <a id="optimal-cluster-selection"></a>🔎 Cluster number Selection (`Selection.py`)
+# <a id="optimal-cluster-selection"></a>🔎 Optimal Cluster Selection
 
-When operating in **unsupervised mode**, selecting the optimal number of clusters ($K$) can be challenging. To assist with this, we provide `Selection.py`, a dedicated utility tool that mathematically determines the best $K_m$ using the Angular Distance Criterion $\Delta L(k)$ introduced in our framework.
+When operating in **unsupervised mode**, selecting the optimal number of clusters ($K$) can be challenging. To assist with this, our framework uses the Angular Distance Criterion $\Delta L(k) = |L(k) - L(k-1)|$ to mathematically determine the best $K_m$. The optimal cluster number is the one that minimizes this difference. 
 
-### How It Works
-`Selection.py` acts as a dry-run evaluator. It **bypasses any training** by loading the pre-trained weights from `main.py`, evaluates a user-defined range of $k$ values via spherical K-Means, and plots the absolute difference metric $\Delta L(k) = |L(k) - L(k-1)|$. The optimal cluster number minimizes this difference.
+You can perform this selection using two different methods:
 
-### Usage
+### Method 1: Fully Automatic Execution (Recommended)
+You can instruct the main pipeline to dynamically calculate and apply the optimal $K$ on the fly without any manual intervention. 
+
+To enable this, simply update the clustering hyperparameters in your `params.json`:
+```json
+"auto_find_clusters": true,   // [SWITCH] Enable dynamic calculation
+"k_min": 2,                   // Minimum K to evaluate
+"k_max": 12                   // Maximum K to evaluate
+```
+When enabled, `main.py` will automatically search the defined range during Stage 4, select the mathematically optimal cluster number, and immediately proceed to generate the final clustering metrics.
+
+### Method 2: Standalone Evaluation (Selection.py)
+If you prefer to manually inspect the evaluation curve before applying the cluster number, you can use `Selection.py`. This is a dedicated utility tool that acts as a dry-run evaluator. It bypasses any training by loading the pre-trained weights, evaluates a user-defined range of $k$ values via spherical K-Means, and plots the absolute difference metric.
+
 **Prerequisite:** You must have run `main.py` at least once so that the model weights are successfully saved in the `weight/` directory.
 
-Run the script from the terminal, specifying the minimum and maximum range of clusters you want to evaluate:
+Run the script from the terminal, specifying the minimum and maximum range of clusters:
 ```bash
 python Selection.py --k_min 2 --k_max 12
 ```
 
-### Workflow Integration
+**Manual Workflow Integration:**
 1. Train your model using `main.py`.
 2. Run `python Selection.py --k_min 2 --k_max 12`.
-3. Check the terminal output and the generated visual plot for the **"Recommended Optimal Cluster Number (Km)"**.
-4. Update the `"n_clusters"` field in your `params.json` with this recommended $K_m$.
-5. Run `main.py` in `"unsupervised"` mode to get the final clustered outputs.
+3. Check the terminal output and the generated visual plot for the "Recommended Optimal Cluster Number (Km)".
+4. Disable the automatic switch (`"auto_find_clusters": false`) and manually update the `"n_clusters"` field in your `params.json` with this recommended $K_m$.
+5. Run `main.py` in "unsupervised" mode to get your final clustered outputs.
 
 ---
 ## 📈 Example Results
