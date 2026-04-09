@@ -24,8 +24,9 @@
 * [Data Preparation](#data-preparation)
 * [Configuration (`params.json`)](#configuration-paramsjson)
 * [Execution and Caching](#execution-and-caching)
-* [Cluster Number Selection (`Selection.py`)](#optimal-cluster-selection)
+* [Optimal Cluster Selection](#optimal-cluster-selection)
 * [Benchmarking with Generic Datasets](#benchmarking-with-generic-datasets)
+* [DualSOM & Sparse Autoencoder API Reference](#dualsom--sparse-autoencoder-api-reference)
 * [Reference](#reference)
 * [License](#license)
 
@@ -69,7 +70,7 @@ The framework is domain-independent; however, it has been **demonstrated on huma
 Get the pipeline up and running immediately with default configurations:
 
 ```bash
-git clone https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git
+git clone [https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git](https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git)
 cd DualSOM--SOFTWAREX-
 pip install -r requirements.txt
 python prepare_mnist.py
@@ -150,7 +151,7 @@ Follow these steps to set up DualSOM on your system.
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git
+git clone [https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git](https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git)
 cd DualSOM--SOFTWAREX-
 ```
 
@@ -186,7 +187,7 @@ If a CUDA-compatible GPU is available, ensure PyTorch is installed with GPU supp
 
 ```bash
 # Example for CUDA 11.7
-pip install torch==2.10.0+cu117 torchvision==0.25.0+cu117 -f https://download.pytorch.org/whl/torch_stable.html
+pip install torch==2.10.0+cu117 torchvision==0.25.0+cu117 -f [https://download.pytorch.org/whl/torch_stable.html](https://download.pytorch.org/whl/torch_stable.html)
 ```
 
 ### 5. Verify Installation
@@ -306,7 +307,8 @@ The pipeline relies on a `params.json` file for all hyperparameters. Below is a 
     "ae_lr": 0.001,
     "ae_reg_param": 0.001,
     "ae_load_model": false,
-    "ae_model_path": "weight/sparse_ae.pth"
+    "ae_model_path": "weight/sparse_ae.pth",
+    "reduction_factor": 1
 }
 ```
 
@@ -328,8 +330,8 @@ The pipeline relies on a `params.json` file for all hyperparameters. Below is a 
 | `ae_load_model` | Bool | Bypass training and load pre-trained SAE weights. | `true`, `false` |
 | `ae_model_path` | String | Filepath for saving/loading SAE weights. | - |
 | **DualSOM** | | | |
-| `som_size_index` | Float | Multiplier for grid size heuristic ($S \approx som_size_index \cdot \sqrt{P}$). | Range: `1.0 - 10.0`<br>**Suggested:** `5.0` |
-| `som_epochs` | Int | Number of complete passes over the dataset. | e.g. `50, 100, 200...` |
+| `som_size_index` | Float | Multiplier for grid size heuristic ($S \approx som\_size\_index \cdot \sqrt{P}$). | Range: `1.0 - 10.0`<br>**Suggested:** `5.0` |
+| `som_epochs` | Int | Number of complete passes over the dataset. | Range: `10 - 500`<br>**Suggested:** `50 - 100` |
 | `som_sigma` | Float | Initial neighborhood radius for weight updates. | Range: `1.0 - 10.0`<br>**Suggested:** `4.0` |
 | `som_sigma_target`| Float | Asymptotic target for radius decay. | Range: `0.001 - 0.1`<br>**Suggested:** `0.01` |
 | `som_lr` | Float | Initial learning rate. | Range: `0.01 - 1.0`<br>**Suggested:** `0.1 - 0.5` |
@@ -340,11 +342,14 @@ The pipeline relies on a `params.json` file for all hyperparameters. Below is a 
 | `som_model_path` | String | Filepath for saving/loading the SOM weights (`.npy`). | - |
 | **Clustering (Unsupervised)** | | | |
 | `auto_find_clusters`| Bool | Dynamically calculate optimal $K$ based on $\Delta L$. | `true`, `false` |
-| `k_min` | Int | Minimum $K$ to evaluate (if `auto_find_clusters` is true). | Range: `> 1`<br>**Suggested:** `2` |
-| `k_max` | Int | Maximum $K$ to evaluate. | Range: `> k_min` |
-| `n_clusters` | Int | Custom target number of clusters ($K$). | Matches expected classes |
+| `k_min` | Int | Minimum $K$ to evaluate (if `auto_find_clusters` is true). | Range: `2 - 10`<br>**Suggested:** `2` |
+| `k_max` | Int | Maximum $K$ to evaluate. | Range: `5 - 50`<br>**Suggested:** `10 - 15` |
+| `n_clusters` | Int | Custom target number of clusters ($K$). | Range: `2 - 100+`<br>**Suggested:** Matches expected classes |
 | `kmeans_max_iter` | Int | Maximum iterations for K-Means convergence. | Range: `100 - 1000`<br>**Suggested:** `100 - 300` |
 | `kmeans_threshold`| Float | Convergence threshold (centroid shift) for K-Means. | Range: `1e-5 - 1e-2`<br>**Suggested:** `1e-4` |
+| **Misc** | | | |
+| `reduction_factor` | Float | Factor to subset data for rapid debugging. | Range: `0.01 - 1.0`<br>**Suggested:** `1` (Full dataset) |
+
 ---
 
 ## <a id="execution-and-caching"></a>🚀 Execution and Caching
@@ -369,7 +374,7 @@ Our framework explicitly separates training from inference. After the first run,
 
 ---
 
-# <a id="optimal-cluster-selection"></a>🔎 Optimal Cluster Selection
+## <a id="optimal-cluster-selection"></a>🔎 Optimal Cluster Selection
 
 When operating in **unsupervised mode**, selecting the optimal number of clusters ($K$) can be challenging. To assist with this, our framework uses the Angular Distance Criterion $\Delta L(k) = |L(k) - L(k-1)|$ to mathematically determine the best $K_m$. The optimal cluster number is the one that minimizes this difference. 
 
@@ -417,7 +422,7 @@ In supervised mode, the model evaluates using standard classification metrics.
 ### 2. Unsupervised Mode (Clustering)
 In unsupervised mode (e.g., using `auto_find_clusters: true` or a fixed $K$), the pipeline evaluates the structural groupings using information-theoretic metrics.
 
-* **Recommended Optimal Cluster Number: 10 (Minimum Delta L)
+* **Recommended Optimal Cluster Number: 10 (Minimum Delta L)**
 * **NMI (Normalized Mutual Information):** ~0.5307
 * **AMI (Adjusted Mutual Information):** ~0.5264
 * **Homogeneity:** ~0.5275
@@ -445,119 +450,103 @@ To evaluate the pipeline on standard benchmarks, use the provided preparation sc
 *The framework will ingest these prepared CSVs, compress the high-dimensional signals/pixels through the Sparse Autoencoder, and project them onto the DualSOM grid automatically.*
 
 ---
-# 📚 DualSOM & Sparse Autoencoder API Reference
+## <a id="dualsom--sparse-autoencoder-api-reference"></a>📚 DualSOM & Sparse Autoencoder API Reference
 
-This document provides a comprehensive guide on how to use the integrated `Dualmap_api.py` module. This module encapsulates the core mathematical engine of the Dual-mode Self-Organizing Map (DualSOM) and the PyTorch-based Sparse Autoencoder for latent feature extraction.
+This document provides a comprehensive guide on how to use the integrated `Dualmap_api.py` (or `api.py`) module. This module encapsulates the core mathematical engine of the Dual-mode Self-Organizing Map (DualSOM) and the PyTorch-based Sparse Autoencoder for latent feature extraction.
 
-## 🚀 API Example
+### 🚀 API Example
 
 The API is designed to be easily integrated into any Python script. Here is a minimal example of how to use the pipeline:
 
 ```python
-import json
-from Dualmap_api import DualSOM, encode_decode, set_ae_args
+import numpy as np
+from api import SparseAutoencoderAPI, DualSOM_API
 
-# 1. Load parameters
-with open('params.json', 'r') as f:
-    parameters = json.load(f)
+# 1. Generate dummy high-dimensional data (e.g., 57 raw features)
+X_train_raw = np.random.rand(1000, 57)
+X_test_raw = np.random.rand(100, 57)
 
-# 2. Setup Autoencoder and Encode Data
-set_ae_args(parameters)
-# Assume 'train_data' is a tuple of (X_features_numpy, y_labels_numpy)
-coded_train_data = encode_decode(train_data) 
+print("--- Step 1: Feature Extraction ---")
+# Initialize the Autoencoder API
+ae = SparseAutoencoderAPI(epochs=30, batch_size=64, device='cpu')
 
-# 3. Initialize and Train DualSOM
-som_model = DualSOM(parameters, coded_train_data)
-som_model.fit(coded_train_data)
+# fit_transform automatically handles scaling and PyTorch training
+X_train_latent = ae.fit_transform(X_train_raw)
+# transform projects new data using pre-trained weights and scalers
+X_test_latent = ae.transform(X_test_raw)
 
-# 4. Predict
-# For unsupervised mode (clustering)
-cluster_labels = som_model.predict(coded_test_data, mode='clustering')
+print(f"Raw shape: {X_train_raw.shape} -> Latent shape: {X_train_latent.shape}")
 
-# For supervised mode (classification)
-predicted_classes = som_model.predict(coded_test_data, mode='classification')
+
+print("\n--- Step 2: Clustering ---")
+# Initialize the DualSOM using a parameter dictionary
+som_params = {
+    'run_mode': 'clustering',
+    'n_clusters': 4,
+    'epochs': 50,
+    'activation_distance': 'euclidean'
+}
+som = DualSOM_API(som_params)
+
+# Train the SOM grid on the extracted latent representations
+som.fit(X_train_latent)
+
+# Predict cluster assignments for the test set
+test_clusters = som.predict(X_test_latent, mode='clustering')
+print(f"\nFirst 10 Test Set Cluster Assignments: {test_clusters[:10]}")
 ```
+
+### 1. `SparseAutoencoderAPI`
+Handles dimensionality reduction and latent feature extraction.
+
+**Constructor:** `SparseAutoencoderAPI(parameters=None, **kwargs)`
+*Allows initialization via modern keyword arguments or a legacy `parameters` dictionary.*
+
+**Parameters:**
+* **`device`** *(str, default='cpu')* — Computation device (`'cpu'` or `'cuda'`).
+* **`epochs`** *(int, default=50)* — Number of training epochs.
+* **`batch_size`** *(int, default=64)* — Batch size for the PyTorch DataLoader.
+* **`learning_rate`** *(float, default=1e-3)* — Optimizer learning rate.
+* **`reg_param`** *(float, default=1e-4)* — L1 sparsity regularization penalty parameter.
+* **`load_model`** *(bool, default=False)* — If `True`, attempts to load an existing model from disk.
+* **`model_path`** *(str, default='ae_model.pth')* — File path to save/load the PyTorch model weights.
+
+**Methods:**
+* **`fit_transform(X)`** $\rightarrow$ `np.ndarray`: Fits internal scalers, trains the autoencoder, and returns standardized latent features.
+* **`transform(X)`** $\rightarrow$ `np.ndarray`: Projects new data into the latent space using pre-trained weights.
+* **`encode_decode(data)`** $\rightarrow$ `tuple`: *Legacy wrapper.* Takes a `(X, y)` tuple, dynamically routes to `fit` or `transform`, and returns `(X_encoded, y)`.
 
 ---
 
-## 🧩 Module Components
+### 2. `DualSOM` (Modern Core Engine)
+The unified, high-level engine for topological clustering and classification using standard Scikit-Learn conventions.
 
-### 1. Autoencoder Global Configuration (`set_ae_args`)
+**Constructor:** `DualSOM(**kwargs)`
 
-Before encoding or decoding any data, you must initialize the global state of the Sparse Autoencoder using your configuration dictionary.
+**Parameters:**
+* **`run_mode`** *(str, default='clustering')* — Target workflow: `'clustering'` or `'classification'`.
+* **`n_clusters`** *(int, default=2)* — Target number of clusters for the internal K-Means algorithm.
+* **`epochs`** *(int, default=100)* — Number of training epochs for the SOM grid.
+* **`activation_distance`** *(str, default='euclidean')* — Routing metric: `'euclidean'`, `'angular'`, or `'cosine'`.
+* **`som_size_index`** *(float, default=2.0)* — Heuristic multiplier used to auto-calculate grid dimensions.
+* **`load_model`** *(bool, default=False)* — If `True`, attempts to load an existing SOM weight matrix.
+* **`model_path`** *(str, default='som_model.npy')* — File path to save/load the NumPy weight matrix.
 
-```python
-def set_ae_args(parameters: dict):
-```
-* **Description:** Extracts necessary hyperparameters from the provided dictionary and updates the internal state for the Autoencoder module.
-* **Required Keys in `parameters`:**
-  * `device` (str): Hardware accelerator (`'cuda'`, `'cpu'`).
-  * `ae_epochs` (int): Number of training epochs.
-  * `ae_batch_size` (int): Mini-batch size.
-  * `ae_lr` (float): Learning rate.
-  * `ae_reg_param` (float): L1 sparsity penalty coefficient.
-  * `ae_load_model` (bool): Whether to load pre-trained weights.
-  * `ae_model_path` (str): Path to save/load the `.pth` model file.
-
----
-
-### 2. Feature Extraction Pipeline (`encode_decode`)
-
-Handles data scaling, model training (or loading), and latent space projection.
-
-```python
-def encode_decode(data: tuple) -> tuple:
-```
-* **Description:** * If called for the first time (training phase), it fits the `MinMaxScaler` and `StandardScaler`, initializes the PyTorch model, and trains it using the specified configuration.
-  * If called subsequently (testing phase), it applies the fitted scalers and runs inference strictly in `eval()` mode with `torch.no_grad()`.
-* **Arguments:**
-  * `data` (tuple): A tuple containing `(X_raw_features, y_labels)`. Both should be numpy arrays.
-* **Returns:**
-  * `tuple`: `(X_latent_encoded, y_labels)`, where `X_latent_encoded` is the lower-dimensional, standardized feature set ready for the SOM.
+**Methods:**
+* **`fit(X, y=None)`**: Trains the SOM grid. `y` (target labels) is required only for classification.
+* **`predict(X, mode=None)`** $\rightarrow$ `np.ndarray`: Maps data to the trained SOM grid and returns predicted cluster IDs or class labels.
+* **`get_weights()`** $\rightarrow$ `np.ndarray`: Returns the trained 3D weight matrix of the map.
 
 ---
 
-### 3. DualSOM Core Engine (`DualSOM`)
+### 3. `DualSOM_API` (Legacy Wrapper)
+A strict compatibility wrapper designed to fulfill old structural expectations, utilizing tuples instead of standard arrays.
 
-The unified high-level wrapper that manages the topological grid and the weight-space K-Means clusterer.
+**Constructor:** `DualSOM_API(parameters: dict, coded_data=None)`
 
-#### Initialization
-```python
-class DualSOM:
-    def __init__(self, parameters: dict, coded_data: tuple):
-```
-* **Description:** Initializes the map. It automatically calculates the optimal grid size ($N \times N$) using the heuristic formula based on the sample size of `coded_data` and the `som_size_index` parameter.
-* **Required Keys in `parameters`:**
-  * `run_mode` (str): `'supervised'` or `'unsupervised'`.
-  * `som_load_model` (bool): Whether to load pre-trained weights.
-  * `som_model_path` (str): Path to save/load the `.npy` weight matrix.
-  * `som_size_index` (float): Multiplier for grid size heuristic.
-  * `som_sigma` (float): Initial neighborhood radius.
-  * `som_sigma_target` (float): Asymptotic target for radius decay.
-  * `som_lr` (float): Initial learning rate.
-  * `som_lr_target` (float): Asymptotic target for learning rate decay.
-  * `activation_distance` (str): BMU distance metric (`'angular'`, `'euclidean'`, `'cosine'`).
-
-#### Training
-```python
-    def fit(self, coded_data: tuple):
-```
-* **Description:** Executes the topological training of the SOM. If `som_load_model` is True, it bypasses training and loads the specified numpy array.
-* **Arguments:**
-  * `coded_data` (tuple): `(X_train_encoded, y_train)`.
-
-#### Prediction & Mapping
-```python
-    def predict(self, coded_data: tuple, mode: str = 'clustering') -> np.ndarray:
-```
-* **Description:** Maps the input data to the trained SOM grid and assigns labels based on the specified operational mode.
-* **Arguments:**
-  * `coded_data` (tuple): `(X_test_encoded, y_test)`.
-  * `mode` (str): 
-    * `'clustering'`: Fits the `SOMClusterer` to the converged weight matrix and groups the data into `n_clusters`.
-    * `'classification'`: Constructs a label voting map based on the Best Matching Units (BMUs) and assigns the majority class to new samples.
-* **Returns:**
-  * `np.ndarray`: An array of predicted class labels or cluster IDs.
+**Methods:**
+* **`fit(coded_data)`**: Takes a tuple `(X, y)` and trains the underlying SOM grid.
+* **`predict(coded_data, mode='clustering')`** $\rightarrow$ `np.ndarray`: Takes a tuple `(X, y)` and returns an array of predicted cluster IDs or class labels.
 
 ---
 
