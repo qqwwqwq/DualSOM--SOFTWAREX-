@@ -305,7 +305,7 @@ The pipeline relies on a `params.json` file for all hyperparameters. Below is a 
 | **Workflow & Paths** | | | |
 | `dataset_name` | String | Target dataset identifier. | `'wut'`, `'pku'`, `'mnist'`, etc. |
 | `run_mode` | String | Execution mode. | `'supervised'` or `'unsupervised'` |
-| `device` | String | Hardware acceleration. | `'cuda'`, `'cpu'`, or `'mps'` |
+| `device` | String | Hardware acceleration. | `'cuda'`, `'cpu'` |
 | `train_data_path` | String | Local path to the training CSV file. | - |
 | `test_data_path` | String | Local path to the testing CSV file. | - |
 | **Sparse Autoencoder (SAE)** | | | |
