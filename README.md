@@ -400,112 +400,52 @@ To evaluate the pipeline on standard benchmarks, use the provided preparation sc
 *The framework will ingest these prepared CSVs, compress the high-dimensional signals/pixels through the Sparse Autoencoder, and project them onto the DualSOM grid automatically.*
 
 ---
-# 🧠 Unified Latent Representation & Dual-SOM API
+# 🧠 Dual-SOM API
 
-This repository provides a complete, object-oriented Python API for **Latent Representation Learning** (via a PyTorch-based Sparse Autoencoder) and **Topological Clustering/Classification** (via a NumPy-based Dual-mode Self-Organizing Map). 
-
-It has been entirely refactored to decouple from CLI arguments and global states, making it perfect for seamless integration into standard Python scripts, data pipelines, or Jupyter Notebooks.
-
-## ✨ Features
-* **Sparse Autoencoder (`SparseAutoencoderAPI`)**: Projects high-dimensional data into a compact latent space. Automatically handles data scaling (`MinMaxScaler` & `StandardScaler`) and PyTorch training loops.
-* **Dual-SOM (`DualSOM_API`)**: Maps latent representations into a topological grid for clustering or classification. Supports multiple distance metrics (Euclidean, Cosine, Angular) and an integrated weight-space K-Means clusterer.
-* **Scikit-Learn Compatible**: Follows the familiar `fit_transform()`, `fit()`, and `predict()` paradigms.
-
-## 📦 Requirements
-Ensure you have the following dependencies installed:
-```bash
-pip install torch numpy scikit-learn tqdm
-```
-
----
-
-## 🚀 Quick Start (End-to-End Pipeline)
-
-This example demonstrates how to extract latent features from raw high-dimensional data and cluster them using the Dual-SOM.
-
-```python
-import numpy as np
-from api import SparseAutoencoderAPI, DualSOM_API
-
-# 1. Generate dummy high-dimensional data (e.g., 57 raw features)
-X_train_raw = np.random.rand(1000, 57)
-X_test_raw = np.random.rand(100, 57)
-
-print("--- Step 1: Autoencoder Feature Extraction ---")
-# Initialize and train the Autoencoder
-ae = SparseAutoencoderAPI(epochs=30, batch_size=64, device='cpu')
-
-# fit_transform automatically scales data and trains the AE
-X_train_latent = ae.fit_transform(X_train_raw)
-X_test_latent = ae.transform(X_test_raw)
-
-print(f"Raw shape: {X_train_raw.shape} -> Latent shape: {X_train_latent.shape}")
-
-print("\n--- Step 2: DualSOM Clustering ---")
-# Initialize the SOM using a parameter dictionary
-som_params = {
-    'run_mode': 'clustering',
-    'n_clusters': 4,
-    'epochs': 50,
-    'activation_distance': 'euclidean'
-}
-som = DualSOM_API(som_params)
-
-# Train the SOM on the extracted latent representations
-som.fit(X_train_latent)
-
-# Predict cluster assignments for the test set
-test_clusters = som.predict(X_test_latent)
-print(f"\nFirst 10 Test Set Cluster Assignments: {test_clusters[:10]}")
-```
-
----
+Object-oriented Python API for Latent Representation Learning (PyTorch Sparse Autoencoder) and Topological Clustering/Classification (NumPy Dual-SOM).
 
 ## 📖 API Reference
 
 ### 1. `SparseAutoencoderAPI`
 Handles dimensionality reduction and latent feature extraction.
 
-#### Initialization
-```python
-ae = SparseAutoencoderAPI(**kwargs)
-```
-| Parameter | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `device` | `str` | `'cpu'` | Computation device (`'cpu'` or `'cuda'`). |
-| `epochs` | `int` | `50` | Number of training epochs. |
-| `batch_size` | `int` | `64` | Batch size for the PyTorch DataLoader. |
-| `learning_rate` | `float`| `1e-3` | Optimizer learning rate. |
-| `reg_param` | `float`| `1e-4` | L1 sparsity regularization penalty parameter. |
-| `load_model` | `bool` | `False` | Attempt to load an existing model from disk instead of training. |
-| `model_path` | `str` | `'ae_model.pth'` | File path to save/load the PyTorch model state dict. |
+**Constructor:** `SparseAutoencoderAPI(**kwargs)`
 
-#### Methods
-* **`fit_transform(X)`**: Fits the internal scalers, trains the autoencoder from scratch (or loads weights), and returns the standardized, low-dimensional latent features as a NumPy array.
-* **`transform(X)`**: Uses the pre-trained autoencoder and scalers to project new data (e.g., test sets) into the latent space.
+**Parameters:**
+* **`device`** *(str, default='cpu')* — Computation device (`'cpu'` or `'cuda'`).
+* **`epochs`** *(int, default=50)* — Number of training epochs.
+* **`batch_size`** *(int, default=64)* — Batch size for the PyTorch DataLoader.
+* **`learning_rate`** *(float, default=1e-3)* — Optimizer learning rate.
+* **`reg_param`** *(float, default=1e-4)* — L1 sparsity regularization penalty parameter.
+* **`load_model`** *(bool, default=False)* — If `True`, attempts to load an existing model from disk instead of training from scratch.
+* **`model_path`** *(str, default='ae_model.pth')* — File path to save/load the PyTorch model weights.
+
+**Methods:**
+* **`fit_transform(X)`** $\rightarrow$ `np.ndarray`: Fits the internal scalers, trains the autoencoder, and returns the standardized, low-dimensional latent features.
+* **`transform(X)`** $\rightarrow$ `np.ndarray`: Projects new input data into the latent space using pre-trained weights and pre-fitted scalers.
 
 ---
 
 ### 2. `DualSOM_API`
-A high-level wrapper that fulfills programmatic initialization using a single parameter dictionary.
+A high-level wrapper that fulfills programmatic initialization for the Dual-SOM clustering and classification engine.
 
-#### Initialization
-```python
-som = DualSOM_API(params: dict)
-```
-| Dictionary Key | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `run_mode` | `str` | `'clustering'` | Target workflow: `'clustering'` or `'classification'`. |
-| `som_size_index`| `float` | `2.0` | Heuristic multiplier used to auto-calculate the grid dimensions based on dataset size. |
-| `epochs` | `int` | `100` | Number of training epochs. |
-| `activation_distance` | `str` | `'euclidean'` | Routing metric. Options:<br>• `"angular"`: best for directional data<br>• `"euclidean"`: general-purpose<br>• `"cosine"`: best for sparse data. |
-| `n_clusters` | `int` | `2` | Target number of clusters for the internal K-Means algorithm (clustering mode only). |
-| `load_model` | `bool` | `False` | Attempt to load an existing SOM weight matrix from disk. |
-| `model_path` | `str` | `'som_model.npy'`| File path to save/load the NumPy weight matrix. |
+**Constructor:** `DualSOM_API(params: dict)`
 
-#### Methods
+**Parameters (Dictionary Keys):**
+* **`run_mode`** *(str, default='clustering')* — Target workflow: `'clustering'` or `'classification'`.
+* **`n_clusters`** *(int, default=2)* — Target number of clusters for the internal K-Means algorithm (clustering mode only).
+* **`epochs`** *(int, default=100)* — Number of training epochs for the SOM grid.
+* **`activation_distance`** *(str, default='euclidean')* — Routing metric. Options: `'euclidean'` (general-purpose), `'angular'` (directional data), or `'cosine'` (sparse data).
+* **`som_size_index`** *(float, default=2.0)* — Heuristic multiplier used to dynamically calculate the grid dimensions based on the dataset size.
+* **`load_model`** *(bool, default=False)* — If `True`, attempts to load an existing SOM weight matrix from disk.
+* **`model_path`** *(str, default='som_model.npy')* — File path to save/load the NumPy weight matrix.
+
+**Methods:**
 * **`fit(X, y=None)`**: Instantiates the underlying mathematical engine and trains the SOM grid. `y` (target labels) is required only if `run_mode='classification'`.
-* **`predict(X, mode='clustering')`**: Maps data to the trained SOM grid and returns an array of predicted cluster IDs or class labels.
+* **`predict(X, mode='clustering')`** $\rightarrow$ `np.ndarray`: Maps data to the trained SOM grid and returns an array of predicted cluster IDs or class labels.
+
+
+
 
 ### <a id="limitations"></a>⚠️ Limitations
 
@@ -523,8 +463,6 @@ This minor variance is expected and stems from internal stochastic processes, sp
 * Algorithm initializations (e.g., K-Means).
 
 *(If strict reproducibility is required for your use case, consider manually fixing the random seeds in your environment prior to execution).*
-
-## <a id="reference"></a>📜 Reference
 
 ## <a id="reference"></a>📜 Reference
 
