@@ -11,6 +11,7 @@ and unsupervised (clustering) operational modes.
 import argparse
 import json
 import os
+import sys
 import numpy as np
 from sklearn import metrics
 from sklearn.metrics import accuracy_score, classification_report, precision_score, recall_score, f1_score
@@ -39,13 +40,13 @@ SUGGESTED_PARAMETERS = {
     "som_sigma_target": 0.01,       # Asymptotic target for the neighborhood radius decay
     "som_lr": 0.1,                  # Initial learning rate
     "som_lr_target": 0.001,         # Asymptotic target for the learning rate decay
-    "activation_distance": "angular", # Distance metric for Best Matching Unit (BMU) selection
+    "activation_distance": "angular", # Distance metric for Best Matching Unit (BMU). Options: 'angular', 'euclidean', 'cosine'
     "som_enable_validation": 1,     # Flag to enable/disable periodic validation prints (1 or 0)
     "som_load_model": False,                     # Switch to bypass training and load a pre-trained SOM
     "som_model_path": "weight/som_weights.npy",  # Filepath for saving/loading the SOM weight matrix
 
     # Clustering Hyperparameters (Active only in 'unsupervised' mode)
-    "n_clusters": 10,               # Target number of clusters for the weight-space K-Means
+    "n_clusters": 10,               # Target number of clusters (Change this based on dataset characteristics)
     "kmeans_max_iter": 100,         # Maximum iterations for K-Means convergence
     "kmeans_threshold": 1e-4,       # Convergence threshold (centroid shift) for K-Means
 
@@ -69,6 +70,7 @@ def create_default_params(json_path):
 def read_parameters(json_path):
     """Reads and parses hyperparameters from the specified JSON configuration file."""
     if not os.path.exists(json_path):
+        # Fault tolerance mechanism: warn the user and return a copy of the default parameters
         print(f"Warning: Config '{json_path}' not found. Using script defaults.")
         return SUGGESTED_PARAMETERS.copy()
     with open(json_path, 'r', encoding='utf-8') as f:
@@ -110,15 +112,44 @@ if __name__ == "__main__":
     create_default_params(args.config)
     parameters = read_parameters(args.config)
 
-    dataset_name = parameters.get('dataset_name', 'mnist')
-    run_mode = parameters.get('run_mode', 'supervised')
+    # ----------------------------------------------------------
+    # Enforce validation of required parameters, removing hardcoded defaults
+    # ----------------------------------------------------------
+    required_keys = [
+        'dataset_name', 
+        'run_mode', 
+        'train_data_path', 
+        'test_data_path', 
+        'activation_distance', 
+        'n_clusters'
+    ]
 
-    train_data_path = parameters.get('train_data_path', 'data/train_data.csv')
-    test_data_path = parameters.get('test_data_path', 'data/test_data.csv')
-
+    # Check for any missing parameters
+    missing_keys = [key for key in required_keys if key not in parameters]
     
+    if missing_keys:
+        print("\n" + "!"*50)
+        print("[ERROR] The following required parameters are missing from the JSON configuration:")
+        for key in missing_keys:
+            print(f"  - '{key}'")
+        print("Please add these parameters to your config file and try again. Execution aborted.")
+        print("!"*50 + "\n")
+        sys.exit(1)
 
-    # --- Step 2: Read  and encode data ---
+    # Strictly use dictionary indexing without fallback defaults
+    dataset_name = parameters['dataset_name']
+    run_mode = parameters['run_mode']
+    train_data_path = parameters['train_data_path']
+    test_data_path = parameters['test_data_path']
+    activation_distance = parameters['activation_distance']
+    n_clusters = parameters['n_clusters']
+
+    print(f"\n--- Workflow Initialization ---")
+    print(f"Dataset: {dataset_name.upper()} | Mode: {run_mode.upper()}")
+    print(f"BMU Distance Metric: '{activation_distance}' | Clusters: {n_clusters}")
+    print(f"-------------------------------\n")
+
+    # --- Step 2: Read and encode data ---
     train_data = get_dataset(train_data_path)
     # Propagate parsed parameters to the Autoencoder module's global state
     set_ae_args(parameters)
@@ -160,8 +191,6 @@ if __name__ == "__main__":
     # ==========================================================
     # Post-processing Metrics Output
     # ==========================================================
-
-   
 
     # 2. Output Testing Metrics (Evaluates generalization capacity)
     evaluate_and_print(y_test, y_pred_test, run_mode, dataset_name, "TESTING")
