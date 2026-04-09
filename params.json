@@ -1,10 +1,10 @@
 {
-    "dataset_name": "wut",
-    "run_mode": "supervised",
+    "dataset_name": "mnist",
+    "run_mode": "unsupervised",
     "device": "cuda",
-    "train_data_path": "Datas/WUT/train_data.csv",
-    "test_data_path": "Dtas/WUT/test_data.csv",
-    "som_size_index": 10.0,
+    "train_data_path": "Datas/MNIST/train_data.csv",
+    "test_data_path": "Datas/MNIST/test_data.csv",
+    "som_size_index": 5.0,
     "som_epochs": 50,
     "som_sigma": 4.0,
     "som_sigma_target": 0.01,
@@ -14,6 +14,9 @@
     "som_enable_validation": 1,
     "som_load_model": false,
     "som_model_path": "weight/som_weights.npy",
+    "auto_find_clusters": true,
+    "k_min": 2,
+    "k_max": 10,
     "n_clusters": 10,
     "kmeans_max_iter": 100,
     "kmeans_threshold": 0.0001,
@@ -22,6 +25,5 @@
     "ae_lr": 0.001,
     "ae_reg_param": 0.001,
     "ae_load_model": false,
-    "ae_model_path": "weight/sparse_ae.pth",
-    "reduction_factor": 1
+    "ae_model_path": "weight/sparse_ae.pth"
 }
