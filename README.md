@@ -392,6 +392,25 @@ python Selection.py --k_min 2 --k_max 12
 5. Run `main.py` in `"unsupervised"` mode to get the final clustered outputs.
 
 ---
+## 📈 Example Results
+
+To help you verify that your environment is configured correctly, below are the expected metric ranges when running the pipeline with the default parameters. Here we use the **MNIST** dataset as a benchmark example for both operational modes.
+
+### 1. Supervised Mode (Classification)
+In supervised mode, the model evaluates using standard classification metrics.
+
+* **Accuracy:** ~0.9195
+* **F1-score (Macro):** ~0.9191
+
+### 2. Unsupervised Mode (Clustering)
+In unsupervised mode (e.g., using `auto_find_clusters: true` or a fixed $K$), the pipeline evaluates the structural groupings using information-theoretic metrics.
+
+* **Recommended Optimal Cluster Number: 10 (Minimum Delta L)
+* **NMI (Normalized Mutual Information):** ~0.5307
+* **AMI (Adjusted Mutual Information):** ~0.5264
+* **Homogeneity:** ~0.5275
+
+> **💡 Note:** Minor fluctuations (±1-2%) in the results are normal due to the random initialization of the PyTorch Autoencoder and the SOM weight vectors.
 
 ## <a id="benchmarking-with-generic-datasets"></a>🎯 Benchmarking with Generic Datasets
 
