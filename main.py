@@ -27,13 +27,13 @@ from Dualmap import DualSOM
 # ==========================================
 SUGGESTED_PARAMETERS = {
     # Workflow Selection
-    "dataset_name": "wut",          # Target dataset identifier [Values: 'wut', 'pku', 'mnist', etc.]
+    "dataset_name": "mnist",          # Target dataset identifier [Values: 'wut', 'pku', 'mnist', etc.]
     "run_mode": "supervised",       # Execution mode [Values: 'supervised' or 'unsupervised']
     "device": "cuda",               # Hardware acceleration [Values: 'cuda', 'cpu']
 
     # Data Paths
-    "train_data_path": "Datas/WUT/train_data.csv",
-    "test_data_path": "Datas/WUT/test_data.csv",
+    "train_data_path": "Datas/MNIST/train_data.csv",
+    "test_data_path": "Datas/MNIST/test_data.csv",
 
     # SOM Hyperparameters
     "som_size_index": 5.0,          # Grid size using the heuristic rule: S ≈ som_size_index * sqrt(P), where P is sample size. [Range: 1.0 - 10.0, Suggested: 5.0]
