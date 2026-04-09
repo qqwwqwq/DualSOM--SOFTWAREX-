@@ -583,7 +583,7 @@ class DualSOM:
 
 ---
 
-### 📐 Advanced Use: Distance Metrics
+## 📐 Advanced Use: Distance Metrics
 
 The SOM supports three mathematical distance metrics for computing neuron activations, configurable via the `activation_distance` parameter:
 
