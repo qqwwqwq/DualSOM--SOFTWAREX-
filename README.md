@@ -301,6 +301,7 @@ If this file is missing, running `python main.py` will automatically generate a 
 | **Workflow & Paths** | | |
 | `dataset_name` | String | Dataset identifier (e.g., `"wut"`, `"pku"`, `"mnist"`, `"forda"`).|
 | `run_mode` | String | `"supervised"` (classification) or `"unsupervised"` (clustering). |
+| `has_labels` | Bool | `true`: Assumes the last CSV column is the label.<br>`false`: Treats all columns as features (ideal for pure unlabeled data). |
 | `device` | String | Hardware accelerator. Options: `"cuda"`, `"cpu"`. |
 | `train_data_path` | String | Local path to the training CSV file. |
 | `test_data_path` | String | Local path to the testing CSV file. |
@@ -319,8 +320,10 @@ If this file is missing, running `python main.py` will automatically generate a 
 | `som_enable_validation`| Int | `1`: Prints periodic accuracy. `0`: Disables prints for max speed. *(Auto-disabled in unsupervised mode)*. |
 | `som_load_model` | Bool | `true`: Load converged map weights. `false`: Train from scratch. |
 | `som_model_path` | String | Filepath for saving/loading the SOM weight matrix (`.npy`). |
-| **Clustering** | | |
-| `n_clusters` | Int | Target number of clusters ($K$) for weight-space K-Means. |
+| **Clustering (Unsupervised Mode Only)** | | |
+| `auto_find_clusters`| Bool | `true`: Dynamically calculates optimal $K$ based on $\Delta L$.<br>`false`: Uses custom `n_clusters`. |
+| `k_min` / `k_max` | Int | The search range for automatic cluster selection (Used if `auto_find_clusters` is `true`). |
+| `n_clusters` | Int | Custom target number of clusters ($K$). (Used if `auto_find_clusters` is `false`). |
 | `kmeans_max_iter` | Int | Maximum iterations for K-Means convergence. |
 | `kmeans_threshold`| Float | Convergence threshold (centroid shift) for K-Means. |
 
