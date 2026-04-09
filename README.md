@@ -64,6 +64,16 @@ The framework is domain-independent; however, it has been **demonstrated on huma
 * **Application-independent framework**
   Although demonstrated on human posture recognition from skeletal data, the software is applicable to any structured or high-dimensional dataset, including sensor data, motion capture, and multimodal inputs.
 
+## ⏱️ 30-Second Quick Start
+
+Get the pipeline up and running immediately with default configurations:
+
+```bash
+git clone <your-repository-url>
+cd DualSOM--SOFTWAREX-
+pip install -r requirements.txt
+python main.py
+
 ## <a id="network-architecture"></a>🕸️ Network Architecture
 
 <p align="center">
