@@ -264,11 +264,12 @@ If this file is missing, running `python main.py` will automatically generate a 
 
 ### Configuration Template
 
+The pipeline relies on a `params.json` file for all hyperparameters. Below is a complete template reflecting the latest version of the framework:
+
 ```json
 {
     "dataset_name": "wut",
     "run_mode": "supervised",
-    "has_labels": true,
     "device": "cuda",
     "train_data_path": "Datas/WUT/train_data.csv",
     "test_data_path": "Datas/WUT/test_data.csv",
@@ -284,7 +285,7 @@ If this file is missing, running `python main.py` will automatically generate a 
     "som_model_path": "weight/som_weights.npy",
     "auto_find_clusters": false,
     "k_min": 2,
-    "k_max": 15,
+    "k_max": 10,
     "n_clusters": 10,
     "kmeans_max_iter": 100,
     "kmeans_threshold": 0.0001,
@@ -293,44 +294,45 @@ If this file is missing, running `python main.py` will automatically generate a 
     "ae_lr": 0.001,
     "ae_reg_param": 0.001,
     "ae_load_model": false,
-    "ae_model_path": "weight/sparse_ae.pth",
-    "reduction_factor": 1
+    "ae_model_path": "weight/sparse_ae.pth"
 }
 ```
 
 ### Parameter Dictionary
 
-| Parameter | Type | Description |
-| :--- | :--- | :--- |
-| **Workflow & Paths** | | |
-| `dataset_name` | String | Dataset identifier (e.g., `"wut"`, `"pku"`, `"mnist"`, `"forda"`).|
-| `run_mode` | String | `"supervised"` (classification) or `"unsupervised"` (clustering). |
-| `has_labels` | Bool | `true`: Assumes the last CSV column is the label.<br>`false`: Treats all columns as features (ideal for pure unlabeled data). |
-| `device` | String | Hardware accelerator. Options: `"cuda"`, `"cpu"`. |
-| `train_data_path` | String | Local path to the training CSV file. |
-| `test_data_path` | String | Local path to the testing CSV file. |
-| **Sparse Autoencoder (SAE)** | | |
-| `ae_batch_size` | Int | Mini-batch size for optimal gradient convergence. |
-| `ae_epochs` | Int | Total number of training epochs for the SAE. |
-| `ae_lr` | Float | Learning rate for the Adam optimizer. |
-| `ae_reg_param` | Float | Coefficient for the L1 sparsity penalty applied to the latent space. |
-| `ae_load_model` | Bool | `true`: Load pre-trained `.pth` weights. `false`: Train from scratch. |
-| `ae_model_path` | String | Filepath for saving/loading SAE weights. |
-| **DualSOM** | | |
-| `som_size_index` | Float | Resolution multiplier. Grid size ($N \times N$) is calculated dynamically. |
-| `som_epochs` | Int | Number of epochs for topological training. |
-| `som_sigma` / `lr` | Float | Initial values for neighborhood radius and learning rate. |
-| `activation_distance`| String | Routing metric. Options:<br>• `"angular"`: best for directional / skeletal data<br>• `"euclidean"`: general-purpose<br>• `"cosine"`: best for high-dimensional sparse data |
-| `som_enable_validation`| Int | `1`: Prints periodic accuracy. `0`: Disables prints for max speed. *(Auto-disabled in unsupervised mode)*. |
-| `som_load_model` | Bool | `true`: Load converged map weights. `false`: Train from scratch. |
-| `som_model_path` | String | Filepath for saving/loading the SOM weight matrix (`.npy`). |
-| **Clustering (Unsupervised Mode Only)** | | |
-| `auto_find_clusters`| Bool | `true`: Dynamically calculates optimal $K$ based on $\Delta L$.<br>`false`: Uses custom `n_clusters`. |
-| `k_min` / `k_max` | Int | The search range for automatic cluster selection (Used if `auto_find_clusters` is `true`). |
-| `n_clusters` | Int | Custom target number of clusters ($K$). (Used if `auto_find_clusters` is `false`). |
-| `kmeans_max_iter` | Int | Maximum iterations for K-Means convergence. |
-| `kmeans_threshold`| Float | Convergence threshold (centroid shift) for K-Means. |
-
+| Parameter | Type | Description | Suggested Value / Range |
+| :--- | :--- | :--- | :--- |
+| **Workflow & Paths** | | | |
+| `dataset_name` | String | Target dataset identifier. | `'wut'`, `'pku'`, `'mnist'`, etc. |
+| `run_mode` | String | Execution mode. | `'supervised'` or `'unsupervised'` |
+| `device` | String | Hardware acceleration. | `'cuda'`, `'cpu'`, or `'mps'` |
+| `train_data_path` | String | Local path to the training CSV file. | - |
+| `test_data_path` | String | Local path to the testing CSV file. | - |
+| **Sparse Autoencoder (SAE)** | | | |
+| `ae_batch_size` | Int | Mini-batch size for SAE gradient descent. | Values: `16, 32, 64, 128, 256`<br>**Suggested:** `32` or `64` |
+| `ae_epochs` | Int | Number of training epochs for the SAE. | Range: `50 - 500`<br>**Suggested:** `150` |
+| `ae_lr` | Float | Learning rate for the Adam optimizer. | Range: `1e-4 - 1e-2`<br>**Suggested:** `0.001` |
+| `ae_reg_param` | Float | Coefficient for the L1 sparsity penalty. | Range: `1e-5 - 1e-1`<br>**Suggested:** `0.001` |
+| `ae_load_model` | Bool | Bypass training and load pre-trained SAE weights. | `true`, `false` |
+| `ae_model_path` | String | Filepath for saving/loading SAE weights. | - |
+| **DualSOM** | | | |
+| `som_size_index` | Float | Multiplier for grid size heuristic ($S \approx index \cdot \sqrt{P}$). | Range: `1.0 - 10.0`<br>**Suggested:** `5.0` |
+| `som_epochs` | Int | Number of complete passes over the dataset. | e.g. `50, 100, 200...` |
+| `som_sigma` | Float | Initial neighborhood radius for weight updates. | Range: `1.0 - 10.0`<br>**Suggested:** `4.0` |
+| `som_sigma_target`| Float | Asymptotic target for radius decay. | Range: `0.001 - 0.1`<br>**Suggested:** `0.01` |
+| `som_lr` | Float | Initial learning rate. | Range: `0.01 - 1.0`<br>**Suggested:** `0.1 - 0.5` |
+| `som_lr_target` | Float | Asymptotic target for LR decay. | Range: `0.0001 - 0.01`<br>**Suggested:** `0.001` |
+| `activation_distance`| String | BMU distance metric.<br>• `"angular"`: best for directional / skeletal data<br>• `"euclidean"`: general-purpose<br>• `"cosine"`: best for high-dimensional sparse data | `'angular'`, `'euclidean'`, `'cosine'` |
+| `som_enable_validation`| Int | Enable/disable periodic validation prints. | `1` (True) or `0` (False) |
+| `som_load_model` | Bool | Bypass training and load a pre-trained SOM. | `true`, `false` |
+| `som_model_path` | String | Filepath for saving/loading the SOM weights (`.npy`). | - |
+| **Clustering (Unsupervised)** | | | |
+| `auto_find_clusters`| Bool | Dynamically calculate optimal $K$ based on $\Delta L$. | `true`, `false` |
+| `k_min` | Int | Minimum $K$ to evaluate (if `auto_find_clusters` is true). | Range: `> 1`<br>**Suggested:** `2` |
+| `k_max` | Int | Maximum $K$ to evaluate. | Range: `> k_min` |
+| `n_clusters` | Int | Custom target number of clusters ($K$). | Matches expected classes |
+| `kmeans_max_iter` | Int | Maximum iterations for K-Means convergence. | Range: `100 - 1000`<br>**Suggested:** `100 - 300` |
+| `kmeans_threshold`| Float | Convergence threshold (centroid shift) for K-Means. | Range: `1e-5 - 1e-2`<br>**Suggested:** `1e-4` |
 ---
 
 ## <a id="execution-and-caching"></a>🚀 Execution and Caching
