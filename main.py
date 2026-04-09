@@ -34,7 +34,7 @@ SUGGESTED_PARAMETERS = {
     "test_data_path": "Datas/WUT/test_data.csv",
 
     # SOM Hyperparameters
-    "som_size_index": 10.0,         # Multiplier for the grid size heuristic calculation
+    "som_size_index": 5.0,         # Multiplier for the grid size heuristic calculation，grid size using the heuristic rule: S ≈ som_size_index * sqrt(P), where P is sample size.
     "som_epochs": 50,               # Number of complete passes over the dataset during SOM training
     "som_sigma": 4.0,               # Initial neighborhood radius for weight updates
     "som_sigma_target": 0.01,       # Asymptotic target for the neighborhood radius decay
