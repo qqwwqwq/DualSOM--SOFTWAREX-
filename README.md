@@ -290,7 +290,7 @@ The pipeline relies on a `params.json` file for all hyperparameters. Below is a 
     "device": "cuda",
     "train_data_path": "Datas/WUT/train_data.csv",
     "test_data_path": "Datas/WUT/test_data.csv",
-    "som_size_index": 5.0,
+    "som_size_index": 10.0,
     "som_epochs": 50,
     "som_sigma": 4.0,
     "som_sigma_target": 0.01,
@@ -333,7 +333,7 @@ The pipeline relies on a `params.json` file for all hyperparameters. Below is a 
 | `ae_load_model` | Bool | Bypass training and load pre-trained SAE weights. | `true`, `false` |
 | `ae_model_path` | String | Filepath for saving/loading SAE weights. | - |
 | **DualSOM** | | | |
-| `som_size_index` | Float | Multiplier for grid size heuristic ($S \approx som\_size\_index \cdot \sqrt{P}$). | Range: `1.0 - 10.0`<br>**Suggested:** `5.0` |
+| `som_size_index` | Float | Multiplier for grid size heuristic ($S \approx \sqrt{som\_size\_index \cdot \sqrt{P}}$). | Range: `1.0 - 20.0`<br>**Suggested:** `10.0` |
 | `som_epochs` | Int | Number of complete passes over the dataset. | e.g. `50, 100, 200...` |
 | `som_sigma` | Float | Initial neighborhood radius for weight updates. | Range: `1.0 - 10.0`<br>**Suggested:** `4.0` |
 | `som_sigma_target`| Float | Asymptotic target for radius decay. | Range: `0.001 - 0.1`<br>**Suggested:** `0.01` |
