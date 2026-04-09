@@ -407,25 +407,7 @@ python Selection.py --k_min 2 --k_max 12
 5. Run `main.py` in "unsupervised" mode to get your final clustered outputs.
 
 ---
-## <a id="example-results"></a>📈 Example Results
 
-To help you verify that your environment is configured correctly, below are the expected metric ranges when running the pipeline with the default parameters. Here we use the **MNIST** dataset as a benchmark example for both operational modes.
-
-### 1. Supervised Mode (Classification)
-In supervised mode, the model evaluates using standard classification metrics.
-
-* **Accuracy:** ~0.9195
-* **F1-score (Macro):** ~0.9191
-
-### 2. Unsupervised Mode (Clustering)
-In unsupervised mode (e.g., using `auto_find_clusters: true` or a fixed $K$), the pipeline evaluates the structural groupings using information-theoretic metrics.
-
-* **Recommended Optimal Cluster Number: 10 (Minimum Delta L)
-* **NMI (Normalized Mutual Information):** ~0.5307
-* **AMI (Adjusted Mutual Information):** ~0.5264
-* **Homogeneity:** ~0.5275
-
-> **💡 Note:** Minor fluctuations (±1-2%) in the results are normal due to the random initialization of the PyTorch Autoencoder and the SOM weight vectors.
 
 ## <a id="benchmarking-with-generic-datasets"></a>🎯 Benchmarking with Generic Datasets
 
@@ -447,7 +429,44 @@ To evaluate the pipeline on standard benchmarks, use the provided preparation sc
 
 *The framework will ingest these prepared CSVs, compress the high-dimensional signals/pixels through the Sparse Autoencoder, and project them onto the DualSOM grid automatically.*
 
+
+## <a id="example-results"></a>📈 Example Results
+
+To help you verify that your environment is configured correctly, below are the expected metric ranges when running the pipeline with the default parameters. Here we use the **MNIST** dataset as a benchmark example for both operational modes.
+
+### 1. Supervised Mode (Classification)
+In supervised mode, the model evaluates using standard classification metrics.
+
+* **Accuracy:** ~0.9195
+* **F1-score (Macro):** ~0.9191
+
+### 2. Unsupervised Mode (Clustering)
+In unsupervised mode (e.g., using `auto_find_clusters: true` or a fixed $K$), the pipeline evaluates the structural groupings using information-theoretic metrics.
+
+* **Recommended Optimal Cluster Number: 10 (Minimum Delta L)
+* **NMI (Normalized Mutual Information):** ~0.5307
+* **AMI (Adjusted Mutual Information):** ~0.5264
+* **Homogeneity:** ~0.5275
+
+> **💡 Note:** Minor fluctuations (±1-2%) in the results are normal due to the random initialization of the PyTorch Autoencoder and the SOM weight vectors.
 ---
+## <a id="limitations"></a>⚠️ Limitations
+
+* **Input Data:** Requires tabular input directly (does not process raw images).
+* **Grid Sizing:** The heuristic used for determining the SOM (Self-Organizing Map) grid size may not yield optimal results for every dataset.
+* **Scalability:** The current implementation is not optimized for extremely large-scale datasets (i.e., those exceeding millions of samples).
+
+## <a id="reproducibility"></a>🎲 Note on Reproducibility (Stochasticity)
+
+Please be aware that the random number generators in this implementation are not explicitly seeded or controlled. Because of this, **every run will yield slightly different results**. 
+
+This minor variance is expected and stems from internal stochastic processes, specifically:
+* Weight initialization for both the SOM and the autoencoder.
+* Mini-batch sampling during SAE (Sparse Autoencoder) training.
+* Algorithm initializations (e.g., K-Means).
+
+*(If strict reproducibility is required for your use case, consider manually fixing the random seeds in your environment prior to execution).*
+
 # <a id="api-reference"></a>📚 DualSOM & Sparse Autoencoder API Reference
 
 This document provides a comprehensive guide on how to use the integrated `Dualmap_api.py` module. This module encapsulates the core mathematical engine of the Dual-mode Self-Organizing Map (DualSOM) and the PyTorch-based Sparse Autoencoder for latent feature extraction.
@@ -572,22 +591,7 @@ The SOM supports three mathematical distance metrics for computing neuron activa
 * **`euclidean`:** Standard L2 norm. Best for general-purpose dense tabular datasets.
 * **`cosine`:** Uses $1 - \text{Cosine Similarity}$. Useful for high-dimensional, sparse feature spaces.
 
-## <a id="limitations"></a>⚠️ Limitations
 
-* **Input Data:** Requires tabular input directly (does not process raw images).
-* **Grid Sizing:** The heuristic used for determining the SOM (Self-Organizing Map) grid size may not yield optimal results for every dataset.
-* **Scalability:** The current implementation is not optimized for extremely large-scale datasets (i.e., those exceeding millions of samples).
-
-## <a id="reproducibility"></a>🎲 Note on Reproducibility (Stochasticity)
-
-Please be aware that the random number generators in this implementation are not explicitly seeded or controlled. Because of this, **every run will yield slightly different results**. 
-
-This minor variance is expected and stems from internal stochastic processes, specifically:
-* Weight initialization for both the SOM and the autoencoder.
-* Mini-batch sampling during SAE (Sparse Autoencoder) training.
-* Algorithm initializations (e.g., K-Means).
-
-*(If strict reproducibility is required for your use case, consider manually fixing the random seeds in your environment prior to execution).*
 
 ## <a id="reference"></a>📜 Reference
 
