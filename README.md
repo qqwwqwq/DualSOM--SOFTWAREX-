@@ -320,7 +320,7 @@ If this file is missing, running `python main.py` will automatically generate a 
 | `som_size_index` | Float | Resolution multiplier. Grid size ($N \times N$) is calculated dynamically. |
 | `som_epochs` | Int | Number of epochs for topological training. |
 | `som_sigma` / `lr` | Float | Initial values for neighborhood radius and learning rate. |
-| `activation_distance`| String | Routing metric. Options: `"angular"`, `"euclidean"`, `"cosine"`. |
+| `activation_distance`| String | Routing metric. Options:<br>• `"angular"`: best for directional / skeletal data<br>• `"euclidean"`: general-purpose<br>• `"cosine"`: best for high-dimensional sparse data |
 | `som_enable_validation`| Int | `1`: Prints periodic accuracy. `0`: Disables prints for max speed. *(Auto-disabled in unsupervised mode)*. |
 | `som_load_model` | Bool | `true`: Load converged map weights. `false`: Train from scratch. |
 | `som_model_path` | String | Filepath for saving/loading the SOM weight matrix (`.npy`). |
