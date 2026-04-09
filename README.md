@@ -448,7 +448,7 @@ def set_ae_args(parameters: dict):
 ```
 * **Description:** Extracts necessary hyperparameters from the provided dictionary and updates the internal state for the Autoencoder module.
 * **Required Keys in `parameters`:**
-  * `device` (str): Hardware accelerator (`'cuda'`, `'cpu'`, `'mps'`).
+  * `device` (str): Hardware accelerator (`'cuda'`, `'cpu'`).
   * `ae_epochs` (int): Number of training epochs.
   * `ae_batch_size` (int): Mini-batch size.
   * `ae_lr` (float): Learning rate.
