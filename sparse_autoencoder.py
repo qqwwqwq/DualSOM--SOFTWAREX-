@@ -62,36 +62,36 @@ class SparseAutoencoder(nn.Module):
 # --- Global State Dictionary ---
 # Maintains scaler states and neural network weights between Train and Test pipeline calls
 # to prevent data leakage and ensure transform consistency.
-# Note: The numerical values here are defaults, which can be modified via params.json
+# Note: The numerical values here are placeholders; actual values MUST be provided via params.json
 _ae_state = {
     'model': None,
     'input_scaler': MinMaxScaler(),
     'feature_scaler': StandardScaler(),
-    'device': 'cuda' if torch.cuda.is_available() else 'cpu',
-    'epochs': 150,           # Default epochs, modifiable via "ae_epochs" in params.json
-    'batch_size': 32,        # Default batch size, modifiable via "ae_batch_size" in params.json
-    'ae_lr': 0.001,          # Default learning rate, modifiable via "ae_lr" in params.json
-    'ae_reg_param': 0.001,   # Default L1 penalty coefficient, modifiable via "ae_reg_param" in params.json
-    'load_model': False,     # Default loading flag, modifiable via "ae_load_model" in params.json
-    'model_path': 'weight/sparse_ae.pth' # Default save path, modifiable via "ae_model_path" in params.json
+    'device': None,          # Must be provided via "device" in params.json
+    'epochs': None,          # Must be provided via "ae_epochs" in params.json
+    'batch_size': None,      # Must be provided via "ae_batch_size" in params.json
+    'ae_lr': None,           # Must be provided via "ae_lr" in params.json
+    'ae_reg_param': None,    # Must be provided via "ae_reg_param" in params.json
+    'load_model': None,      # Must be provided via "ae_load_model" in params.json
+    'model_path': None       # Must be provided via "ae_model_path" in params.json
 }
 
 def set_ae_args(parameters):
     """
     Updates the global autoencoder configuration state dictionary based on
-    settings parsed from the JSON file.
+    settings parsed from the JSON file. Will raise KeyError if keys are missing.
 
     Args:
         parameters (dict): The configuration dictionary loaded in main.py.
     """
-    # Fallback default values are provided here (e.g., 150, 32, 0.001) in case they are missing from params.json
-    _ae_state['device'] = parameters.get('device', 'cuda' if torch.cuda.is_available() else 'cpu')
-    _ae_state['epochs'] = parameters.get('ae_epochs', 150)
-    _ae_state['batch_size'] = parameters.get('ae_batch_size', 32)
-    _ae_state['ae_lr'] = parameters.get('ae_lr', 0.001)
-    _ae_state['ae_reg_param'] = parameters.get('ae_reg_param', 0.001)
-    _ae_state['load_model'] = parameters.get('ae_load_model', False)
-    _ae_state['model_path'] = parameters.get('ae_model_path', 'weight/sparse_ae.pth')
+    # Values MUST be explicitly provided in params.json
+    _ae_state['device'] = parameters['device']
+    _ae_state['epochs'] = parameters['ae_epochs']
+    _ae_state['batch_size'] = parameters['ae_batch_size']
+    _ae_state['ae_lr'] = parameters['ae_lr']
+    _ae_state['ae_reg_param'] = parameters['ae_reg_param']
+    _ae_state['load_model'] = parameters['ae_load_model']
+    _ae_state['model_path'] = parameters['ae_model_path']
 
 def encode_decode(data):
     """
