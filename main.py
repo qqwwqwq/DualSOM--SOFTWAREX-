@@ -49,9 +49,9 @@ SUGGESTED_PARAMETERS = {
 
     # Clustering Hyperparameters (Active only in 'unsupervised' mode)
     "auto_find_clusters": False,    # [NEW SWITCH] Dynamically calculate optimal K [Values: True, False]
-    "k_min": 2,                     # [NEW PARAM] Min K to evaluate if auto_find_clusters is True [Range: 2 - 10, Suggested: 2]
-    "k_max": 10,                    # [NEW PARAM] Max K to evaluate if auto_find_clusters is True [Range: 5 - 50, Suggested: 10 - 15]
-    "n_clusters": 10,               # Custom target number of clusters [Range: 2 - 100+, Suggested: Matches expected dataset classes]
+    "k_min": 2,                     # [NEW PARAM] Min K to evaluate if auto_find_clusters is True [Range: > 1, Suggested: 2]
+    "k_max": 10,                    # [NEW PARAM] Max K to evaluate if auto_find_clusters is True [Range: > k_min]
+    "n_clusters": 10,               # Custom target number of clusters [Suggested: Matches expected dataset classes, or auto-seleted by our method.]
     "kmeans_max_iter": 100,         # Maximum iterations for K-Means convergence [Range: 100 - 1000, Suggested: 100 - 300]
     "kmeans_threshold": 1e-4,       # Convergence threshold (centroid shift) for K-Means [Range: 1e-5 - 1e-2, Suggested: 1e-4]
 
