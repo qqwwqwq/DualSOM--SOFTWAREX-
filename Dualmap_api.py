@@ -1,12 +1,12 @@
 """
 api.py
 
-Dual-mode Self-Organizing Map (Dual-SOM) Core Implementation - Pure API Version.
+Unified API for Sparse Autoencoder and Dual-mode Self-Organizing Map (Dual-SOM).
 
-This module provides the mathematical and computational foundation for the SOM.
-It contains the low-level grid operations (`BaseDualSom`), a specialized K-Means
-algorithm designed for grouping angular neuron weights (`SOMClusterer`), and a
-unified high-level wrapper (`DualSOM`) that interfaces seamlessly with any Python workflow.
+This module provides a complete, object-oriented pipeline for Latent Representation 
+Learning (via PyTorch-based Sparse Autoencoder) and clustering/classification 
+(via NumPy-based DualSOM). It is completely decoupled from CLI arguments and 
+global states, making it suitable for standard Python imports.
 """
 
 import os
@@ -14,9 +14,247 @@ import math
 import numpy as np
 from numpy import linalg, outer, meshgrid, einsum
 from collections import defaultdict, Counter
+
+# --- PyTorch Imports (Autoencoder) ---
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+from torch.utils.data import DataLoader, TensorDataset
+
+# --- Scikit-Learn Imports ---
 from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+
+# --- Utilities ---
 from tqdm import tqdm
 
+
+# ==============================================================================
+# PART 1: Sparse Autoencoder API
+# ==============================================================================
+
+class SparseAutoencoderModel(nn.Module):
+    """
+    Feed-forward Neural Network Architecture for the Sparse Autoencoder.
+    Employs Batch Normalization, CELU activations, and a symmetric encoder-decoder structure.
+    """
+    def __init__(self, input_dim=57):
+        """
+        Args:
+            input_dim (int): Dimensionality of the raw input feature space.
+        """
+        super(SparseAutoencoderModel, self).__init__()
+
+        # Encoder mapping: Input -> 72 -> 36 (Latent Space)
+        self.enc1 = nn.Linear(input_dim, 72)
+        self.bn1 = nn.BatchNorm1d(72)
+        self.enc2 = nn.Linear(72, 36)
+
+        # Decoder mapping: 36 -> 72 -> Input (Reconstruction)
+        self.dec1 = nn.Linear(36, 72)
+        self.bn2 = nn.BatchNorm1d(72)
+        self.dec2 = nn.Linear(72, input_dim)
+
+    def forward(self, x):
+        """
+        Forward pass generating both reconstructions and latent codes.
+
+        Returns:
+            tuple: (Reconstructed inputs scaled by sigmoid, Latent vector).
+        """
+        x = F.celu(self.bn1(self.enc1(x)))
+        latent = F.relu(self.enc2(x))
+        x = F.celu(self.bn2(self.dec1(latent)))
+        return torch.sigmoid(self.dec2(x)), latent
+
+    def fd(self, x):
+        """
+        Feature extraction method used during the inference stage.
+        Bypasses the decoder entirely to directly yield the latent code representation.
+        """
+        x = F.celu(self.bn1(self.enc1(x)))
+        return F.relu(self.enc2(x))
+
+
+class SparseAutoencoderAPI:
+    """
+    Python API wrapper for the Sparse Autoencoder to enable programmatic
+    fit/transform usage. Maintains its own state (scalers, models) avoiding globals.
+    """
+    
+    def __init__(self, **kwargs):
+        """
+        Initializes the autoencoder pipeline.
+        
+        Args:
+            device (str): Computation device, e.g., 'cpu' or 'cuda' (default: 'cpu').
+            epochs (int): Number of training epochs (default: 50).
+            batch_size (int): Batch size for training (default: 64).
+            learning_rate (float): Optimizer learning rate (default: 1e-3).
+            reg_param (float): L1 sparsity regularization penalty parameter (default: 1e-4).
+            load_model (bool): Whether to attempt loading an existing model from disk (default: False).
+            model_path (str): File path for saving/loading the PyTorch model (default: 'ae_model.pth').
+        """
+        self.device = kwargs.get('device', 'cpu')
+        self.epochs = kwargs.get('epochs', 50)
+        self.batch_size = kwargs.get('batch_size', 64)
+        self.learning_rate = kwargs.get('learning_rate', 1e-3)
+        self.reg_param = kwargs.get('reg_param', 1e-4)
+        self.load_model = kwargs.get('load_model', False)
+        self.model_path = kwargs.get('model_path', 'ae_model.pth')
+        
+        self.model = None
+        self.input_scaler = MinMaxScaler()
+        self.feature_scaler = StandardScaler()
+        
+    def fit_transform(self, X):
+        """
+        Fits the data scalers, trains the autoencoder (or loads weights), 
+        and returns the encoded latent features.
+        
+        Args:
+            X (np.ndarray): The raw input feature matrix.
+            
+        Returns:
+            np.ndarray: The standardized, low-dimensional latent features.
+        """
+        # 1. Scale inputs
+        X_scaled = self.input_scaler.fit_transform(X)
+        X_tensor = torch.from_numpy(X_scaled).float().to(self.device)
+        
+        # 2. Initialize Model Architecture
+        input_dim = X.shape[1]
+        self.model = SparseAutoencoderModel(input_dim=input_dim).to(self.device)
+        
+        # 3. Load or Train
+        if self.load_model:
+            if os.path.exists(self.model_path):
+                print(f">>> Loading pre-trained AutoEncoder model from {self.model_path}...")
+                self.model.load_state_dict(torch.load(self.model_path, map_location=self.device))
+            else:
+                raise FileNotFoundError(f"Requested load_model=True, but no model found at {self.model_path}!")
+        else:
+            print(f">>> Training AutoEncoder from scratch for {self.epochs} epochs...")
+            optimizer = optim.Adam(self.model.parameters(), lr=self.learning_rate)
+            criterion = nn.MSELoss()
+
+            dataset = TensorDataset(X_tensor)
+            loader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
+
+            self.model.train()
+            for epoch in tqdm(range(self.epochs), desc="AE Training", unit="epoch"):
+                for batch in loader:
+                    x_batch = batch[0]
+                    optimizer.zero_grad()
+                    outputs, latent = self.model(x_batch)
+
+                    # Total Loss = MSE (Reconstruction) + L1 Penalty (Sparsity)
+                    loss = criterion(outputs, x_batch) + self.reg_param * torch.mean(torch.abs(latent))
+                    loss.backward()
+                    optimizer.step()
+
+            # Persist model weights locally
+            os.makedirs(os.path.dirname(self.model_path) or '.', exist_ok=True)
+            torch.save(self.model.state_dict(), self.model_path)
+            print(f">>> Model saved successfully to {self.model_path}")
+            
+        # 4. Extract Latent Features
+        return self._extract_features(X_tensor, is_train=True)
+
+    def transform(self, X):
+        """
+        Uses the pre-trained autoencoder and scalers to project new data
+        into the latent space.
+        
+        Args:
+            X (np.ndarray): The raw input feature matrix (e.g., test data).
+            
+        Returns:
+            np.ndarray: The standardized, low-dimensional latent features.
+        """
+        if self.model is None:
+            raise RuntimeError("Autoencoder is not trained. Call fit_transform() first.")
+            
+        X_scaled = self.input_scaler.transform(X)
+        X_tensor = torch.from_numpy(X_scaled).float().to(self.device)
+        
+        return self._extract_features(X_tensor, is_train=False)
+
+    def _extract_features(self, X_tensor, is_train):
+        """Internal helper to process tensor batches and standardize latent outputs."""
+        self.model.eval()
+        latent_list = []
+        
+        with torch.no_grad():
+            dataset = TensorDataset(X_tensor)
+            loader = DataLoader(dataset, batch_size=256, shuffle=False)
+            
+            for batch in loader:
+                x_batch = batch[0]
+                latent_list.append(self.model.fd(x_batch).cpu().numpy())
+
+        X_latent = np.vstack(latent_list)
+
+        if is_train:
+            return self.feature_scaler.fit_transform(X_latent)
+        else:
+            return self.feature_scaler.transform(X_latent)
+
+
+# ==============================================================================
+# PART 2: DualSOM Reviewer-Requested API Wrapper
+# ==============================================================================
+
+class DualSOM_API:
+    """
+    Python API wrapper designed specifically to fulfill the programmatic 
+    fit()/predict() usage requirements using a single parameter dictionary.
+    """
+    
+    def __init__(self, params):
+        """
+        Initializes the API wrapper with a parameter dictionary.
+        
+        Args:
+            params (dict): Dictionary containing hyperparameter configurations.
+        """
+        self.params = params
+        self.model = None
+
+    def fit(self, X, y=None):
+        """
+        Instantiates the underlying core model using the provided parameters
+        and trains it on the input data.
+        
+        Args:
+            X (np.ndarray): The input feature matrix.
+            y (np.ndarray, optional): Target labels, required if running classification.
+        """
+        # Instantiate the underlying kwargs-based engine using the dictionary
+        self.model = DualSOM(**self.params)
+        self.model.fit(X, y=y)
+
+    def predict(self, X, mode='clustering'):
+        """
+        Predicts cluster assignments or classifications for the input data.
+        
+        Args:
+            X (np.ndarray): The input feature matrix.
+            mode (str): Determines the logic flow ('clustering' or 'classification').
+            
+        Returns:
+            np.ndarray: Predicted labels.
+        """
+        if self.model is None:
+            raise RuntimeError("Model has not been trained yet. Call fit() first.")
+            
+        return self.model.predict(X, mode=mode)
+
+
+# ==============================================================================
+# PART 3: DualSOM Core High-Level Engine
+# ==============================================================================
 
 def thumb_rule(data_len, som_size_index):
     """
@@ -27,39 +265,20 @@ def thumb_rule(data_len, som_size_index):
 
 class DualSOM:
     """
-    Unified high-level wrapper for the Dual-mode SOM.
+    Unified high-level engine for the Dual-mode SOM.
 
-    Encapsulates the underlying base map and the weight-space clusterer, exposing
-    standard scikit-learn style `fit()` and `predict()` APIs.
+    Encapsulates the underlying base map and the weight-space clusterer.
     """
 
     def __init__(self, **kwargs):
         """
-        Initializes the DualSOM wrapper with modern API keyword arguments.
-        
-        Args:
-            grid_size (int, optional): Size of the SOM grid (e.g., 10 for a 10x10 grid). 
-                                       If None, it will be automatically calculated during fit().
-            run_mode (str): 'clustering' or 'classification' (default: 'clustering').
-            load_model (bool): Whether to load weights from disk (default: False).
-            model_path (str): Path to save/load the SOM weights (default: 'som_model.npy').
-            som_size_index (float): Hyperparameter for auto-sizing the grid (default: 2.0).
-            sigma (float, optional): Initial neighborhood radius.
-            sigma_target (float): Asymptotic limit for radius decay (default: 0.1).
-            learning_rate (float): Initial learning rate (default: 0.5).
-            lr_target (float): Asymptotic limit for learning rate decay (default: 0.05).
-            activation_distance (str): Routing metric. Options: "angular", "euclidean", "cosine" (default: "euclidean").
-            epochs (int): Number of training epochs (default: 100).
-            enable_validation (bool): Whether to run periodic accuracy validation (default: False).
-            n_clusters (int): Target number of clusters for K-Means over SOM weights (default: 2).
-            kmeans_max_iter (int): Max iterations for weight-space K-Means (default: 300).
-            kmeans_threshold (float): Early stopping threshold for K-Means (default: 1e-4).
+        Initializes the DualSOM engine with modern keyword arguments.
         """
         self.clusterer = None
         self._winmap = None
         self._train_labels = None
 
-        # Build the parameters dictionary
+        # Build the parameters dictionary with intelligent defaults
         self.parameters = {
             'run_mode': kwargs.get('run_mode', 'clustering'),
             'som_load_model': kwargs.get('load_model', False),
@@ -83,15 +302,8 @@ class DualSOM:
         self.grid_size = kwargs.get('grid_size', None)
         self.som = None # Delay initialization until data is provided
 
-
     def fit(self, X, y=None):
-        """
-        Trains the SOM weights using the provided feature matrix X.
-        
-        Args:
-            X (np.ndarray): The input feature matrix of shape (n_samples, n_features).
-            y (np.ndarray, optional): Target labels. Required if run_mode is 'classification'.
-        """
+        """Trains the SOM weights using the provided feature matrix X."""
         self._train_labels = y
 
         # Deferred initialization: Build the base SOM now that we know X's dimensions
@@ -138,16 +350,7 @@ class DualSOM:
             print(f">>> SOM weights saved successfully to {self.model_path}")
 
     def predict(self, X, mode=None):
-        """
-        Maps data to the SOM grid and assigns final predictions.
-        
-        Args:
-            X (np.ndarray): The input feature matrix.
-            mode (str, optional): Override the initialization run_mode. ('clustering' or 'classification').
-            
-        Returns:
-            np.ndarray: An array of predicted labels or cluster assignments.
-        """
+        """Maps data to the SOM grid and assigns final predictions."""
         eval_mode = mode if mode is not None else self.run_mode
         
         if eval_mode == 'clustering':
@@ -185,8 +388,9 @@ class DualSOM:
             return self.som._weights
         return None
 
+
 # ==============================================================================
-# Low-Level Core Classes
+# PART 4: DualSOM Low-Level Core Mathematical Classes
 # ==============================================================================
 
 class SOMClusterer:
