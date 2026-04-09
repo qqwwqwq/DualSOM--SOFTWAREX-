@@ -564,7 +564,7 @@ class DualSOM:
 
 ---
 
-## 📐 Advanced Use: Distance Metrics
+### 📐 Advanced Use: Distance Metrics
 
 The SOM supports three mathematical distance metrics for computing neuron activations, configurable via the `activation_distance` parameter:
 
@@ -572,13 +572,13 @@ The SOM supports three mathematical distance metrics for computing neuron activa
 * **`euclidean`:** Standard L2 norm. Best for general-purpose dense tabular datasets.
 * **`cosine`:** Uses $1 - \text{Cosine Similarity}$. Useful for high-dimensional, sparse feature spaces.
 
-### <a id="limitations"></a>⚠️ Limitations
+## <a id="limitations"></a>⚠️ Limitations
 
 * **Input Data:** Requires tabular input directly (does not process raw images).
 * **Grid Sizing:** The heuristic used for determining the SOM (Self-Organizing Map) grid size may not yield optimal results for every dataset.
 * **Scalability:** The current implementation is not optimized for extremely large-scale datasets (i.e., those exceeding millions of samples).
 
-### <a id="reproducibility"></a>🎲 Note on Reproducibility (Stochasticity)
+## <a id="reproducibility"></a>🎲 Note on Reproducibility (Stochasticity)
 
 Please be aware that the random number generators in this implementation are not explicitly seeded or controlled. Because of this, **every run will yield slightly different results**. 
 
