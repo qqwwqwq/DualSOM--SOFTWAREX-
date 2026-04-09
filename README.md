@@ -69,10 +69,12 @@ The framework is domain-independent; however, it has been **demonstrated on huma
 Get the pipeline up and running immediately with default configurations:
 
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git
 cd DualSOM--SOFTWAREX-
 pip install -r requirements.txt
+python prepare_mnist.py
 python main.py
+```
 
 ## <a id="network-architecture"></a>🕸️ Network Architecture
 
