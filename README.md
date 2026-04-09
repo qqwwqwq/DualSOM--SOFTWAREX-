@@ -17,6 +17,7 @@
 
 * [Introduction](#introduction)
 * [Key Features](#key-features)
+* [30-Second Quick Start](#quick-start)
 * [Network Architecture](#network-architecture)
 * [How the System Works](#how-the-system-works)
 * [System Requirements](#system-requirements)
@@ -25,7 +26,9 @@
 * [Configuration (`params.json`)](#configuration-paramsjson)
 * [Execution and Caching](#execution-and-caching)
 * [Cluster Number Selection (`Selection.py`)](#optimal-cluster-selection)
+* [Example Results](#example-results)
 * [Benchmarking with Generic Datasets](#benchmarking-with-generic-datasets)
+* [API Reference](#api-reference)
 * [Reference](#reference)
 * [License](#license)
 
@@ -64,12 +67,12 @@ The framework is domain-independent; however, it has been **demonstrated on huma
 * **Application-independent framework**
   Although demonstrated on human posture recognition from skeletal data, the software is applicable to any structured or high-dimensional dataset, including sensor data, motion capture, and multimodal inputs.
 
-## ⏱️ 30-Second Quick Start
+## <a id="quick-start"></a>⏱️ 30-Second Quick Start
 
 Get the pipeline up and running immediately with default configurations:
 
 ```bash
-git clone https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git
+git clone [https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git](https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git)
 cd DualSOM--SOFTWAREX-
 pip install -r requirements.txt
 python prepare_mnist.py
@@ -150,7 +153,7 @@ Follow these steps to set up DualSOM on your system.
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git
+git clone [https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git](https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git)
 cd DualSOM--SOFTWAREX-
 ```
 
@@ -186,7 +189,7 @@ If a CUDA-compatible GPU is available, ensure PyTorch is installed with GPU supp
 
 ```bash
 # Example for CUDA 11.7
-pip install torch==2.10.0+cu117 torchvision==0.25.0+cu117 -f https://download.pytorch.org/whl/torch_stable.html
+pip install torch==2.10.0+cu117 torchvision==0.25.0+cu117 -f [https://download.pytorch.org/whl/torch_stable.html](https://download.pytorch.org/whl/torch_stable.html)
 ```
 
 ### 5. Verify Installation
@@ -240,28 +243,28 @@ After downloading and extracting (or preparing your custom data), please arrange
 DualSOM/
 ├── Datas/
 │   ├── WUT/
-│   │   ├── train_data.csv       # Preprocessed training features & labels
-│   │   ├── test_data.csv        # Preprocessed testing features & labels
-│   │   └── wut_label_map.json   # Auto-generated label mapping
+│   │   ├── train_data.csv        # Preprocessed training features & labels
+│   │   ├── test_data.csv         # Preprocessed testing features & labels
+│   │   └── wut_label_map.json    # Auto-generated label mapping
 │   ├── PKU/
-│   │   ├── train_data.csv       # Preprocessed training features & labels
-│   │   ├── test_data.csv        # Preprocessed testing features & labels
-│   │   └── pku_label_map.json   # Auto-generated label mapping
+│   │   ├── train_data.csv        # Preprocessed training features & labels
+│   │   ├── test_data.csv         # Preprocessed testing features & labels
+│   │   └── pku_label_map.json    # Auto-generated label mapping
 │   ├── MNIST/
-│   │   ├── train_data.csv       # Preprocessed training features & labels
-│   │   ├── test_data.csv        # Preprocessed testing features & labels
+│   │   ├── train_data.csv        # Preprocessed training features & labels
+│   │   ├── test_data.csv         # Preprocessed testing features & labels
 │   │   └── mnist_label_map.json # Auto-generated label mapping
 │   └── FordA/
-│       ├── train_data.csv       # Preprocessed training features & labels
-│       ├── test_data.csv        # Preprocessed testing features & labels
+│       ├── train_data.csv        # Preprocessed training features & labels
+│       ├── test_data.csv         # Preprocessed testing features & labels
 │       └── forda_label_map.json # Auto-generated label mapping
-├── Daulmap.py                   # Core mathematical SOM and clusterer
-├── sparse_autoencoder.py        # PyTorch Mini-Batch Autoencoder module
-├── preprocessing.py             # Data ingestion and generic loader
-├── main.py                      # Main 5-stage execution pipeline
-├── Selection.py                 # Tool for finding the optimal cluster number
-├── params.json                  # All-in-one configuration file
-└── weight/                      # Auto-generated directory for cached models
+├── Daulmap.py                    # Core mathematical SOM and clusterer
+├── sparse_autoencoder.py         # PyTorch Mini-Batch Autoencoder module
+├── preprocessing.py              # Data ingestion and generic loader
+├── main.py                       # Main 5-stage execution pipeline
+├── Selection.py                  # Tool for finding the optimal cluster number
+├── params.json                   # All-in-one configuration file
+└── weight/                       # Auto-generated directory for cached models
     ├── sparse_ae.pth
     └── som_weights.npy
 ```
@@ -328,7 +331,7 @@ The pipeline relies on a `params.json` file for all hyperparameters. Below is a 
 | `ae_load_model` | Bool | Bypass training and load pre-trained SAE weights. | `true`, `false` |
 | `ae_model_path` | String | Filepath for saving/loading SAE weights. | - |
 | **DualSOM** | | | |
-| `som_size_index` | Float | Multiplier for grid size heuristic ($S \approx som_size_index \cdot \sqrt{P}$). | Range: `1.0 - 10.0`<br>**Suggested:** `5.0` |
+| `som_size_index` | Float | Multiplier for grid size heuristic ($S \approx som\_size\_index \cdot \sqrt{P}$). | Range: `1.0 - 10.0`<br>**Suggested:** `5.0` |
 | `som_epochs` | Int | Number of complete passes over the dataset. | e.g. `50, 100, 200...` |
 | `som_sigma` | Float | Initial neighborhood radius for weight updates. | Range: `1.0 - 10.0`<br>**Suggested:** `4.0` |
 | `som_sigma_target`| Float | Asymptotic target for radius decay. | Range: `0.001 - 0.1`<br>**Suggested:** `0.01` |
@@ -404,7 +407,7 @@ python Selection.py --k_min 2 --k_max 12
 5. Run `main.py` in "unsupervised" mode to get your final clustered outputs.
 
 ---
-## 📈 Example Results
+## <a id="example-results"></a>📈 Example Results
 
 To help you verify that your environment is configured correctly, below are the expected metric ranges when running the pipeline with the default parameters. Here we use the **MNIST** dataset as a benchmark example for both operational modes.
 
@@ -445,7 +448,7 @@ To evaluate the pipeline on standard benchmarks, use the provided preparation sc
 *The framework will ingest these prepared CSVs, compress the high-dimensional signals/pixels through the Sparse Autoencoder, and project them onto the DualSOM grid automatically.*
 
 ---
-# 📚 DualSOM & Sparse Autoencoder API Reference
+# <a id="api-reference"></a>📚 DualSOM & Sparse Autoencoder API Reference
 
 This document provides a comprehensive guide on how to use the integrated `Dualmap_api.py` module. This module encapsulates the core mathematical engine of the Dual-mode Self-Organizing Map (DualSOM) and the PyTorch-based Sparse Autoencoder for latent feature extraction.
 
