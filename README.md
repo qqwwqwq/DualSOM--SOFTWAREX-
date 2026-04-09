@@ -406,7 +406,7 @@ To evaluate the pipeline on standard benchmarks, use the provided preparation sc
 
 This document provides a comprehensive guide on how to use the integrated `Dualmap_api.py` module. This module encapsulates the core mathematical engine of the Dual-mode Self-Organizing Map (DualSOM) and the PyTorch-based Sparse Autoencoder for latent feature extraction.
 
-## 🚀 Quick Start
+## 🚀 API Example
 
 The API is designed to be easily integrated into any Python script. Here is a minimal example of how to use the pipeline:
 
