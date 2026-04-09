@@ -27,42 +27,42 @@ from Dualmap import DualSOM
 # ==========================================
 SUGGESTED_PARAMETERS = {
     # Workflow Selection
-    "dataset_name": "wut",          # Target dataset identifier (e.g., 'wut', 'pku', 'mnist')
-    "run_mode": "supervised",       # Execution mode: 'supervised' or 'unsupervised'
-    "device": "cuda",               # Hardware acceleration: 'cuda' or 'cpu'
+    "dataset_name": "wut",          # Target dataset identifier [Values: 'wut', 'pku', 'mnist', etc.]
+    "run_mode": "supervised",       # Execution mode [Values: 'supervised' or 'unsupervised']
+    "device": "cuda",               # Hardware acceleration [Values: 'cuda', 'cpu', or 'mps']
 
     # Data Paths
     "train_data_path": "Datas/WUT/train_data.csv",
     "test_data_path": "Datas/WUT/test_data.csv",
 
     # SOM Hyperparameters
-    "som_size_index": 5.0,         # Multiplier for the grid size heuristic calculation
-    "som_epochs": 50,               # Number of complete passes over the dataset during SOM training
-    "som_sigma": 4.0,               # Initial neighborhood radius for weight updates
-    "som_sigma_target": 0.01,       # Asymptotic target for the neighborhood radius decay
-    "som_lr": 0.1,                  # Initial learning rate
-    "som_lr_target": 0.001,         # Asymptotic target for the learning rate decay
-    "activation_distance": "angular", # Distance metric for Best Matching Unit (BMU)
-    "som_enable_validation": 1,     # Flag to enable/disable periodic validation prints (1 or 0)
-    "som_load_model": False,                     # Switch to bypass training and load a pre-trained SOM
+    "som_size_index": 5.0,          # Multiplier for grid size heuristic [Range: 1.0 - 10.0, Suggested: 5.0]
+    "som_epochs": 50,               # SOM training passes [e.g. 50, 100, 200...]
+    "som_sigma": 4.0,               # Initial neighborhood radius [Range: 1.0 - 10.0, Suggested: 4.0]
+    "som_sigma_target": 0.01,       # Asymptotic target for radius decay [Range: 0.001 - 0.1, Suggested: 0.01]
+    "som_lr": 0.1,                  # Initial learning rate [Range: 0.01 - 1.0, Suggested: 0.1 - 0.5]
+    "som_lr_target": 0.001,         # Asymptotic target for LR decay [Range: 0.0001 - 0.01, Suggested: 0.001]
+    "activation_distance": "angular", # BMU distance metric [Values: 'angular', 'euclidean', 'cosine']
+    "som_enable_validation": 1,     # Enable/disable periodic validation prints [Values: 1 (True) or 0 (False)]
+    "som_load_model": False,        # Switch to bypass training and load a pre-trained SOM [Values: True, False]
     "som_model_path": "weight/som_weights.npy",  # Filepath for saving/loading the SOM weight matrix
 
     # Clustering Hyperparameters (Active only in 'unsupervised' mode)
-    "auto_find_clusters": False,    # [NEW SWITCH] If True, dynamically calculates optimal K instead of using 'n_clusters'
-    "k_min": 2,                     # [NEW PARAM] Min K to evaluate if auto_find_clusters is True
-    "k_max": 10,                    # [NEW PARAM] Max K to evaluate if auto_find_clusters is True
-    "n_clusters": 10,               # Custom target number of clusters (Used if auto_find_clusters is False)
-    "kmeans_max_iter": 100,         # Maximum iterations for K-Means convergence
-    "kmeans_threshold": 1e-4,       # Convergence threshold (centroid shift) for K-Means
+    "auto_find_clusters": False,    # [NEW SWITCH] Dynamically calculate optimal K [Values: True, False]
+    "k_min": 2,                     # [NEW PARAM] Min K to evaluate if auto_find_clusters is True [Range: 2 - 10, Suggested: 2]
+    "k_max": 10,                    # [NEW PARAM] Max K to evaluate if auto_find_clusters is True [Range: 5 - 50, Suggested: 10 - 15]
+    "n_clusters": 10,               # Custom target number of clusters [Range: 2 - 100+, Suggested: Matches expected dataset classes]
+    "kmeans_max_iter": 100,         # Maximum iterations for K-Means convergence [Range: 100 - 1000, Suggested: 100 - 300]
+    "kmeans_threshold": 1e-4,       # Convergence threshold (centroid shift) for K-Means [Range: 1e-5 - 1e-2, Suggested: 1e-4]
 
     # Sparse Autoencoder (SAE) Hyperparameters
-    "ae_batch_size": 32,            # Mini-batch size for SAE gradient descent
-    "ae_epochs": 150,               # Number of training epochs for the SAE
-    "ae_lr": 0.001,                 # Learning rate for the Adam optimizer
-    "ae_reg_param": 0.001,          # Coefficient for the L1 sparsity penalty on the latent space
-    "ae_load_model": False,                   # Switch to bypass training and load pre-trained SAE weights
+    "ae_batch_size": 32,            # Mini-batch size for SAE gradient descent [Values: 16, 32, 64, 128, 256. Suggested: 32 or 64]
+    "ae_epochs": 150,               # Number of training epochs for the SAE [Range: 50 - 500, Suggested: 150]
+    "ae_lr": 0.001,                 # Learning rate for the Adam optimizer [Range: 1e-4 - 1e-2, Suggested: 0.001]
+    "ae_reg_param": 0.001,          # Coefficient for the L1 sparsity penalty [Range: 1e-5 - 1e-1, Suggested: 0.001]
+    "ae_load_model": False,         # Switch to bypass training and load pre-trained SAE weights [Values: True, False]
     "ae_model_path": "weight/sparse_ae.pth",  # Filepath for saving/loading the SAE PyTorch model
-    "reduction_factor": 1           # Factor to subset data for rapid debugging (1 = full dataset)
+    "reduction_factor": 1           # Factor to subset data for rapid debugging [Range: 0.01 - 1.0, Suggested: 1 (Full dataset)]
 }
 
 # =====================================================================
