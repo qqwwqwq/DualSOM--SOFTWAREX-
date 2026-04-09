@@ -189,6 +189,19 @@ python -c "import torch, numpy, pandas, matplotlib; print('Environment OK')"
 
 ## <a id="data-preparation"></a>📂 Data Preparation
 
+### 📊 Input Data Format
+The model pipeline expects datasets to be in standard **CSV format** (headers are fully supported).
+
+**Using Custom Datasets:**
+If you are using your own CSV data, ensure it strictly follows this structure:
+* **Rows:** Individual data samples.
+* **Columns [0 to N-1]:** Numerical input features.
+* **Last Column [N]:** The Target label. 
+  * ✨ **Auto-Factorization:** String/Text labels (e.g., "Normal", "Anomaly") are fully supported and will be automatically converted to numerical IDs during ingestion.
+  * ⚠️ **Unsupervised Note:** The data loader **always** extracts the last column as the label. Even if you are running in strictly `'unsupervised'` mode with unlabeled data, **you must include a dummy column at the end** (e.g., filled with zeros) to prevent your last feature column from being accidentally stripped.
+
+---
+
 ### Tested Datasets
 Our framework is highly flexible. It supports standard vectorized data (`.npy`, `.csv`) and has built-in pipelines specifically tailored and evaluated on:
 
@@ -206,10 +219,10 @@ One signal dataset:
 * **WUT Dataset**: Download the skeleton-only dataset from [Link](#).
 * **PKU Dataset**: Download the skeleton-only dataset from [Link](#).
 * **MNIST Dataset**: Run `python prepare_mnist.py` to automatically download, normalize, and format the image data into compatible CSV files.
-* **FordA Dataset**: Run `python prepare_ucr_forda.py` to automatically download and process the 1D sensor time-series data into compatible CSV files.
+* **FordA Dataset**: Run `python prepare_forda.py` to automatically download and process the 1D sensor time-series data into compatible CSV files.
 
 ### 2. Directory Structure
-After downloading and extracting, please arrange the raw data into the following directory structure before training:
+After downloading and extracting (or preparing your custom data), please arrange the raw data into the following directory structure before training:
 
 ```text
 DualSOM/
