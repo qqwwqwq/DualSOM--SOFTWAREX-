@@ -401,6 +401,25 @@ To evaluate the pipeline on standard benchmarks, use the provided preparation sc
 
 ---
 
+### <a id="limitations"></a>⚠️ Limitations
+
+* **Input Data:** Requires tabular input directly (does not process raw images).
+* **Grid Sizing:** The heuristic used for determining the SOM (Self-Organizing Map) grid size may not yield optimal results for every dataset.
+* **Scalability:** The current implementation is not optimized for extremely large-scale datasets (i.e., those exceeding millions of samples).
+
+### <a id="reproducibility"></a>🎲 Note on Reproducibility (Stochasticity)
+
+Please be aware that the random number generators in this implementation are not explicitly seeded or controlled. Because of this, **every run will yield slightly different results**. 
+
+This minor variance is expected and stems from internal stochastic processes, specifically:
+* Weight initialization for both the SOM and the autoencoder.
+* Mini-batch sampling during SAE (Sparse Autoencoder) training.
+* Algorithm initializations (e.g., K-Means).
+
+*(If strict reproducibility is required for your use case, consider manually fixing the random seeds in your environment prior to execution).*
+
+## <a id="reference"></a>📜 Reference
+
 ## <a id="reference"></a>📜 Reference
 
 [1] Xin He, Teresa Zielinska, Vibekananda Dutta, Takafumi Matsumaru, and Robert Sitnik. "From Seeing to Recognising–An Extended Self-Organizing Map for Human Postures Identification." *IEEE Robotics and Automation Letters*, vol. 9, no. 9, pp. 7899-7906, 2024.
