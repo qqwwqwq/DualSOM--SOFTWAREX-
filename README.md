@@ -76,10 +76,10 @@ python prepare_mnist.py
 python main.py
 ```
 
-## <a id="network-architecture"></a>🕸️ Network Architecture
+## <a id="network-architecture"></a>🕸️ Outline of Method
 
 <p align="center">
-  <img src="./assets/Outline.png" width="800">
+  <img src="./assets/schema-imp.png" width="800">
 </p>
 
 ## <a id="how-the-system-works"></a>⚙️ How the System Works
