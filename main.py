@@ -62,7 +62,6 @@ SUGGESTED_PARAMETERS = {
     "ae_reg_param": 0.001,          # Coefficient for the L1 sparsity penalty [Range: 1e-5 - 1e-1, Suggested: 0.001]
     "ae_load_model": False,         # Switch to bypass training and load pre-trained SAE weights [Values: True, False]
     "ae_model_path": "weight/sparse_ae.pth",  # Filepath for saving/loading the SAE PyTorch model
-    "reduction_factor": 1           # Factor to subset data for rapid debugging [Range: 0.01 - 1.0, Suggested: 1 (Full dataset)]
 }
 
 # =====================================================================
