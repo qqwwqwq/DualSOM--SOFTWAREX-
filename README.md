@@ -5,11 +5,11 @@
 ¹ *Waseda University, Japan*
 ² *Warsaw University of Technology, Poland*
 
-![Python](https://img.shields.io/badge/Python-3.8-3776AB?style=flat-square&logo=python&logoColor=white)
-![PyTorch](https://img.shields.io/badge/PyTorch-2.10.0-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)
-![NumPy](https://img.shields.io/badge/NumPy-2.4.2-013243?style=flat-square&logo=numpy&logoColor=white)
-![Pandas](https://img.shields.io/badge/Pandas-3.0.0-150458?style=flat-square&logo=pandas&logoColor=white)
-![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-1.4.2-F7931E?style=flat-square&logo=scikitlearn&logoColor=white)
+![Python](https://img.shields.io/badge/Python-%3E%3D3.8-3776AB?style=flat-square&logo=python&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-%3E%3D2.10.0-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)
+![NumPy](https://img.shields.io/badge/NumPy-%3E%3D2.4.2-013243?style=flat-square&logo=numpy&logoColor=white)
+![Pandas](https://img.shields.io/badge/Pandas-%3E%3D3.0.0-150458?style=flat-square&logo=pandas&logoColor=white)
+![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-%3E%3D1.4.2-F7931E?style=flat-square&logo=scikitlearn&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 ![Status](https://img.shields.io/badge/Status-Research--Ready-brightgreen?style=flat-square)
 
