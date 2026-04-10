@@ -1,29 +1,79 @@
 {
     "dataset_name": "mnist",
+    "_comment_dataset_name": "Target dataset identifier [Values: 'wut', 'pku', 'mnist', etc.]",
+    
     "run_mode": "unsupervised",
+    "_comment_run_mode": "Execution mode [Values: 'supervised' or 'unsupervised']",
+    
     "device": "cuda",
+    "_comment_device": "Hardware acceleration [Values: 'cuda', 'cpu']",
+    
     "train_data_path": "Datas/MNIST/train_data.csv",
     "test_data_path": "Datas/MNIST/test_data.csv",
+    
     "som_size_index": 10.0,
+    "_comment_som_size_index": "Grid size using the heuristic rule: S ≈ sqrt(som_size_index * math.sqrt(P)), where P is sample size. [Range: 1.0 - 20.0, Suggested: 10.0]",
+    
     "som_epochs": 50,
+    "_comment_som_epochs": "SOM training passes [e.g. 50, 100, 200...]",
+    
     "som_sigma": 4.0,
+    "_comment_som_sigma": "Initial neighborhood radius [Range: 1.0 - 10.0, Suggested: 4.0]",
+    
     "som_sigma_target": 0.01,
+    "_comment_som_sigma_target": "Asymptotic target for radius decay [Range: 0.001 - 0.1, Suggested: 0.01]",
+    
     "som_lr": 0.1,
+    "_comment_som_lr": "Initial learning rate [Range: 0.01 - 1.0, Suggested: 0.1 - 0.5]",
+    
     "som_lr_target": 0.001,
+    "_comment_som_lr_target": "Asymptotic target for LR decay [Range: 0.0001 - 0.01, Suggested: 0.001]",
+    
     "activation_distance": "angular",
+    "_comment_activation_distance": "BMU distance metric [Values: 'angular':  best for directional / skeletal data, 'euclidean': general-purpose, 'cosine': best for high-dimensional sparse dat]",
+    
     "som_enable_validation": 1,
+    "_comment_som_enable_validation": "Enable/disable periodic validation prints [Values: 1 (True) or 0 (False)]",
+    
     "som_load_model": false,
+    "_comment_som_load_model": "Switch to bypass training and load a pre-trained SOM [Values: True, False]",
+    
     "som_model_path": "weight/som_weights.npy",
+    "_comment_som_model_path": "Filepath for saving/loading the SOM weight matrix",
+    
     "auto_find_clusters": true,
+    "_comment_auto_find_clusters": "[NEW SWITCH] Dynamically calculate optimal K [Values: True, False]",
+    
     "k_min": 2,
+    "_comment_k_min": "[NEW PARAM] Min K to evaluate if auto_find_clusters is True [Range: > 1, Suggested: 2]",
+    
     "k_max": 10,
+    "_comment_k_max": "[NEW PARAM] Max K to evaluate if auto_find_clusters is True [Range: > k_min]",
+    
     "n_clusters": 10,
+    "_comment_n_clusters": "Custom target number of clusters [Suggested: Matches expected dataset classes, or auto-seleted by our method.]",
+    
     "kmeans_max_iter": 100,
+    "_comment_kmeans_max_iter": "Maximum iterations for K-Means convergence [Range: 100 - 1000, Suggested: 100 - 300]",
+    
     "kmeans_threshold": 0.0001,
+    "_comment_kmeans_threshold": "Convergence threshold (centroid shift) for K-Means [Range: 1e-5 - 1e-2, Suggested: 1e-4]",
+    
     "ae_batch_size": 32,
+    "_comment_ae_batch_size": "Mini-batch size for SAE gradient descent [Values: 16, 32, 64, 128, 256. Suggested: 32 or 64]",
+    
     "ae_epochs": 150,
+    "_comment_ae_epochs": "Number of training epochs for the SAE [Range: 50 - 500, Suggested: 150]",
+    
     "ae_lr": 0.001,
+    "_comment_ae_lr": "Learning rate for the Adam optimizer [Range: 1e-4 - 1e-2, Suggested: 0.001]",
+    
     "ae_reg_param": 0.001,
+    "_comment_ae_reg_param": "Coefficient for the L1 sparsity penalty [Range: 1e-5 - 1e-1, Suggested: 0.001]",
+    
     "ae_load_model": false,
-    "ae_model_path": "weight/sparse_ae.pth"
+    "_comment_ae_load_model": "Switch to bypass training and load pre-trained SAE weights [Values: True, False]",
+    
+    "ae_model_path": "weight/sparse_ae.pth",
+    "_comment_ae_model_path": "Filepath for saving/loading the SAE PyTorch model"
 }
