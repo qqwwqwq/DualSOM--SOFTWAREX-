@@ -30,13 +30,13 @@
     "_comment_auto_find_clusters": "If true, dynamically calculate optimal K using SOMClusterSelector [Values: true, false]",
 
     "k_min": 2,
-    "_comment_k_min": "Lower bound for auto-K search space [Range: > 1, Suggested: 2]",
+    "_comment_k_min": "Lower bound for auto-number of clusters search space [Range: > 1, Suggested: 2]",
 
     "k_max": 12,
-    "_comment_k_max": "Upper bound for auto-K search space [Range: > k_min]",
+    "_comment_k_max": "Upper bound for auto-number of clusters search space [Range: > k_min]",
 
     "n_clusters": 10,
-    "_comment_n_clusters": "Hardcoded K, only needed when auto_find_clusters is false [Manually provided by the user]",
+    "_comment_n_clusters": "Custom number of clusters. It is only active when (auto_find_clusters) is set to false. [Manually provided by the user]",
 
     "ae_epochs": 150,
     "_comment_ae_epochs": "Number of training epochs for the SAE [Range: 50 - 500, Suggested: 150]",
