@@ -56,9 +56,9 @@ USER_CONFIG_DEFAULTS = {
 
     # Clustering Configurations (Active only when run_mode == 'unsupervised')
     "auto_find_clusters": False,      # If True, trigger SOMClusterSelector to find optimal K [Values: True, False]
-    "k_min": 2,                       # Lower bound for auto-K search space [Range: > 1, Suggested: 2]
-    "k_max": 12,                      # Upper bound for auto-K search space [Range: > k_min]
-    "n_clusters": 10,                 # Hardcoded K, only needed when auto_find_clusters is false [Manually provided by the user]
+    "k_min": 2,                       # Lower bound for auto-number of clusters search space [Range: > 1, Suggested: 2]
+    "k_max": 12,                      # Upper bound for auto-number of clusters search space [Range: > k_min]
+    "n_clusters": 10,                 # Custom number of clusters. It is only active when "auto_find_clusters" is set to false. [Manually provided by the user]
 
     # Key Training Hyperparameters
     "ae_epochs": 150,                 # Number of training epochs for the SAE [Range: 50 - 500, Suggested: 150]
