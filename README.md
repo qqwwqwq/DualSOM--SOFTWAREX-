@@ -296,7 +296,7 @@ Below is the complete template reflecting the latest version of the framework. W
     "n_clusters": 10,
     "ae_epochs": 150,
     "som_epochs": 50,
-    "activation_distance": "cosine"
+    "activation_distance": "angular"
 }
 ```
 
