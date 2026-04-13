@@ -338,7 +338,7 @@ These constants govern the fundamental mathematical behavior of the Dual-SOM and
 | `som_lr` | Float | Initial learning rate for Hebbian weight updates. | Range: `0.01 - 1.0`<br>**Suggested:** `0.1 - 0.5` |
 | `som_lr_target` | Float | Asymptotic lower bound for learning rate decay. | Range: `0.0001 - 0.01`<br>**Suggested:** `0.001` |
 | `som_enable_validation`| Int | Boolean flag for periodic terminal logging. | `1` (True) or `0` (False) |
-| `kmeans_max_iter` | Int | Maximum iterations for K-Means convergence. | Range: `100 - 1000`<br>**Suggested:** `100 - 300` |
+| `kmeans_max_iter` | Int | Maximum iterations for K-Means convergence. | Range: `100 - 1000`<br>**Suggested:** `100` |
 | `kmeans_threshold`| Float | Convergence threshold (centroid shift) for early stopping. | Range: `1e-5 - 1e-2`<br>**Suggested:** `1e-4` |
 | `ae_batch_size` | Int | Mini-batch size for SAE Adam optimizer. | Values: `16, 32, 64, 128, 256`<br>**Suggested:** `32` or `64` |
 | `ae_lr` | Float | Base learning rate for SAE weight adjustments. | Range: `1e-4 - 1e-2`<br>**Suggested:** `0.001` |
