@@ -40,30 +40,30 @@ from Dualmap import DualSOM
 # specific to the user's dataset and hardware constraints.
 USER_CONFIG_DEFAULTS = {
     # Workflow Selection
-    "dataset_name": "mnist",          # Target dataset identifier ['wut', 'pku', 'mnist', etc.]
-    "run_mode": "supervised",         # Execution mode ['supervised' or 'unsupervised']
-    "device": "cuda",                 # Hardware acceleration target ['cuda', 'cpu']
+    "dataset_name": "mnist",          # Target dataset [Values: 'wut', 'pku', 'mnist', etc.]
+    "run_mode": "supervised",         # Execution mode [Values: 'supervised', 'unsupervised']
+    "device": "cuda",                 # Hardware acceleration target [Values: 'cuda', 'cpu']
 
     # Data Paths (Relative to the execution directory)
     "train_data_path": "Datas/MNIST/train_data.csv",
     "test_data_path": "Datas/MNIST/test_data.csv",
 
     # Model Saving/Loading Switches
-    "som_load_model": False,          # If True, bypass SOM training and load pre-trained weights
+    "som_load_model": False,          # If True, bypass SOM training and load pre-trained weights [Values: True, False]
     "som_model_path": "weight/som_weights.npy",
-    "ae_load_model": False,           # If True, bypass SAE training and load pre-trained weights
+    "ae_load_model": False,           # If True, bypass SAE training and load pre-trained weights [Values: True, False]
     "ae_model_path": "weight/sparse_ae.pth",
 
     # Clustering Configurations (Active only when run_mode == 'unsupervised')
-    "auto_find_clusters": False,      # If True, trigger SOMClusterSelector to find optimal K
-    "k_min": 2,                       # Lower bound for auto-K search space
-    "k_max": 10,                      # Upper bound for auto-K search space
-    "n_clusters": 10,                 # Hardcoded K (used if auto_find_clusters is False)
+    "auto_find_clusters": False,      # If True, trigger SOMClusterSelector to find optimal K [Values: True, False]
+    "k_min": 2,                       # Lower bound for auto-K search space [Range: > 1, Suggested: 2]
+    "k_max": 10,                      # Upper bound for auto-K search space [Range: > k_min]
+    "n_clusters": 10,                 # Hardcoded K, only be used when "auto_find_clusters"=False [Suggested: Matches expected dataset classes, or auto-selected]
 
     # Key Training Hyperparameters
-    "ae_epochs": 150,                 # Number of training iterations for the Sparse Autoencoder
-    "som_epochs": 50,                 # Number of global passes through the dataset for the SOM
-    "activation_distance": "cosine", # BMU distance metric ['angular', 'euclidean', 'cosine']
+    "ae_epochs": 150,                 # Number of training epochs for the SAE [Range: 50 - 500, Suggested: 150]
+    "som_epochs": 50,                 # Number of global passes through the dataset for the SOM [e.g. 50, 100, 200...]
+    "activation_distance": "cosine",  # BMU distance metric [Values: 'angular' (directional/skeletal), 'euclidean' (general), 'cosine' (high-dim sparse)]
 }
 
 # =====================================================================
@@ -73,23 +73,22 @@ USER_CONFIG_DEFAULTS = {
 # They are hidden from the user config to maintain structural stability.
 INTRINSIC_PARAMETERS = {
     # SOM Topological Hyperparameters
-    "som_size_index": 10.0,            # Grid size heuristic (S ≈ index * sqrt(N_samples))
-    "som_sigma": 4.0,                 # Initial neighborhood radius for lateral inhibition
-    "som_sigma_target": 0.01,         # Asymptotic lower bound for radius decay
-    "som_lr": 0.1,                    # Initial learning rate for Hebbian weight updates
-    "som_lr_target": 0.001,           # Asymptotic lower bound for learning rate decay
-    "som_enable_validation": 1,       # Boolean flag (1/0) for periodic terminal logging
+    "som_size_index": 10.0,           # Grid size heuristic (S ≈ sqrt(index * sqrt(N))) [Range: 1.0 - 20.0, Suggested: 10.0]
+    "som_sigma": 4.0,                 # Initial neighborhood radius for lateral inhibition [Range: 1.0 - 10.0, Suggested: 4.0]
+    "som_sigma_target": 0.01,         # Asymptotic lower bound for radius decay [Range: 0.001 - 0.1, Suggested: 0.01]
+    "som_lr": 0.1,                    # Initial learning rate for Hebbian weight updates [Range: 0.01 - 1.0, Suggested: 0.1 - 0.5]
+    "som_lr_target": 0.001,           # Asymptotic lower bound for learning rate decay [Range: 0.0001 - 0.01, Suggested: 0.001]
+    "som_enable_validation": 1,       # Boolean flag for periodic terminal logging [Values: 1 (True) or 0 (False)]
 
     # K-Means Convergence Hyperparameters
-    "kmeans_max_iter": 100,           # Max iterations before early stopping
-    "kmeans_threshold": 1e-4,         # Centroid shift tolerance for convergence
+    "kmeans_max_iter": 100,           # Max iterations before early stopping [Range: 100 - 1000, Suggested: 100 - 300]
+    "kmeans_threshold": 1e-4,         # Centroid shift tolerance for convergence [Range: 1e-5 - 1e-2, Suggested: 1e-4]
 
     # Sparse Autoencoder (SAE) Optimization Hyperparameters
-    "ae_batch_size": 32,              # Mini-batch size for Adam optimizer
-    "ae_lr": 0.001,                   # Base learning rate for SAE weight adjustments
-    "ae_reg_param": 0.001,            # L1 sparsity penalty coefficient (rho)
+    "ae_batch_size": 32,              # Mini-batch size for SAE gradient descent [Values: 16, 32, 64, 128, 256. Suggested: 32 or 64]
+    "ae_lr": 0.001,                   # Base learning rate for SAE Adam optimizer [Range: 1e-4 - 1e-2, Suggested: 0.001]
+    "ae_reg_param": 0.001,            # L1 sparsity penalty coefficient (rho) [Range: 1e-5 - 1e-1, Suggested: 0.001]
 }
-
 # =====================================================================
 # Integrated Cluster Selection Logic
 # =====================================================================
