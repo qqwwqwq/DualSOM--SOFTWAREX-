@@ -32,7 +32,7 @@
     "k_min": 2,
     "_comment_k_min": "Lower bound for auto-K search space [Range: > 1, Suggested: 2]",
 
-    "k_max": 10,
+    "k_max": 12,
     "_comment_k_max": "Upper bound for auto-K search space [Range: > k_min]",
 
     "n_clusters": 10,
