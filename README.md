@@ -282,52 +282,21 @@ Below is the complete template reflecting the latest version of the framework. W
 ```json
 {
     "dataset_name": "mnist",
-    "_comment_dataset_name": "Target dataset identifier [Values: 'wut', 'pku', 'mnist', etc.]",
-
     "run_mode": "supervised",
-    "_comment_run_mode": "Execution mode [Values: 'supervised', 'unsupervised']",
-
     "device": "cuda",
-    "_comment_device": "Hardware acceleration target [Values: 'cuda', 'cpu']",
-
     "train_data_path": "Datas/MNIST/train_data.csv",
-    "_comment_train_data_path": "Relative path to the training dataset",
-
     "test_data_path": "Datas/MNIST/test_data.csv",
-    "_comment_test_data_path": "Relative path to the testing dataset",
-
     "som_load_model": false,
-    "_comment_som_load_model": "If true, bypass SOM training and load pre-trained weights [Values: true, false]",
-
     "som_model_path": "weight/som_weights.npy",
-    "_comment_som_model_path": "Filepath for saving/loading the SOM weight matrix",
-
     "ae_load_model": false,
-    "_comment_ae_load_model": "If true, bypass SAE training and load pre-trained weights [Values: true, false]",
-
     "ae_model_path": "weight/sparse_ae.pth",
-    "_comment_ae_model_path": "Filepath for saving/loading the SAE PyTorch model",
-
     "auto_find_clusters": false,
-    "_comment_auto_find_clusters": "If true, dynamically calculate optimal K using SOMClusterSelector [Values: true, false]",
-
     "k_min": 2,
-    "_comment_k_min": "Lower bound for auto-K search space [Range: > 1, Suggested: 2]",
-
     "k_max": 10,
-    "_comment_k_max": "Upper bound for auto-K search space [Range: > k_min]",
-
     "n_clusters": 10,
-    "_comment_n_clusters": "Hardcoded K, used if auto_find_clusters is false [Suggested: Matches expected dataset classes]",
-
     "ae_epochs": 150,
-    "_comment_ae_epochs": "Number of training epochs for the SAE [Range: 50 - 500, Suggested: 150]",
-
     "som_epochs": 50,
-    "_comment_som_epochs": "Number of global passes through the dataset for the SOM [e.g. 50, 100, 200...]",
-
-    "activation_distance": "cosine",
-    "_comment_activation_distance": "BMU distance metric [Values: 'angular' (directional/skeletal), 'euclidean' (general), 'cosine' (high-dim sparse)]"
+    "activation_distance": "cosine"
 }
 ```
 
