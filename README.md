@@ -359,10 +359,13 @@ python main.py
 ```
 
 #### 2. Instant Re-evaluation (Using Cached Models)
-Our framework explicitly separates training from inference. After the first run, model weights are saved to the `weight/` directory. To rapidly test a different scenario (e.g., switching to `"unsupervised"` mode):
-1. Set `"run_mode": "unsupervised"` and `"n_clusters": <desired_number>` in `params.json`.
-2. Set `"ae_load_model": true` and `"som_load_model": true`.
-3. Run `python main.py`.
+Our framework explicitly separates training from inference. After the first run, model weights are saved to the `weight/` directory. To rapidly test a different scenario (e.g., switching to `"unsupervised"` mode to evaluate clustering):
+1. Set `"run_mode": "unsupervised"` in `params.json`.
+2. Configure your cluster preference: either manually set `"n_clusters": <desired_number>` OR enable `"auto_find_clusters": true`.
+3. Set `"ae_load_model": true` and `"som_load_model": true`.
+4. Run `python main.py`.
+
+*The pipeline will instantly bypass all training blocks and output the final metrics in seconds. (**Note:** The script will still briefly load the `train_data.csv` to rapidly recalibrate the PyTorch data scalers before executing the evaluation).*
 
 *The pipeline will bypass training blocks and output clustering metrics in seconds.*
 
