@@ -333,7 +333,7 @@ These constants govern the fundamental mathematical behavior of the Dual-SOM and
 
 | Parameter | Type | Description | Suggested Value / Range |
 | :--- | :--- | :--- | :--- |
-| `som_size_index` | Float | Multiplier for grid size heuristic ($S \approx \sqrt{\mathtt{index} \cdot \sqrt{N}}$). | Range: `1.0 - 20.0`<br>**Suggested:** `10.0` |
+| `som_size_index` | Float | Scale factor for the grid size heuristic ($S \approx \sqrt{\mathtt{som\\_size\\_index} \cdot \sqrt{N}}$). | Range: `1.0 - 20.0`<br>**Suggested:** `10.0` |
 | `som_sigma` | Float | Initial neighborhood radius for lateral inhibition. | Range: `1.0 - 10.0`<br>**Suggested:** `4.0` |
 | `som_sigma_target`| Float | Asymptotic lower bound for radius decay. | Range: `0.001 - 0.1`<br>**Suggested:** `0.01` |
 | `som_lr` | Float | Initial learning rate for Hebbian weight updates. | Range: `0.01 - 1.0`<br>**Suggested:** `0.1 - 0.5` |
