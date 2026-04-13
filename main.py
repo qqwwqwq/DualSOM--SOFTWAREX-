@@ -57,7 +57,7 @@ USER_CONFIG_DEFAULTS = {
     # Clustering Configurations (Active only when run_mode == 'unsupervised')
     "auto_find_clusters": False,      # If True, trigger SOMClusterSelector to find optimal K [Values: True, False]
     "k_min": 2,                       # Lower bound for auto-K search space [Range: > 1, Suggested: 2]
-    "k_max": 10,                      # Upper bound for auto-K search space [Range: > k_min]
+    "k_max": 12,                      # Upper bound for auto-K search space [Range: > k_min]
     "n_clusters": 10,                 # Hardcoded K, only needed when auto_find_clusters is false [Manually provided by the user]
 
     # Key Training Hyperparameters
