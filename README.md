@@ -2,8 +2,7 @@
 
 **Authors:** Xin He¹², Teresa Zielinska², Vibekananda Dutta¹², Takafumi Matsumaru¹, Robert Sitnik²
 
-¹ *Waseda University, Japan*
-² *Warsaw University of Technology, Poland*
+¹ *Waseda University, Japan* ² *Warsaw University of Technology, Poland*
 
 ![Python](https://img.shields.io/badge/Python-%3E%3D3.8-3776AB?style=flat-square&logo=python&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-%3E%3D2.10.0-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)
@@ -23,11 +22,13 @@
 * [System Requirements](#system-requirements)
 * [Installation Guide](#installation-guide)
 * [Data Preparation](#data-preparation)
-* [Configuration (`params.json`)](#configuration-paramsjson)
+* [Configuration (`params.json`)](#configuration)
 * [Execution and Caching](#execution-and-caching)
 * [Cluster Number Selection (`Selection.py`)](#optimal-cluster-selection)
-* [Example Results](#example-results)
 * [Benchmarking with Generic Datasets](#benchmarking-with-generic-datasets)
+* [Example Results](#example-results)
+* [Limitations](#limitations)
+* [Note on Reproducibility](#reproducibility)
 * [API Reference](#api-reference)
 * [Reference](#reference)
 * [License](#license)
@@ -255,12 +256,12 @@ DualSOM/
 │   ├── MNIST/
 │   │   ├── train_data.csv        # Preprocessed training features & labels
 │   │   ├── test_data.csv         # Preprocessed testing features & labels
-│   │   └── mnist_label_map.json # Auto-generated label mapping
+│   │   └── mnist_label_map.json  # Auto-generated label mapping
 │   └── FordA/
 │       ├── train_data.csv        # Preprocessed training features & labels
 │       ├── test_data.csv         # Preprocessed testing features & labels
-│       └── forda_label_map.json # Auto-generated label mapping
-├── Daulmap.py                    # Core mathematical SOM and clusterer
+│       └── forda_label_map.json  # Auto-generated label mapping
+├── Dualmap.py                    # Core mathematical SOM and clusterer
 ├── sparse_autoencoder.py         # PyTorch Mini-Batch Autoencoder module
 ├── preprocessing.py              # Data ingestion and generic loader
 ├── main.py                       # Main 5-stage execution pipeline
@@ -273,7 +274,7 @@ DualSOM/
 
 ---
 
-### Configuration Template
+## <a id="configuration"></a>⚙️ Configuration (`params.json`)
 
 To enforce **Safe Configuration Management**, the pipeline splits hyperparameters into two groups. Only the high-level workflow choices and tuning knobs are exposed in the `params.json` file. 
 
@@ -282,25 +283,54 @@ Below is the complete template reflecting the latest version of the framework. W
 ```json
 {
     "dataset_name": "mnist",
+    "_comment_dataset_name": "Target dataset identifier [Values: 'wut', 'pku', 'mnist', etc.]",
+
     "run_mode": "supervised",
+    "_comment_run_mode": "Execution mode [Values: 'supervised', 'unsupervised']",
+
     "device": "cuda",
+    "_comment_device": "Hardware acceleration target [Values: 'cuda', 'cpu']",
+
     "train_data_path": "Datas/MNIST/train_data.csv",
+    "_comment_train_data_path": "Relative path to the training dataset",
+
     "test_data_path": "Datas/MNIST/test_data.csv",
+    "_comment_test_data_path": "Relative path to the testing dataset",
+
     "som_load_model": false,
+    "_comment_som_load_model": "If true, bypass SOM training and load pre-trained weights [Values: true, false]",
+
     "som_model_path": "weight/som_weights.npy",
+    "_comment_som_model_path": "Filepath for saving/loading the SOM weight matrix",
+
     "ae_load_model": false,
+    "_comment_ae_load_model": "If true, bypass SAE training and load pre-trained weights [Values: true, false]",
+
     "ae_model_path": "weight/sparse_ae.pth",
+    "_comment_ae_model_path": "Filepath for saving/loading the SAE PyTorch model",
+
     "auto_find_clusters": false,
+    "_comment_auto_find_clusters": "If true, dynamically calculate optimal K using SOMClusterSelector [Values: true, false]",
+
     "k_min": 2,
+    "_comment_k_min": "Lower bound for auto-K search space [Range: > 1, Suggested: 2]",
+
     "k_max": 10,
+    "_comment_k_max": "Upper bound for auto-K search space [Range: > k_min]",
+
     "n_clusters": 10,
+    "_comment_n_clusters": "Hardcoded K, only needed when auto_find_clusters is false [Manually provided by the user].",
+
     "ae_epochs": 150,
+    "_comment_ae_epochs": "Number of training epochs for the SAE [Range: 50 - 500, Suggested: 150]",
+
     "som_epochs": 50,
-    "activation_distance": "angular"
+    "_comment_som_epochs": "Number of global passes through the dataset for the SOM [e.g. 50, 100, 200...]",
+
+    "activation_distance": "cosine",
+    "_comment_activation_distance": "BMU distance metric [Values: 'angular' (directional/skeletal), 'euclidean' (general), 'cosine' (high-dim sparse)]"
 }
 ```
-
----
 
 ### Parameter Dictionary
 
@@ -333,7 +363,7 @@ These constants govern the fundamental mathematical behavior of the Dual-SOM and
 
 | Parameter | Type | Description | Suggested Value / Range |
 | :--- | :--- | :--- | :--- |
-| `som_size_index` | Float | Scale factor for the grid size heuristic ($S \approx \sqrt{\mathtt{som\\_size\\_index} \cdot \sqrt{N}}$). | Range: `1.0 - 20.0`<br>**Suggested:** `10.0` |
+| `som_size_index` | Float | Scale factor for the grid size heuristic ($S \approx \sqrt{\mathtt{som\_size\_index} \cdot \sqrt{N}}$). | Range: `1.0 - 20.0`<br>**Suggested:** `10.0` |
 | `som_sigma` | Float | Initial neighborhood radius for lateral inhibition. | Range: `1.0 - 10.0`<br>**Suggested:** `4.0` |
 | `som_sigma_target`| Float | Asymptotic lower bound for radius decay. | Range: `0.001 - 0.1`<br>**Suggested:** `0.01` |
 | `som_lr` | Float | Initial learning rate for Hebbian weight updates. | Range: `0.01 - 1.0`<br>**Suggested:** `0.1 - 0.5` |
@@ -344,6 +374,7 @@ These constants govern the fundamental mathematical behavior of the Dual-SOM and
 | `ae_batch_size` | Int | Mini-batch size for SAE Adam optimizer. | Values: `16, 32, 64, 128, 256`<br>**Suggested:** `32` or `64` |
 | `ae_lr` | Float | Base learning rate for SAE weight adjustments. | Range: `1e-4 - 1e-2`<br>**Suggested:** `0.001` |
 | `ae_reg_param` | Float | Coefficient for the L1 sparsity penalty (rho). | Range: `1e-5 - 1e-1`<br>**Suggested:** `0.001` |
+
 ---
 
 ## <a id="execution-and-caching"></a>🚀 Execution and Caching
@@ -368,7 +399,7 @@ Our framework explicitly separates training from inference. After the first run,
 
 ---
 
-# <a id="optimal-cluster-selection"></a>🔎 Optimal Cluster Selection
+## <a id="optimal-cluster-selection"></a>🔎 Optimal Cluster Selection
 
 When operating in **unsupervised mode**, selecting the optimal number of clusters ($K$) can be challenging. To assist with this, our framework uses the Angular Distance Criterion $\Delta L(k) = |L(k) - L(k-1)|$ to mathematically determine the best $K_m$. The optimal cluster number is the one that minimizes this difference. 
 
@@ -404,7 +435,6 @@ python Selection.py --k_min 2 --k_max 12
 
 ---
 
-
 ## <a id="benchmarking-with-generic-datasets"></a>🎯 Benchmarking with Generic Datasets
 
 To evaluate the pipeline on standard benchmarks, use the provided preparation scripts to generate standardized CSV files. Once the data is prepared, the generic pipeline treats them as standard feature vectors.
@@ -425,6 +455,7 @@ To evaluate the pipeline on standard benchmarks, use the provided preparation sc
 
 *The framework will ingest these prepared CSVs, compress the high-dimensional signals/pixels through the Sparse Autoencoder, and project them onto the DualSOM grid automatically.*
 
+---
 
 ## <a id="example-results"></a>📈 Example Results
 
@@ -439,18 +470,22 @@ In supervised mode, the model evaluates using standard classification metrics.
 ### 2. Unsupervised Mode (Clustering)
 In unsupervised mode (e.g., using `auto_find_clusters: true` or a fixed $K$), the pipeline evaluates the structural groupings using information-theoretic metrics.
 
-* **Recommended Optimal Cluster Number: 10 (Minimum Delta L)
+* **Recommended Optimal Cluster Number:** 10 (Minimum Delta L)
 * **NMI (Normalized Mutual Information):** ~0.5307
 * **AMI (Adjusted Mutual Information):** ~0.5264
 * **Homogeneity:** ~0.5275
 
 > **💡 Note:** Minor fluctuations (±1-2%) in the results are normal due to the random initialization of the PyTorch Autoencoder and the SOM weight vectors.
+
 ---
+
 ## <a id="limitations"></a>⚠️ Limitations
 
 * **Input Data:** Requires tabular input directly (does not process raw images).
 * **Grid Sizing:** The heuristic used for determining the SOM (Self-Organizing Map) grid size may not yield optimal results for every dataset.
 * **Scalability:** The current implementation is not optimized for extremely large-scale datasets (i.e., those exceeding millions of samples).
+
+---
 
 ## <a id="reproducibility"></a>🎲 Note on Reproducibility (Stochasticity)
 
@@ -463,11 +498,13 @@ This minor variance is expected and stems from internal stochastic processes, sp
 
 *(If strict reproducibility is required for your use case, consider manually fixing the random seeds in your environment prior to execution).*
 
-# <a id="api-reference"></a>📚 DualSOM & Sparse Autoencoder API Reference
+---
+
+## <a id="api-reference"></a>📚 DualSOM & Sparse Autoencoder API Reference
 
 This document provides a comprehensive guide on how to use the integrated `Dualmap_api.py` module. This module encapsulates the core mathematical engine of the Dual-mode Self-Organizing Map (DualSOM) and the PyTorch-based Sparse Autoencoder for latent feature extraction.
 
-## 🚀 API Example
+### 🚀 API Example
 
 The API is designed to be easily integrated into any Python script. Here is a minimal example of how to use the pipeline:
 
@@ -500,11 +537,9 @@ cluster_labels = som_model.predict(coded_test_data, mode='clustering')
 predicted_classes = som_model.predict(coded_test_data, mode='classification')
 ```
 
----
+### 🧩 Module Components
 
-## 🧩 Module Components
-
-### 1. Autoencoder Global Configuration (`set_ae_args`)
+#### 1. Autoencoder Global Configuration (`set_ae_args`)
 
 Before encoding or decoding any data, you must initialize the global state of the Sparse Autoencoder using your configuration dictionary.
 
@@ -521,9 +556,7 @@ def set_ae_args(parameters: dict):
   * `ae_load_model` (bool): Whether to load pre-trained weights.
   * `ae_model_path` (str): Path to save/load the `.pth` model file.
 
----
-
-### 2. Feature Extraction Pipeline (`encode_decode`)
+#### 2. Feature Extraction Pipeline (`encode_decode`)
 
 Handles data scaling, model training (or loading), and latent space projection.
 
@@ -537,13 +570,11 @@ def encode_decode(data: tuple) -> tuple:
 * **Returns:**
   * `tuple`: `(X_latent_encoded, y_labels)`, where `X_latent_encoded` is the lower-dimensional, standardized feature set ready for the SOM.
 
----
-
-### 3. DualSOM Core Engine (`DualSOM`)
+#### 3. DualSOM Core Engine (`DualSOM`)
 
 The unified high-level wrapper that manages the topological grid and the weight-space K-Means clusterer.
 
-#### Initialization
+**Initialization**
 ```python
 class DualSOM:
     def __init__(self, parameters: dict, coded_data: tuple):
@@ -560,7 +591,7 @@ class DualSOM:
   * `som_lr_target` (float): Asymptotic target for learning rate decay.
   * `activation_distance` (str): BMU distance metric (`'angular'`, `'euclidean'`, `'cosine'`).
 
-#### Training
+**Training**
 ```python
     def fit(self, coded_data: tuple):
 ```
@@ -568,7 +599,7 @@ class DualSOM:
 * **Arguments:**
   * `coded_data` (tuple): `(X_train_encoded, y_train)`.
 
-#### Prediction & Mapping
+**Prediction & Mapping**
 ```python
     def predict(self, coded_data: tuple, mode: str = 'clustering') -> np.ndarray:
 ```
@@ -581,9 +612,7 @@ class DualSOM:
 * **Returns:**
   * `np.ndarray`: An array of predicted class labels or cluster IDs.
 
----
-
-## 📐 Advanced Use: Distance Metrics
+### 📐 Advanced Use: Distance Metrics
 
 The SOM supports three mathematical distance metrics for computing neuron activations, configurable via the `activation_distance` parameter:
 
@@ -591,7 +620,7 @@ The SOM supports three mathematical distance metrics for computing neuron activa
 * **`euclidean`:** Standard L2 norm. Best for general-purpose dense tabular datasets.
 * **`cosine`:** Uses $1 - \text{Cosine Similarity}$. Useful for high-dimensional, sparse feature spaces.
 
-
+---
 
 ## <a id="reference"></a>📜 Reference
 
