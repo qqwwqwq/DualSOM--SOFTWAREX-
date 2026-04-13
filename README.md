@@ -318,8 +318,8 @@ These parameters represent high-level workflow choices and training iterations s
 | `ae_load_model` | Bool | Bypass SAE training and load pre-trained SAE weights. | `true`, `false` |
 | `ae_model_path` | String | Filepath for saving/loading SAE weights (`.pth`). | - |
 | `auto_find_clusters`| Bool | Dynamically calculate optimal $K$ based on $\Delta L$. | `true`, `false` |
-| `k_min` | Int | Minimum $K$ to evaluate (if `auto_find_clusters` is true). | Range: `> 1`<br>**Suggested:** `2` |
-| `k_max` | Int | Maximum $K$ to evaluate. | Range: `> k_min` |
+| `k_min` | Int | Lower bound for automated number ($K$) of clusters search space (if `auto_find_clusters` is true). | Range: `> 1`<br>**Suggested:** `2` |
+| `k_max` | Int | Upper bound for automated number ($K$) of clusters search space. | Range: `> k_min` |
 | `n_clusters` | Int | Custom number of clusters ($K$). It is only active when "auto_find_clusters" is set to false. | Manually provided by the user |
 | `ae_epochs` | Int | Number of training epochs for the SAE. | Range: `50 - 500`<br>**Suggested:** `150` |
 | `som_epochs` | Int | Number of complete passes over the dataset. | e.g. `50, 100, 200...` |
