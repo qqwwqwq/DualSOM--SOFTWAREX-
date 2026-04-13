@@ -479,16 +479,20 @@ from Dualmap_api import DualSOM, encode_decode, set_ae_args
 with open('params.json', 'r') as f:
     parameters = json.load(f)
 
-# 2. Setup Autoencoder and Encode Data
+# 2. Setup Autoencoder and Encode TRAIN Data
 set_ae_args(parameters)
 # Assume 'train_data' is a tuple of (X_features_numpy, y_labels_numpy)
-coded_train_data = encode_decode(train_data) 
+coded_train_data = encode_decode(train_data)  # Phase 1: Trains AE & fits scalers
 
 # 3. Initialize and Train DualSOM
 som_model = DualSOM(parameters, coded_train_data)
 som_model.fit(coded_train_data)
 
-# 4. Predict
+# 4. Encode TEST Data
+# Assume 'test_data' is a tuple of (X_test_features, y_test_labels)
+coded_test_data = encode_decode(test_data)    # Phase 2: Inference only, applies fitted scalers
+
+# 5. Predict
 # For unsupervised mode (clustering)
 cluster_labels = som_model.predict(coded_test_data, mode='clustering')
 
@@ -526,8 +530,8 @@ Handles data scaling, model training (or loading), and latent space projection.
 ```python
 def encode_decode(data: tuple) -> tuple:
 ```
-* **Description:** * If called for the first time (training phase), it fits the `MinMaxScaler` and `StandardScaler`, initializes the PyTorch model, and trains it using the specified configuration.
-  * If called subsequently (testing phase), it applies the fitted scalers and runs inference strictly in `eval()` mode with `torch.no_grad()`.
+* **Description:** * If called for the **first time** (training phase), it fits the `MinMaxScaler` and `StandardScaler`, initializes the PyTorch model, and trains it using the specified configuration.
+  * If called **subsequently** (testing phase), it applies the pre-fitted scalers and runs inference strictly in `eval()` mode with `torch.no_grad()` to prevent data leakage.
 * **Arguments:**
   * `data` (tuple): A tuple containing `(X_raw_features, y_labels)`. Both should be numpy arrays.
 * **Returns:**
@@ -544,7 +548,7 @@ The unified high-level wrapper that manages the topological grid and the weight-
 class DualSOM:
     def __init__(self, parameters: dict, coded_data: tuple):
 ```
-* **Description:** Initializes the map. It automatically calculates the optimal grid size ($N \times N$) using the heuristic formula based on the sample size of `coded_data` and the `som_size_index` parameter.
+* **Description:** Initializes the map. It automatically calculates the optimal grid size ($S \times S$) using the heuristic formula based on the sample size of `coded_data` and the `som_size_index` parameter.
 * **Required Keys in `parameters`:**
   * `run_mode` (str): `'supervised'` or `'unsupervised'`.
   * `som_load_model` (bool): Whether to load pre-trained weights.
@@ -572,7 +576,7 @@ class DualSOM:
 * **Arguments:**
   * `coded_data` (tuple): `(X_test_encoded, y_test)`.
   * `mode` (str): 
-    * `'clustering'`: Fits the `SOMClusterer` to the converged weight matrix and groups the data into `n_clusters`.
+    * `'clustering'`: Fits the `SOMClusterer` to the converged weight matrix and groups the data. *(Requires keys: `n_clusters`, `kmeans_max_iter`, `kmeans_threshold`)*.
     * `'classification'`: Constructs a label voting map based on the Best Matching Units (BMUs) and assigns the majority class to new samples.
 * **Returns:**
   * `np.ndarray`: An array of predicted class labels or cluster IDs.
@@ -583,7 +587,7 @@ class DualSOM:
 
 The SOM supports three mathematical distance metrics for computing neuron activations, configurable via the `activation_distance` parameter:
 
-* **`angular` (Default):** Calculates the angle between vectors. Excellent for skeletal or directional data where magnitude is less important than relative orientation.
+* **`angular`:** Calculates the angle between vectors. Excellent for skeletal or directional data where magnitude is less important than relative orientation.
 * **`euclidean`:** Standard L2 norm. Best for general-purpose dense tabular datasets.
 * **`cosine`:** Uses $1 - \text{Cosine Similarity}$. Useful for high-dimensional, sparse feature spaces.
 
