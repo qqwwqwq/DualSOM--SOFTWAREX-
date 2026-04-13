@@ -63,7 +63,7 @@ USER_CONFIG_DEFAULTS = {
     # Key Training Hyperparameters
     "ae_epochs": 150,                 # Number of training epochs for the SAE [Range: 50 - 500, Suggested: 150]
     "som_epochs": 50,                 # Number of global passes through the dataset for the SOM [e.g. 50, 100, 200...]
-    "activation_distance": "cosine",  # BMU distance metric [Values: 'angular' (directional/skeletal), 'euclidean' (general), 'cosine' (high-dim sparse)]
+    "activation_distance": "angular",  # BMU distance metric [Values: 'angular' (directional/skeletal), 'euclidean' (general), 'cosine' (high-dim sparse)]
 }
 
 # =====================================================================
