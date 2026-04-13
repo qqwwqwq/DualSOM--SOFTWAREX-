@@ -382,7 +382,7 @@ You can instruct the main pipeline to dynamically calculate and apply the optima
 
 To enable this, simply update the clustering hyperparameters in your `params.json`:
 ```json
-"auto_find_clusters": true,   // [SWITCH] Enable dynamic calculation
+"auto_find_clusters": true,   // [SWITCH] Enable dynamic selection
 "k_min": 2,                   // Minimum K to evaluate
 "k_max": 12                   // Maximum K to evaluate
 ```
