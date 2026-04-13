@@ -73,7 +73,7 @@ USER_CONFIG_DEFAULTS = {
 # They are hidden from the user config to maintain structural stability.
 INTRINSIC_PARAMETERS = {
     # SOM Topological Hyperparameters
-    "som_size_index": 10.0,           # Grid size heuristic (S ≈ sqrt(index * sqrt(N))) [Range: 1.0 - 20.0, Suggested: 10.0]
+    "som_size_index": 10.0,           # Grid size heuristic (S ≈ sqrt(som_size_index * sqrt(N))) [Range: 1.0 - 20.0, Suggested: 10.0]
     "som_sigma": 4.0,                 # Initial neighborhood radius for lateral inhibition [Range: 1.0 - 10.0, Suggested: 4.0]
     "som_sigma_target": 0.01,         # Asymptotic lower bound for radius decay [Range: 0.001 - 0.1, Suggested: 0.01]
     "som_lr": 0.1,                    # Initial learning rate for Hebbian weight updates [Range: 0.01 - 1.0, Suggested: 0.1 - 0.5]
