@@ -36,7 +36,7 @@
     "_comment_k_max": "Upper bound for auto-K search space [Range: > k_min]",
 
     "n_clusters": 10,
-    "_comment_n_clusters": "Hardcoded K, used if auto_find_clusters is false [Suggested: Matches expected dataset classes]",
+    "_comment_n_clusters": "Hardcoded K, only needed when auto_find_clusters is false [Manually provided by the user]",
 
     "ae_epochs": 150,
     "_comment_ae_epochs": "Number of training epochs for the SAE [Range: 50 - 500, Suggested: 150]",
