@@ -293,7 +293,7 @@ Below is the complete template reflecting the latest version of the framework. W
     "ae_model_path": "weight/sparse_ae.pth",
     "auto_find_clusters": false,
     "k_min": 2,
-    "k_max": 10,
+    "k_max": 12,
     "n_clusters": 10,
     "ae_epochs": 150,
     "som_epochs": 50,
