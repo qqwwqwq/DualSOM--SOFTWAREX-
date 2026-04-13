@@ -589,7 +589,7 @@ The SOM supports three mathematical distance metrics for computing neuron activa
 
 * **`angular`:** Calculates the angle between vectors. Excellent for skeletal or directional data where magnitude is less important than relative orientation.
 * **`euclidean`:** Standard L2 norm. Best for general-purpose dense tabular datasets.
-* **`cosine`:** Uses $1 - \text{Cosine Similarity}$. Useful for high-dimensional, sparse feature spaces.
+* **`cosine`:** Uses $\text{Cosine Similarity}$. Useful for high-dimensional, sparse feature spaces.
 
 
 
