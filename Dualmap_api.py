@@ -29,6 +29,9 @@ def thumb_rule(data_len, som_size_index):
     """
     Calculates the optimal grid size for the SOM based on dataset volume.
 
+    Uses a well-established heuristic where the total number of neurons (S^2)
+    scales with the square root of the number of training samples.
+
     Args:
         data_len (int): Total number of samples in the training dataset.
         som_size_index (float): A scaling hyperparameter.
@@ -38,12 +41,23 @@ def thumb_rule(data_len, som_size_index):
     """
     return math.ceil(np.sqrt(som_size_index * np.sqrt(data_len)))
 
+
 class DualSOM:
     """
     Unified high-level wrapper for the Dual-mode SOM.
 
-    Encapsulates the underlying base map and the weight-space clusterer, exposing
-    standard scikit-learn style `fit()` and `predict()` APIs to the main workflow.
+    Encapsulates the underlying base map (`BaseDualSom`) and the weight-space
+    clusterer (`SOMClusterer`), exposing standard scikit-learn style `fit()`
+    and `predict()` APIs to the main workflow.
+
+    Attributes:
+        parameters (dict): The hyperparameter dictionary loaded from JSON.
+        run_mode (str): Operational mode ('supervised' or 'unsupervised').
+        load_model (bool): Flag indicating if weights should be loaded from disk.
+        model_path (str): Filepath for serializing/deserializing map weights.
+        grid_size (int): The calculated width and height of the SOM grid.
+        som (BaseDualSom): The underlying mathematical SOM instance.
+        clusterer (SOMClusterer or None): The unsupervised weight-space clusterer.
     """
 
     def __init__(self, parameters, coded_data):
@@ -56,8 +70,6 @@ class DualSOM:
             coded_data (tuple): A tuple of (X_features, y_labels).
         """
         self.parameters = parameters
-        
-        # Must be provided via "run_mode" in params.json
         self.run_mode = parameters['run_mode']
 
         # IO Parameters for model persistence. Must be provided in params.json
@@ -94,6 +106,9 @@ class DualSOM:
 
         Args:
             coded_data (tuple): A tuple containing (X_train, y_train).
+
+        Raises:
+            FileNotFoundError: If `som_load_model` is True but the file does not exist.
         """
         X, y = coded_data
         self._train_labels = y
@@ -131,7 +146,8 @@ class DualSOM:
 
         Args:
             coded_data (tuple): A tuple containing (X_data, y_labels).
-            mode (str): Determines the logic flow ('clustering' or 'classification').
+            mode (str, optional): Determines the logic flow ('clustering' or 'classification').
+                                  Defaults to 'clustering'.
 
         Returns:
             np.ndarray: An array of predicted labels or cluster assignments.
@@ -168,15 +184,27 @@ class DualSOM:
                     result.append(default_class)
             return np.array(result)
 
+
 class SOMClusterer:
     """
     A modified K-Means clustering algorithm adapted specifically for grouping
-    Self-Organizing Map neuron weight vectors. Utilizes angular distance matrices.
+    Self-Organizing Map neuron weight vectors.
+
+    It utilizes angular distance matrices to handle directional/skeletal latent
+    features more effectively than standard Euclidean distance.
+
+    Attributes:
+        K (int): The target number of clusters.
+        max_iter (int): Maximum algorithm iterations.
+        threshold (float): Early stopping threshold.
+        labels_map (np.ndarray): 2D grid mapping each SOM neuron to a cluster ID.
+        centroids (np.ndarray): The learned geometric centers of the clusters.
     """
 
-    # Initialization params are controlled by the wrapper using params.json
     def __init__(self, n_clusters, max_iter, threshold):
         """
+        Initializes the clusterer with stopping criteria.
+
         Args:
             n_clusters (int): The target number of clusters (K).
             max_iter (int): Maximum iterations to prevent infinite loops.
@@ -191,6 +219,13 @@ class SOMClusterer:
     def _angular_distance_matrix(self, W1, W2):
         """
         Computes the pairwise angular distance matrix between two sets of vectors.
+
+        Args:
+            W1 (np.ndarray): First matrix of shape (N, D).
+            W2 (np.ndarray): Second matrix of shape (M, D).
+
+        Returns:
+            np.ndarray: A distance matrix of shape (N, M).
         """
         W1_norm = W1 / (np.linalg.norm(W1, axis=1, keepdims=True) + 1e-8)
         W2_norm = W2 / (np.linalg.norm(W2, axis=1, keepdims=True) + 1e-8)
@@ -203,8 +238,14 @@ class SOMClusterer:
         """
         Executes the K-Means algorithm over the converged SOM weight grid.
 
+        Uses a farthest-first traversal strategy for robust initial centroid selection,
+        followed by iterative centroid updates using the angular distance metric.
+
         Args:
             som_weights (np.ndarray): The 3D tensor representing the SOM weights.
+
+        Returns:
+            SOMClusterer: The fitted instance of the clusterer.
         """
         grid_x, grid_y, features = som_weights.shape
         U = grid_x * grid_y
@@ -250,6 +291,13 @@ class SOMClusterer:
     def predict(self, som, data_X):
         """
         Projects data onto the SOM and maps them to their respective weight-space cluster.
+
+        Args:
+            som (BaseDualSom): The trained underlying SOM instance.
+            data_X (np.ndarray): The input data matrix to cluster.
+
+        Returns:
+            np.ndarray: An array of predicted cluster indices for each input sample.
         """
         preds = []
         for x in data_X:
@@ -257,18 +305,25 @@ class SOMClusterer:
             preds.append(self.labels_map[win_x, win_y])
         return np.array(preds)
 
+
 class BaseDualSom(object):
     """
     Low-level mathematical implementation of the Self-Organizing Map.
 
     Augmented with dynamic distance routing (Euclidean, Cosine, Angular) and
     an exponential attention mechanism for robust weight updates.
+
+    Attributes:
+        _weights (np.ndarray): A 3D tensor holding the topological weights.
+        _activation_map (np.ndarray): A 2D matrix capturing distances from input to nodes.
+        _xx, _yy (np.ndarray): Meshgrid coordinates for spatial neighborhood calculations.
     """
 
-    # Initialization parameters are controlled by the wrapper using params.json
     def __init__(self, x, y, input_len, sigma, sigma_target,
                  learning_rate, lr_target, activation_distance):
         """
+        Initializes the SOM grid and configures update hyper-parameters.
+
         Args:
             x (int): Grid width.
             y (int): Grid height.
@@ -278,6 +333,9 @@ class BaseDualSom(object):
             learning_rate (float): Initial learning rate (alpha).
             lr_target (float): Asymptotic limit for learning rate decay.
             activation_distance (str): Metric used to compute node activations.
+
+        Raises:
+            ValueError: If an unsupported `activation_distance` is provided.
         """
         self._learning_rate = learning_rate
         self._lr_target = lr_target
@@ -386,6 +444,16 @@ class BaseDualSom(object):
                     enable_validation=True):
         """
         The main training loop executed over the generated sequence of iterations.
+
+        Args:
+            data (np.ndarray): The training input features.
+            Y_train (np.ndarray, optional): Training ground truth labels.
+            X_test (np.ndarray, optional): Validation input features.
+            Y_test (np.ndarray, optional): Validation ground truth labels.
+            max_iter (int, optional): The total number of iterations. Defaults to 1000.
+            verbose (bool, optional): Controls output logging. Defaults to False.
+            enable_validation (bool, optional): Toggles periodic accuracy reports.
+                                                Defaults to True.
         """
         iterations = np.arange(max_iter) % len(data)
 
@@ -409,6 +477,15 @@ class BaseDualSom(object):
         """
         Constructs a voting map associating each neuron with the class labels
         of the samples that are mapped to it.
+
+        Args:
+            data (np.ndarray): The dataset used to populate the map.
+            labels (np.ndarray): The corresponding ground truth labels.
+
+        Returns:
+            defaultdict: A dictionary mapping grid coordinates (tuple) to a
+                         `Counter` object representing the label distribution
+                         for that specific neuron.
         """
         winmap = defaultdict(list)
         for x, l in zip(data, labels):
@@ -426,6 +503,11 @@ class SparseAutoencoder(nn.Module):
     """
     Feed-forward Neural Network Architecture for the Sparse Autoencoder.
     Employs Batch Normalization, CELU activations, and a symmetric encoder-decoder structure.
+
+    Attributes:
+        enc1, enc2 (nn.Linear): Encoder layer mappings.
+        bn1, bn2 (nn.BatchNorm1d): Batch normalization layers.
+        dec1, dec2 (nn.Linear): Decoder layer mappings.
     """
     def __init__(self, input_dim=57):
         """
@@ -448,6 +530,9 @@ class SparseAutoencoder(nn.Module):
         """
         Forward pass generating both reconstructions and latent codes.
 
+        Args:
+            x (torch.Tensor): Input batch of feature vectors.
+
         Returns:
             tuple: (Reconstructed inputs scaled by sigmoid, Latent vector).
         """
@@ -460,6 +545,12 @@ class SparseAutoencoder(nn.Module):
         """
         Feature extraction method used during the inference stage.
         Bypasses the decoder entirely to directly yield the latent code representation.
+
+        Args:
+            x (torch.Tensor): Input batch of feature vectors.
+
+        Returns:
+            torch.Tensor: The encoded latent vector.
         """
         x = F.celu(self.bn1(self.enc1(x)))
         return F.relu(self.enc2(x))
@@ -512,6 +603,9 @@ def encode_decode(data):
 
     Returns:
         tuple: (X_latent_encoded, y_labels).
+
+    Raises:
+        FileNotFoundError: If `ae_load_model` is True but the specified model path is invalid.
     """
     X_raw, y = data
     is_train = _ae_state['model'] is None
