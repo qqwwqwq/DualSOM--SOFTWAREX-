@@ -273,72 +273,108 @@ DualSOM/
 
 ---
 
-## <a id="configuration-paramsjson"></a>⚙️ Configuration (`params.json`)
-
-To ensure absolute experimental reproducibility, **all hyperparameters, paths, hardware settings, and operational modes are exclusively controlled via a single `params.json` file**. 
-
-If this file is missing, running `python main.py` will automatically generate a template.
-
 ### Configuration Template
 
-The pipeline relies on a `params.json` file for all hyperparameters. Below is a complete template reflecting the latest version of the framework:
+To enforce **Safe Configuration Management**, the pipeline splits hyperparameters into two groups. Only the high-level workflow choices and tuning knobs are exposed in the `params.json` file. 
+
+Below is the complete template reflecting the latest version of the framework. We utilize `_comment_` dummy keys to provide in-line documentation without breaking JSON parsers:
 
 ```json
 {
-   "dataset_name": "mnist",
+    "dataset_name": "mnist",
+    "_comment_dataset_name": "Target dataset identifier [Values: 'wut', 'pku', 'mnist', etc.]",
+
     "run_mode": "supervised",
+    "_comment_run_mode": "Execution mode [Values: 'supervised', 'unsupervised']",
+
     "device": "cuda",
+    "_comment_device": "Hardware acceleration target [Values: 'cuda', 'cpu']",
+
     "train_data_path": "Datas/MNIST/train_data.csv",
+    "_comment_train_data_path": "Relative path to the training dataset",
+
     "test_data_path": "Datas/MNIST/test_data.csv",
+    "_comment_test_data_path": "Relative path to the testing dataset",
+
     "som_load_model": false,
+    "_comment_som_load_model": "If true, bypass SOM training and load pre-trained weights [Values: true, false]",
+
     "som_model_path": "weight/som_weights.npy",
+    "_comment_som_model_path": "Filepath for saving/loading the SOM weight matrix",
+
     "ae_load_model": false,
+    "_comment_ae_load_model": "If true, bypass SAE training and load pre-trained weights [Values: true, false]",
+
     "ae_model_path": "weight/sparse_ae.pth",
+    "_comment_ae_model_path": "Filepath for saving/loading the SAE PyTorch model",
+
     "auto_find_clusters": false,
+    "_comment_auto_find_clusters": "If true, dynamically calculate optimal K using SOMClusterSelector [Values: true, false]",
+
     "k_min": 2,
+    "_comment_k_min": "Lower bound for auto-K search space [Range: > 1, Suggested: 2]",
+
     "k_max": 10,
+    "_comment_k_max": "Upper bound for auto-K search space [Range: > k_min]",
+
     "n_clusters": 10,
+    "_comment_n_clusters": "Hardcoded K, used if auto_find_clusters is false [Suggested: Matches expected dataset classes]",
+
     "ae_epochs": 150,
+    "_comment_ae_epochs": "Number of training epochs for the SAE [Range: 50 - 500, Suggested: 150]",
+
     "som_epochs": 50,
-    "activation_distance": "cosine"
+    "_comment_som_epochs": "Number of global passes through the dataset for the SOM [e.g. 50, 100, 200...]",
+
+    "activation_distance": "cosine",
+    "_comment_activation_distance": "BMU distance metric [Values: 'angular' (directional/skeletal), 'euclidean' (general), 'cosine' (high-dim sparse)]"
 }
 ```
 
+---
+
 ### Parameter Dictionary
+
+#### 1. User-Configurable Parameters (via `params.json`)
+These parameters represent high-level workflow choices and training iterations specific to your dataset and hardware constraints.
 
 | Parameter | Type | Description | Suggested Value / Range |
 | :--- | :--- | :--- | :--- |
-| **Workflow & Paths** | | | |
 | `dataset_name` | String | Target dataset identifier. | `'wut'`, `'pku'`, `'mnist'`, etc. |
 | `run_mode` | String | Execution mode. | `'supervised'` or `'unsupervised'` |
-| `device` | String | Hardware acceleration. | `'cuda'`, `'cpu'` |
+| `device` | String | Hardware acceleration target. | `'cuda'` or `'cpu'` |
 | `train_data_path` | String | Local path to the training CSV file. | - |
 | `test_data_path` | String | Local path to the testing CSV file. | - |
-| **Sparse Autoencoder (SAE)** | | | |
-| `ae_batch_size` | Int | Mini-batch size for SAE gradient descent. | Values: `16, 32, 64, 128, 256`<br>**Suggested:** `32` or `64` |
-| `ae_epochs` | Int | Number of training epochs for the SAE. | Range: `50 - 500`<br>**Suggested:** `150` |
-| `ae_lr` | Float | Learning rate for the Adam optimizer. | Range: `1e-4 - 1e-2`<br>**Suggested:** `0.001` |
-| `ae_reg_param` | Float | Coefficient for the L1 sparsity penalty. | Range: `1e-5 - 1e-1`<br>**Suggested:** `0.001` |
-| `ae_load_model` | Bool | Bypass training and load pre-trained SAE weights. | `true`, `false` |
-| `ae_model_path` | String | Filepath for saving/loading SAE weights. | - |
-| **DualSOM** | | | |
-| `som_size_index` | Float | Multiplier for grid size heuristic ($S \approx \sqrt{\mathtt{som\\_size\\_index} \cdot \sqrt{P}}$). | Range: `1.0 - 20.0`<br>**Suggested:** `10.0` |
-| `som_epochs` | Int | Number of complete passes over the dataset. | e.g. `50, 100, 200...` |
-| `som_sigma` | Float | Initial neighborhood radius for weight updates. | Range: `1.0 - 10.0`<br>**Suggested:** `4.0` |
-| `som_sigma_target`| Float | Asymptotic target for radius decay. | Range: `0.001 - 0.1`<br>**Suggested:** `0.01` |
-| `som_lr` | Float | Initial learning rate. | Range: `0.01 - 1.0`<br>**Suggested:** `0.1 - 0.5` |
-| `som_lr_target` | Float | Asymptotic target for LR decay. | Range: `0.0001 - 0.01`<br>**Suggested:** `0.001` |
-| `activation_distance`| String | BMU distance metric.<br>• `"angular"`: best for directional / skeletal data<br>• `"euclidean"`: general-purpose<br>• `"cosine"`: best for high-dimensional sparse data | `'angular'`, `'euclidean'`, `'cosine'` |
-| `som_enable_validation`| Int | Enable/disable periodic validation prints. | `1` (True) or `0` (False) |
-| `som_load_model` | Bool | Bypass training and load a pre-trained SOM. | `true`, `false` |
+| `som_load_model` | Bool | Bypass SOM training and load pre-trained weights. | `true`, `false` |
 | `som_model_path` | String | Filepath for saving/loading the SOM weights (`.npy`). | - |
-| **Clustering (Unsupervised)** | | | |
+| `ae_load_model` | Bool | Bypass SAE training and load pre-trained SAE weights. | `true`, `false` |
+| `ae_model_path` | String | Filepath for saving/loading SAE weights (`.pth`). | - |
 | `auto_find_clusters`| Bool | Dynamically calculate optimal $K$ based on $\Delta L$. | `true`, `false` |
 | `k_min` | Int | Minimum $K$ to evaluate (if `auto_find_clusters` is true). | Range: `> 1`<br>**Suggested:** `2` |
 | `k_max` | Int | Maximum $K$ to evaluate. | Range: `> k_min` |
 | `n_clusters` | Int | Custom target number of clusters ($K$). | Matches expected classes |
+| `ae_epochs` | Int | Number of training epochs for the SAE. | Range: `50 - 500`<br>**Suggested:** `150` |
+| `som_epochs` | Int | Number of complete passes over the dataset. | e.g. `50, 100, 200...` |
+| `activation_distance`| String | BMU distance metric.<br>• `"angular"`: best for directional / skeletal data<br>• `"euclidean"`: general-purpose<br>• `"cosine"`: best for high-dimensional sparse data | `'angular'`, `'euclidean'`, `'cosine'` |
+
+<br>
+
+#### 2. Intrinsic Algorithm Parameters (Internal)
+These constants govern the fundamental mathematical behavior of the Dual-SOM and K-Means components. They are deliberately hidden from the JSON to maintain structural stability but can be adjusted directly in the Python source code for advanced research purposes.
+
+| Parameter | Type | Description | Suggested Value / Range |
+| :--- | :--- | :--- | :--- |
+| `som_size_index` | Float | Multiplier for grid size heuristic ($S \approx \sqrt{\mathtt{index} \cdot \sqrt{N}}$). | Range: `1.0 - 20.0`<br>**Suggested:** `10.0` |
+| `som_sigma` | Float | Initial neighborhood radius for lateral inhibition. | Range: `1.0 - 10.0`<br>**Suggested:** `4.0` |
+| `som_sigma_target`| Float | Asymptotic lower bound for radius decay. | Range: `0.001 - 0.1`<br>**Suggested:** `0.01` |
+| `som_lr` | Float | Initial learning rate for Hebbian weight updates. | Range: `0.01 - 1.0`<br>**Suggested:** `0.1 - 0.5` |
+| `som_lr_target` | Float | Asymptotic lower bound for learning rate decay. | Range: `0.0001 - 0.01`<br>**Suggested:** `0.001` |
+| `som_enable_validation`| Int | Boolean flag for periodic terminal logging. | `1` (True) or `0` (False) |
 | `kmeans_max_iter` | Int | Maximum iterations for K-Means convergence. | Range: `100 - 1000`<br>**Suggested:** `100 - 300` |
-| `kmeans_threshold`| Float | Convergence threshold (centroid shift) for K-Means. | Range: `1e-5 - 1e-2`<br>**Suggested:** `1e-4` |
+| `kmeans_threshold`| Float | Convergence threshold (centroid shift) for early stopping. | Range: `1e-5 - 1e-2`<br>**Suggested:** `1e-4` |
+| `ae_batch_size` | Int | Mini-batch size for SAE Adam optimizer. | Values: `16, 32, 64, 128, 256`<br>**Suggested:** `32` or `64` |
+| `ae_lr` | Float | Base learning rate for SAE weight adjustments. | Range: `1e-4 - 1e-2`<br>**Suggested:** `0.001` |
+| `ae_reg_param` | Float | Coefficient for the L1 sparsity penalty (rho). | Range: `1e-5 - 1e-1`<br>**Suggested:** `0.001` |
 ---
 
 ## <a id="execution-and-caching"></a>🚀 Execution and Caching
