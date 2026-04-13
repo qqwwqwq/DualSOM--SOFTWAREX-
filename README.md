@@ -285,33 +285,22 @@ The pipeline relies on a `params.json` file for all hyperparameters. Below is a 
 
 ```json
 {
-    "dataset_name": "wut",
+   "dataset_name": "mnist",
     "run_mode": "supervised",
     "device": "cuda",
-    "train_data_path": "Datas/WUT/train_data.csv",
-    "test_data_path": "Datas/WUT/test_data.csv",
-    "som_size_index": 10.0,
-    "som_epochs": 50,
-    "som_sigma": 4.0,
-    "som_sigma_target": 0.01,
-    "som_lr": 0.1,
-    "som_lr_target": 0.001,
-    "activation_distance": "angular",
-    "som_enable_validation": 1,
+    "train_data_path": "Datas/MNIST/train_data.csv",
+    "test_data_path": "Datas/MNIST/test_data.csv",
     "som_load_model": false,
     "som_model_path": "weight/som_weights.npy",
+    "ae_load_model": false,
+    "ae_model_path": "weight/sparse_ae.pth",
     "auto_find_clusters": false,
     "k_min": 2,
     "k_max": 10,
     "n_clusters": 10,
-    "kmeans_max_iter": 100,
-    "kmeans_threshold": 0.0001,
-    "ae_batch_size": 32,
     "ae_epochs": 150,
-    "ae_lr": 0.001,
-    "ae_reg_param": 0.001,
-    "ae_load_model": false,
-    "ae_model_path": "weight/sparse_ae.pth"
+    "som_epochs": 50,
+    "activation_distance": "cosine"
 }
 ```
 
