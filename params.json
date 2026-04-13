@@ -36,7 +36,7 @@
     "_comment_k_max": "Upper bound for automated number of clusters (K) search space [Range: > k_min]",
 
     "n_clusters": 10,
-    "_comment_n_clusters": "Custom number of clusters (K). It is only active when (auto_find_clusters) is set to false. [Manually provided by the user]",
+    "_comment_n_clusters": "Custom defined number of clusters (K). It is only active when (auto_find_clusters) is set to false. [Manually provided by the user]",
 
     "ae_epochs": 150,
     "_comment_ae_epochs": "Number of training epochs for the SAE [Range: 50 - 500, Suggested: 150]",
