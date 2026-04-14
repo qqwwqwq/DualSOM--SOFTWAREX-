@@ -472,36 +472,40 @@ This minor variance is expected and stems from internal stochastic processes, sp
 
 ---
 
+"""
 ## <a id="api-reference"></a>📚 DualSOM & Sparse Autoencoder API Reference
 
-This document provides a comprehensive guide on how to use the integrated `Dualmap_api.py` module. This module encapsulates the core mathematical engine of the Dual-mode Self-Organizing Map (DualSOM) and the PyTorch-based Sparse Autoencoder for latent feature extraction.
+This document provides a comprehensive guide on how to use the integrated `Dualmap_api.py` module. This module encapsulates the core mathematical engine of the Dual-mode Self-Organizing Map (DualSOM), the PyTorch-based Sparse Autoencoder for latent feature extraction, and the local data ingestion pipeline.
 
 ### 🚀 API Example
 
-The API is designed to be easily integrated into any Python script. Here is a minimal example of how to use the pipeline:
+The API is designed to be easily integrated into any Python script. Here is a minimal example of how to use the pipeline with local preprocessed CSV files:
 
 ```python
 import json
-from Dualmap_api import DualSOM, encode_decode, set_ae_args
+from Dualmap_api import get_dataset, DualSOM, encode_decode, set_ae_args
 
 # 1. Load parameters
 with open('params.json', 'r') as f:
     parameters = json.load(f)
 
-# 2. Setup Autoencoder and Encode TRAIN Data
+# 2. Load Preprocessed Local Datasets
+# Assumes CSVs where columns 0 to N-1 are features, and the last column is the label
+train_data = get_dataset('train_data_path')
+test_data = get_dataset('test_data_path')
+
+# 3. Setup Autoencoder and Encode TRAIN Data
 set_ae_args(parameters)
-# Assume 'train_data' is a tuple of (X_features_numpy, y_labels_numpy)
 coded_train_data = encode_decode(train_data)  # Phase 1: Trains AE & fits scalers
 
-# 3. Initialize and Train DualSOM
+# 4. Initialize and Train DualSOM
 som_model = DualSOM(parameters, coded_train_data)
 som_model.fit(coded_train_data)
 
-# 4. Encode TEST Data
-# Assume 'test_data' is a tuple of (X_test_features, y_test_labels)
+# 5. Encode TEST Data
 coded_test_data = encode_decode(test_data)    # Phase 2: Inference only, applies fitted scalers
 
-# 5. Predict
+# 6. Predict
 # For unsupervised mode (clustering)
 cluster_labels = som_model.predict(coded_test_data, mode='clustering')
 
@@ -511,7 +515,20 @@ predicted_classes = som_model.predict(coded_test_data, mode='classification')
 
 ### 🧩 Module Components
 
-#### 1. Autoencoder Global Configuration (`set_ae_args`)
+#### 1. Data Ingestion (`get_dataset`)
+
+A generic, robust interface for loading purely numerical, preprocessed CSV datasets into the pipeline. 
+
+```python
+def get_dataset(data_path: str) -> tuple:
+```
+* **Description:** Securely loads a CSV from a local path. It automatically isolates features (all columns except the last) from labels (the final column), enforces strict `float32` typing for PyTorch compatibility, and factorizes string labels into integers if necessary.
+* **Arguments:**
+  * `data_path` (str): The localized filepath to the preprocessed CSV file.
+* **Returns:**
+  * `tuple`: `(X_features, y_labels)` as properly typed NumPy arrays.
+
+#### 2. Autoencoder Global Configuration (`set_ae_args`)
 
 Before encoding or decoding any data, you must initialize the global state of the Sparse Autoencoder using your configuration dictionary.
 
@@ -528,7 +545,7 @@ def set_ae_args(parameters: dict):
   * `ae_load_model` (bool): Whether to load pre-trained weights.
   * `ae_model_path` (str): Path to save/load the `.pth` model file.
 
-#### 2. Feature Extraction Pipeline (`encode_decode`)
+#### 3. Feature Extraction Pipeline (`encode_decode`)
 
 Handles data scaling, model training (or loading), and latent space projection.
 
@@ -542,7 +559,7 @@ def encode_decode(data: tuple) -> tuple:
 * **Returns:**
   * `tuple`: `(X_latent_encoded, y_labels)`, where `X_latent_encoded` is the lower-dimensional, standardized feature set ready for the SOM.
 
-#### 3. DualSOM Core Engine (`DualSOM`)
+#### 4. DualSOM Core Engine (`DualSOM`)
 
 The unified high-level wrapper that manages the topological grid and the weight-space K-Means clusterer.
 
@@ -551,7 +568,7 @@ The unified high-level wrapper that manages the topological grid and the weight-
 class DualSOM:
     def __init__(self, parameters: dict, coded_data: tuple):
 ```
-* **Description:** Initializes the map. It automatically calculates the optimal grid size ($S \times S$) using the heuristic formula based on the sample size of `coded_data` and the `som_size_index` parameter.
+* **Description:** Initializes the map. It automatically calculates the optimal grid size (S x S) using the heuristic formula based on the sample size of `coded_data` and the `som_size_index` parameter.
 * **Required Keys in `parameters`:**
   * `run_mode` (str): `'supervised'` or `'unsupervised'`.
   * `som_load_model` (bool): Whether to load pre-trained weights.
@@ -590,7 +607,8 @@ The SOM supports three mathematical distance metrics for computing neuron activa
 
 * **`angular`:** Calculates the angle between vectors. Excellent for skeletal or directional data where magnitude is less important than relative orientation.
 * **`euclidean`:** Standard L2 norm. Best for general-purpose dense tabular datasets.
-* **`cosine`:** Uses $1 - \text{Cosine Similarity}$. Useful for high-dimensional, sparse feature spaces.
+* **`cosine`:** Uses 1 - Cosine Similarity. Useful for high-dimensional, sparse feature spaces.
+"""
 
 ---
 
