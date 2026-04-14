@@ -14,8 +14,6 @@ import numpy as np
 from numpy import linalg, outer, meshgrid, einsum
 from collections import defaultdict, Counter
 
-from sklearn.datasets import fetch_openml
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from tqdm import tqdm
@@ -30,21 +28,14 @@ from torch.utils.data import DataLoader, TensorDataset
 # Data Ingestion Module (Preprocessed Data Scope)
 # =====================================================================
 
-def get_dataset(data_path, is_train=True, dataset_name='generic'):
+def get_dataset(data_path):
     """
     Primary data ingestion interface connecting physical files to the pipeline.
 
-    Provides automated handling for downloading the MNIST benchmark dataset 
-    from OpenML or securely loads custom, pre-cleaned CSV datasets from a 
-    designated local path.
+    Securely loads custom, pre-cleaned CSV datasets from a designated local path.
 
     Args:
         data_path (str): The localized filepath to the preprocessed CSV file.
-        is_train (bool, optional): Identifies if the caller requires the training 
-                                   or testing split. Defaults to True.
-        dataset_name (str, optional): Identifier for the dataset. Triggering 
-                                      'mnist' bypasses local file loading. 
-                                      Defaults to 'generic'.
 
     Returns:
         tuple: A tuple containing two NumPy arrays:
@@ -58,31 +49,7 @@ def get_dataset(data_path, is_train=True, dataset_name='generic'):
                     (e.g., due to uncleaned string artifacts in the feature columns).
     """
     
-    # =================================================================
-    # Intercept Route: Built-in MNIST Benchmark via OpenML
-    # =================================================================
-    if dataset_name == 'mnist':
-        if is_train:
-            print(f"\n>>> Loading benchmark dataset [MNIST] (Downloading if first time...)")
-
-        # Pull the official MNIST (784 features) directly from OpenML servers
-        X, y = fetch_openml('mnist_784', version=1, return_X_y=True, as_frame=False)
-        
-        # Normalize pixel intensities from [0, 255] to [0.0, 1.0] to prevent gradient explosion
-        X = X.astype(np.float32) / 255.0  
-        y = y.astype(int)
-
-        # Apply a static, deterministic train/test split to guarantee experimental reproducibility
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, train_size=10000, test_size=2000, random_state=42
-        )
-
-        return (X_train, y_train) if is_train else (X_test, y_test)
-
-    # =================================================================
-    # Primary Route: Generic Preprocessed CSV Structured Data
-    # =================================================================
-    print(f"\n>>> Loading preprocessed dataset [{dataset_name.upper()}] from {data_path}")
+    print(f"\n>>> Loading preprocessed dataset from {data_path}")
 
     # Validate file existence before attempting to parse
     if not os.path.exists(data_path):
