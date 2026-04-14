@@ -477,6 +477,10 @@ This minor variance is expected and stems from internal stochastic processes, sp
 
 This document provides a comprehensive guide on how to use the integrated `Dualmap_api.py` module. This module encapsulates the core mathematical engine of the Dual-mode Self-Organizing Map (DualSOM), the PyTorch-based Sparse Autoencoder for latent feature extraction, and the local data ingestion pipeline.
 
+## <a id="api-reference"></a>📚 DualSOM & Sparse Autoencoder API Reference
+
+This document provides a comprehensive guide on how to use the integrated `Dualmap_api.py` module. This module encapsulates the core mathematical engine of the Dual-mode Self-Organizing Map (DualSOM), the PyTorch-based Sparse Autoencoder for latent feature extraction, and the local data ingestion pipeline.
+
 ### 🚀 API Example
 
 The API is designed to be easily integrated into any Python script. Here is a minimal example of how to use the pipeline with local preprocessed CSV files:
@@ -491,8 +495,8 @@ with open('params.json', 'r') as f:
 
 # 2. Load Preprocessed Local Datasets
 # Assumes CSVs where columns 0 to N-1 are features, and the last column is the label
-train_data = get_dataset('train_data_path')
-test_data = get_dataset('test_data_path')
+train_data = get_dataset('path/to/your_train_data.csv')
+test_data = get_dataset('path/to/your_test_data.csv')
 
 # 3. Setup Autoencoder and Encode TRAIN Data
 set_ae_args(parameters)
@@ -523,10 +527,11 @@ A generic, robust interface for loading purely numerical, preprocessed CSV datas
 def get_dataset(data_path: str) -> tuple:
 ```
 * **Description:** Securely loads a CSV from a local path. It automatically isolates features (all columns except the last) from labels (the final column), enforces strict `float32` typing for PyTorch compatibility, and factorizes string labels into integers if necessary.
+* **⚠️ Unsupervised Data Requirement:** Because the ingestion logic strictly separates the final column (`df.iloc[:, -1]`) as the label vector, **datasets intended for purely unsupervised clustering must still include a trailing column**. If your dataset lacks ground-truth labels, you must pad your CSV with a dummy column (e.g., all `0`s or `-1`s). Failing to do so will result in your last actual feature being accidentally stripped and treated as the label.
 * **Arguments:**
   * `data_path` (str): The localized filepath to the preprocessed CSV file.
 * **Returns:**
-  * `tuple`: `(X_features, y_labels)` as properly typed NumPy arrays.
+  * `tuple`: `(X_features, y_labels)` as properly typed NumPy arrays. (For dummy columns, `y_labels` will safely return an array of those dummy values).
 
 #### 2. Autoencoder Global Configuration (`set_ae_args`)
 
@@ -608,8 +613,6 @@ The SOM supports three mathematical distance metrics for computing neuron activa
 * **`angular`:** Calculates the angle between vectors. Excellent for skeletal or directional data where magnitude is less important than relative orientation.
 * **`euclidean`:** Standard L2 norm. Best for general-purpose dense tabular datasets.
 * **`cosine`:** Uses 1 - Cosine Similarity. Useful for high-dimensional, sparse feature spaces.
-"""
-
 ---
 
 ## <a id="reference"></a>📜 Reference
