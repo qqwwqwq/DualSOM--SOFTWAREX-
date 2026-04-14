@@ -116,7 +116,7 @@ DualSOM is designed as a flexible framework for human posture and activity recog
 ## <a id="system-requirements"></a>💻 System Requirements
 
 ### 1. Software Requirements
-* **Python:** 3.8 (recommended)
+* **Python:** 3.7 (recommended)
 * **Python Libraries:**
   * `numpy >= 1.24`
   * `pandas >= 3.0`
