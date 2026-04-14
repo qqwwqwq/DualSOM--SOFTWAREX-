@@ -4,7 +4,7 @@
 
 ¹ *Waseda University, Japan* ² *Warsaw University of Technology, Poland*
 
-![Python](https://img.shields.io/badge/Python-%3E%3D3.8-3776AB?style=flat-square&logo=python&logoColor=white)
+![Python](https://img.shields.io/badge/Python-%3E%3D3.7-3776AB?style=flat-square&logo=python&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-%3E%3D2.10.0-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)
 ![NumPy](https://img.shields.io/badge/NumPy-%3E%3D2.4.2-013243?style=flat-square&logo=numpy&logoColor=white)
 ![Pandas](https://img.shields.io/badge/Pandas-%3E%3D3.0.0-150458?style=flat-square&logo=pandas&logoColor=white)
