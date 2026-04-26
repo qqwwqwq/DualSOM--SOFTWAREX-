@@ -118,14 +118,13 @@ DualSOM is designed as a flexible framework for human posture and activity recog
 ### 1. Software Requirements
 * **Python:** 3.7 (recommended)
 * **Python Libraries:**
-  * `numpy >= 1.24`
-  * `pandas >= 3.0`
-  * `matplotlib >= 3.8`
-  * `scikit-learn >= 1.3`
-  * `scipy >= 1.17`
-  * `torch >= 2.10`
-  * `torchvision >= 0.25`
-  * `tqdm >= 4.66`
+  * `torch >= 1.13.1` (CUDA 11.7 supported)
+  * `numpy >= 1.21.6`
+  * `pandas >= 1.3.5`
+  * `scikit-learn >= 0.24.2`
+  * `matplotlib >= 3.5.3`
+  * `scipy >= 1.4.1`
+  * `tqdm >= 4.65.2`
 
 ### 2. Hardware Requirements
 * **CPU:** Standard multi-core processor 
