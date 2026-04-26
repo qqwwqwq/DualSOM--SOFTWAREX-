@@ -162,19 +162,12 @@ cd DualSOM--SOFTWAREX-
 
 ### 2. Create a Python Environment
 
-It is recommended to use `conda` or `venv` to isolate dependencies:
+It is recommended to use `conda` to isolate dependencies:
 
 **Using conda:**
 ```bash
 conda create -n dualsom python=3.8
 conda activate dualsom
-```
-
-**Using venv:**
-```bash
-python -m venv dualsom_env
-source dualsom_env/bin/activate  # Linux/macOS
-dualsom_env\Scripts\activate     # Windows
 ```
 
 ### 3. Install Dependencies
