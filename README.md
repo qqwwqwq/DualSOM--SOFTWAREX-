@@ -5,10 +5,10 @@
 ¹ *Waseda University, Japan* ² *Warsaw University of Technology, Poland*
 
 ![Python](https://img.shields.io/badge/Python-%3E%3D3.7-3776AB?style=flat-square&logo=python&logoColor=white)
-![PyTorch](https://img.shields.io/badge/PyTorch-%3E%3D2.10.0-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)
-![NumPy](https://img.shields.io/badge/NumPy-%3E%3D2.4.2-013243?style=flat-square&logo=numpy&logoColor=white)
-![Pandas](https://img.shields.io/badge/Pandas-%3E%3D3.0.0-150458?style=flat-square&logo=pandas&logoColor=white)
-![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-%3E%3D1.4.2-F7931E?style=flat-square&logo=scikitlearn&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-%3E%3D1.13.1-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)
+![NumPy](https://img.shields.io/badge/NumPy-%3E%3D1.21.6-013243?style=flat-square&logo=numpy&logoColor=white)
+![Pandas](https://img.shields.io/badge/Pandas-%3E%3D1.3.5-150458?style=flat-square&logo=pandas&logoColor=white)
+![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-%3E%3D0.24.2-F7931E?style=flat-square&logo=scikitlearn&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 ![Status](https://img.shields.io/badge/Status-Research--Ready-brightgreen?style=flat-square)
 
@@ -128,14 +128,12 @@ DualSOM is designed as a flexible framework for human posture and activity recog
   * `tqdm >= 4.66`
 
 ### 2. Hardware Requirements
-* **CPU:** Standard multi-core processor (recommended)
+* **CPU:** Standard multi-core processor 
 * **RAM:** Minimum 8 GB (16 GB recommended for large datasets)
-* **GPU (optional):** CUDA-compatible GPU recommended for faster Sparse Autoencoder training
+* **GPU (optional):** CUDA-compatible GPU recommended for faster Sparse Autoencoder training (recommended)
 
 ### 3. Operating Systems
 * Linux (recommended)
-* macOS
-* Windows
 
 ### 4. Input Data Requirements
 * Tabular format (e.g., `.csv`)
@@ -162,7 +160,7 @@ cd DualSOM--SOFTWAREX-
 
 ### 2. Create a Python Environment
 
-It is recommended to use `conda` to isolate dependencies:
+It is highly recommended to use `conda` to isolate dependencies. This project is optimized for Python 3.7:
 
 **Using conda:**
 ```bash
@@ -170,30 +168,22 @@ conda create -n dualsom python=3.7 -y
 conda activate dualsom
 ```
 
-### 3. Install Dependencies
+### 3. Install Dependencies (Includes GPU Support)
 
-Install required Python packages using `pip` and the `requirements.txt` file:
+Install the required Python packages using `pip`. 
+*Note: The `requirements.txt` is pre-configured to automatically download PyTorch with **CUDA 11.7** support for hardware acceleration.*
 
 ```bash
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 4. Optional: GPU Support
+### 4. Verify Installation
 
-If a CUDA-compatible GPU is available, ensure PyTorch is installed with GPU support to accelerate Sparse Autoencoder training:
-
-```bash
-# Example for CUDA 11.7
-pip install torch==2.10.0+cu117 torchvision==0.25.0+cu117 -f [https://download.pytorch.org/whl/torch_stable.html](https://download.pytorch.org/whl/torch_stable.html)
-```
-
-### 5. Verify Installation
-
-Run a quick test to confirm the environment is correctly set up:
+Run a quick test to confirm the environment is correctly set up and can successfully communicate with your GPU:
 
 ```bash
-python -c "import torch, numpy, pandas, matplotlib; print('Environment OK')"
+python -c "import torch, numpy, pandas, matplotlib; print('Environment OK. CUDA Available:', torch.cuda.is_available())"
 ```
 
 ---
