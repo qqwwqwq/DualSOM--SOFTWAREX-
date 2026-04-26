@@ -12,6 +12,8 @@ Key Features:
       using a custom angular distance dispersion metric (Delta L).
     - Safe Configuration Management: Merges user-defined JSON settings with
       immutable algorithm intrinsics to prevent accidental destabilization.
+    - Dynamic Visualization: Automatically selects maximum separation dimensions
+      using ANOVA F-value and generates scatter plots with class legends.
 
 Usage:
     $ python main.py --config params.json
@@ -22,10 +24,12 @@ import json
 import os
 import sys
 
+import matplotlib.pyplot as plt
 import numpy as np
 from sklearn import metrics
-from sklearn.metrics import accuracy_score, classification_report, f1_score
 from sklearn.cluster import KMeans
+from sklearn.feature_selection import f_classif
+from sklearn.metrics import accuracy_score, classification_report, f1_score
 from sklearn.preprocessing import normalize
 
 # Internal module imports for data handling, autoencoder, and the SOM model
@@ -63,7 +67,7 @@ USER_CONFIG_DEFAULTS = {
     # Key Training Hyperparameters
     "ae_epochs": 150,                 # Number of training epochs for the SAE [Range: 50 - 500, Suggested: 150]
     "som_epochs": 50,                 # Number of global passes through the dataset for the SOM [e.g. 50, 100, 200...]
-    "activation_distance": "angular",  # BMU distance metric [Values: 'angular' (directional/skeletal), 'euclidean' (general), 'cosine' (high-dim sparse)]
+    "activation_distance": "angular", # BMU distance metric [Values: 'angular' (directional/skeletal), 'euclidean' (general), 'cosine' (high-dim sparse)]
 }
 
 # =====================================================================
@@ -89,6 +93,7 @@ INTRINSIC_PARAMETERS = {
     "ae_lr": 0.001,                   # Base learning rate for SAE Adam optimizer [Range: 1e-4 - 1e-2, Suggested: 0.001]
     "ae_reg_param": 0.001,            # L1 sparsity penalty coefficient (rho) [Range: 1e-5 - 1e-1, Suggested: 0.001]
 }
+
 # =====================================================================
 # Integrated Cluster Selection Logic
 # =====================================================================
@@ -301,6 +306,108 @@ def evaluate_and_print(y_true, y_pred, mode, dataset, stage_label):
     for key, value in metrics_dict.items():
         print(f"{key.capitalize()}: {value:.4f}")
 
+def visualize_and_save(X, y_true, y_pred, dataset_name, mode, stage, output_dir="output"):
+    """
+    Generates and saves a scatter plot of the latent space distributions.
+    
+    Automatically selects the two dimensions with the maximum separation using
+    the ANOVA F-value metric. Adds a single centered legend above the plots.
+    Labels X and Y axes exactly as 'Dimension-A' and 'Dimension-B'.
+    
+    - Unsupervised mode: Computes separation based on predicted clusters (y_pred)
+      and generates a single plot.
+    - Supervised mode: Computes separation based on ground truth labels (y_true)
+      and generates a side-by-side comparison plot.
+
+    Args:
+        X (np.ndarray): The encoded latent representations.
+        y_true (np.ndarray): Ground truth labels.
+        y_pred (np.ndarray): Predicted labels or cluster assignments.
+        dataset_name (str): Identifier for the dataset (used in file naming).
+        mode (str): 'supervised' or 'unsupervised'.
+        stage (str): The pipeline stage (e.g., "TESTING").
+        output_dir (str, optional): Target directory for saving figures. Defaults to "output".
+    """
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    print(f"\n>>> Generating {mode} visualization for {stage}...")
+    
+    # Determine the target labels for computing feature separation
+    target_labels = y_true if mode == 'supervised' else y_pred
+    
+    # Compute ANOVA F-value for each dimension relative to the target labels
+    f_values, _ = f_classif(X, target_labels)
+    
+    # Identify indices of the two dimensions with the highest F-values
+    top2_indices = np.argsort(f_values)[-2:][::-1]
+    dim_x_idx, dim_y_idx = top2_indices[0], top2_indices[1]
+    print(f"    Selected dimensions with max separation: Dim-{dim_x_idx} and Dim-{dim_y_idx}")
+    
+    # Extract the data for the selected dimensions
+    X_plot = X[:, [dim_x_idx, dim_y_idx]]
+    
+    if mode == 'unsupervised':
+        # Single plot formatting for unsupervised results
+        fig, ax = plt.subplots(figsize=(8, 6))
+        scatter = ax.scatter(X_plot[:, 0], X_plot[:, 1], c=y_pred, cmap='tab20', s=15, alpha=0.8)
+        
+        ax.set_title(f"DualSOM ({mode.capitalize()})")
+        ax.set_xlabel("Dimension-A")
+        ax.set_ylabel("Dimension-B")
+        ax.set_xticks([])
+        ax.set_yticks([])
+        
+        # Extract unique color handles and map them to numbers starting from 0
+        handles, _ = scatter.legend_elements()
+        labels = [str(i) for i in range(len(handles))]
+        
+        # Add a single shared legend centered above the subplot
+        fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 0.90), 
+                   ncol=5, title="Classes")
+        
+    else:
+        # Dual plot formatting for supervised comparisons
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+        
+        # Left Panel: Ground Truth
+        scatter1 = ax1.scatter(X_plot[:, 0], X_plot[:, 1], c=y_true, cmap='tab20', s=15, alpha=0.8)
+        ax1.set_title("Ground Truth")
+        ax1.set_xlabel("Dimension-A")
+        ax1.set_ylabel("Dimension-B")
+        ax1.set_xticks([])
+        ax1.set_yticks([])
+
+        # Right Panel: Model Prediction
+        scatter2 = ax2.scatter(X_plot[:, 0], X_plot[:, 1], c=y_pred, cmap='tab20', s=15, alpha=0.8)
+        ax2.set_title(f"Our Proposal ({mode.capitalize()})")
+        ax2.set_xlabel("Dimension-A")
+        ax2.set_ylabel("Dimension-B")
+        ax2.set_xticks([])
+        ax2.set_yticks([])
+        
+        # Extract handles and add a single shared legend centered above both subplots
+        handles, _ = scatter1.legend_elements()
+        labels = [str(i) for i in range(len(handles))]
+        
+        # Using ncol=10 for the wider dual-plot layout to spread them cleanly
+        fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 0.90), 
+                   ncol=10, title="Classes")
+
+    # Apply global title at the very top
+    plt.suptitle(f"Distribution of Results - {dataset_name.upper()} ({stage})", y=0.98)
+    
+    # Adjust tight layout to reserve the top 15% of the figure purely for the shared legend and suptitle
+    plt.tight_layout(rect=[0, 0, 1, 0.85])
+
+    # Construct file path and save
+    filename = f"{dataset_name}_{mode}_{stage.lower()}_distribution.png"
+    save_path = os.path.join(output_dir, filename)
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    
+    print(f">>> Visualization successfully saved to: {save_path}")
+
 
 # =====================================================================
 # Main Execution Entry Point
@@ -394,5 +501,14 @@ if __name__ == "__main__":
         print("\n>>> Executing Stage 2b: Classification Testing Phase...")
         pred_labels_test = model.predict(coded_test, mode='classification')
         evaluate_and_print(y_test, pred_labels_test, run_mode, dataset_name, "TESTING")
+
+    # ---------------------------------------------------------
+    # Visualization Stage (Step 3)
+    # ---------------------------------------------------------
+    # Generate visualization for the Test set utilizing max separation features
+    if run_mode == 'unsupervised':
+        visualize_and_save(X_test, y_test, clusters_test, dataset_name, run_mode, "TESTING")
+    else:
+        visualize_and_save(X_test, y_test, pred_labels_test, dataset_name, run_mode, "TESTING")
 
     print("\n>>> All Done.")
