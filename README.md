@@ -77,7 +77,7 @@ Get the pipeline up and running immediately with default configurations:
 ```bash
 git clone https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git
 cd DualSOM--SOFTWAREX-
-pip install -r requirements.txt
+pip install -r config/requirements.txt
 python prepare_mnist.py
 python main.py
 ```
@@ -156,7 +156,7 @@ Follow these steps to set up DualSOM on your system.
 ### 1. Clone the Repository
 
 ```bash
-git clone [https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git](https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git)
+git clone https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git
 cd DualSOM--SOFTWAREX-
 ```
 
