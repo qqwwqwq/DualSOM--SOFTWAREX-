@@ -166,7 +166,7 @@ It is recommended to use `conda` to isolate dependencies:
 
 **Using conda:**
 ```bash
-conda create -n dualsom python=3.7
+conda create -n dualsom python=3.7 -y
 conda activate dualsom
 ```
 
