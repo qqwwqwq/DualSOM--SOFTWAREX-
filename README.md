@@ -81,7 +81,7 @@ pip install -r config/requirements.txt
 python prepare_mnist.py
 python main.py
 ```
-[<video src="./assets/usi.mp4" width="600" controls="controls"></video>](https://github.com/qqwwqwq/DualSOM--SOFTWAREX-/blob/main/assets/usi.mp4?raw=true)
+https://github.com/qqwwqwq/DualSOM--SOFTWAREX-/blob/main/assets/usi.mp4?raw=true
 
 ## <a id="network-architecture"></a>🕸️ Outline of Method
 
