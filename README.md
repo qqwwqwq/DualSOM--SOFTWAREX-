@@ -83,7 +83,9 @@ python main.py
 ```
 
 
-https://github.com/user-attachments/assets/e8fa741d-df1e-4dbe-94fd-a07d064b9674
+
+https://github.com/user-attachments/assets/1eb8866a-c2ab-44c4-9225-6ee5dc207918
+
 
 
 
