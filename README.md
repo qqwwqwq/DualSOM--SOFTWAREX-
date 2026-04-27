@@ -81,7 +81,7 @@ pip install -r config/requirements.txt
 python prepare_mnist.py
 python main.py
 ```
-<video src="./assets/User_instructions.mp4" width="600" controls="controls"></video>
+<video src="./assets/usi.mp4" width="600" controls="controls"></video>
 
 ## <a id="network-architecture"></a>🕸️ Outline of Method
 
