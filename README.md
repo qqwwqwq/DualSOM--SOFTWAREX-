@@ -157,14 +157,9 @@ DualSOM is designed as a flexible framework for human posture and activity recog
 
 Follow these steps to set up DualSOM on your system.
 
-### 1. Clone the Repository
 
-```bash
-git clone https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git
-cd DualSOM--SOFTWAREX-
-```
 
-### 2. Create a Python Environment
+### 1. Create a Python Environment
 
 It is highly recommended to use `conda` to isolate dependencies. This project is optimized for Python 3.7:
 
@@ -172,6 +167,13 @@ It is highly recommended to use `conda` to isolate dependencies. This project is
 ```bash
 conda create -n dualsom python=3.7 -y
 conda activate dualsom
+```
+
+### 2. Clone the Repository
+
+```bash
+git clone https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git
+cd DualSOM--SOFTWAREX-
 ```
 
 ### 3. Install Dependencies (Includes GPU Support)
