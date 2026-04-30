@@ -9,6 +9,7 @@
 ![NumPy](https://img.shields.io/badge/NumPy-%3E%3D1.21.6-013243?style=flat-square&logo=numpy&logoColor=white)
 ![Pandas](https://img.shields.io/badge/Pandas-%3E%3D1.3.5-150458?style=flat-square&logo=pandas&logoColor=white)
 ![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-%3E%3D0.24.2-F7931E?style=flat-square&logo=scikitlearn&logoColor=white)
+![PyQt5](https://img.shields.io/badge/PyQt5-%3E%3D5.15.10-41CD52?style=flat-square&logo=qt&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 ![Status](https://img.shields.io/badge/Status-Research--Ready-brightgreen?style=flat-square)
 
