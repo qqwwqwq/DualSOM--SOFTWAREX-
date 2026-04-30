@@ -266,7 +266,7 @@ class DualSOMApp(QMainWindow):
         layout.setContentsMargins(0, 0, 10, 0) 
         
         self.input_dataset = QComboBox()
-        self.input_dataset.addItems(["mnist", "wut", "pku", "other"])
+        self.input_dataset.addItems(["mnist", "wut", "pku", "ford","customized data"])
         self.input_dataset.setCurrentText(self.init_params.get("dataset_name", "mnist"))
         layout.addRow("Dataset Name:", self.input_dataset)
         
