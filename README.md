@@ -127,6 +127,7 @@ DualSOM is designed as a flexible framework for human posture and activity recog
   * `matplotlib >= 3.5.3`
   * `scipy >= 1.4.1`
   * `tqdm >= 4.65.2`
+  * `PyQt5>=5.15.10`
 
 ### 2. Hardware Requirements
 * **CPU:** Standard multi-core processor 
@@ -233,20 +234,16 @@ DualSOM/
 ├── Datas/
 │   ├── WUT/
 │   │   ├── train_data.csv        # Preprocessed training features & labels
-│   │   ├── test_data.csv         # Preprocessed testing features & labels
-│   │   └── wut_label_map.json    # Auto-generated label mapping
+│   │   └── test_data.csv         # Preprocessed testing features & labels
 │   ├── PKU/
 │   │   ├── train_data.csv        # Preprocessed training features & labels
-│   │   ├── test_data.csv         # Preprocessed testing features & labels
-│   │   └── pku_label_map.json    # Auto-generated label mapping
+│   │   └── test_data.csv         # Preprocessed testing features & labels
 │   ├── MNIST/
 │   │   ├── train_data.csv        # Preprocessed training features & labels
-│   │   ├── test_data.csv         # Preprocessed testing features & labels
-│   │   └── mnist_label_map.json  # Auto-generated label mapping
+│   │   └── test_data.csv         # Preprocessed testing features & labels
 │   └── FordA/
 │       ├── train_data.csv        # Preprocessed training features & labels
-│       ├── test_data.csv         # Preprocessed testing features & labels
-│       └── forda_label_map.json  # Auto-generated label mapping
+│       └── test_data.csv         # Auto-generated label mapping
 ├── Dualmap.py                    # Core mathematical SOM and clusterer
 ├── sparse_autoencoder.py         # PyTorch Mini-Batch Autoencoder module
 ├── preprocessing.py              # Data ingestion and generic loader
