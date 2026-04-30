@@ -221,8 +221,8 @@ One signal dataset:
 * **FordA** (Automotive engine noise and vibration sensor time-series dataset from the UCR archive)
   
 ### 1. Download Datasets
-* **WUT Dataset**: Download the skeleton-only dataset from [https://drive.google.com/file/d/19IMwA_N7HC-RfstoInZxLx8BF5Lge99q/view?usp=sharing](#).
-* **PKU Dataset**: Download the skeleton-only dataset from [https://drive.google.com/file/d/19ATaTph3IBtfdKRzLkro9Es1wPW7aCf6/view?usp=sharing](#).
+* **WUT Dataset**: Download the skeleton-only dataset from [https://drive.google.com/file/d/1vUCRI8ATVbDu3JsYGfgnVNJaAfNMwRVW/view?usp=sharing](#).
+* **PKU Dataset**: Download the skeleton-only dataset from [https://drive.google.com/file/d/1HsPPiyzpjIvDHAeqR-qqa40qJgRjaG4D/view?usp=sharing](#).
 * **MNIST Dataset**: Run `python prepare_mnist.py` to automatically download, normalize, and format the image data into compatible CSV files.
 * **FordA Dataset**: Run `python prepare_forda.py` to automatically download and process the 1D sensor time-series data into compatible CSV files.
 
