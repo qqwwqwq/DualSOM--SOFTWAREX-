@@ -194,6 +194,8 @@ class DualSOMApp(QMainWindow):
         
         self.btn_save_json = QPushButton("Save to params.json")
         self.btn_save_json.setMinimumHeight(40)
+        # CHANGED: Added CSS styling to make the button red
+        self.btn_save_json.setStyleSheet("background-color: #f44336; color: white; font-weight: bold;")
         self.btn_save_json.clicked.connect(self.save_current_to_json)
 
         self.progress_bar = QProgressBar()
@@ -266,7 +268,7 @@ class DualSOMApp(QMainWindow):
         layout.setContentsMargins(0, 0, 10, 0) 
         
         self.input_dataset = QComboBox()
-        self.input_dataset.addItems(["mnist", "wut", "pku", "ford","customized data"])
+        self.input_dataset.addItems(["mnist", "wut", "pku", "other"])
         self.input_dataset.setCurrentText(self.init_params.get("dataset_name", "mnist"))
         layout.addRow("Dataset Name:", self.input_dataset)
         
@@ -362,6 +364,11 @@ class DualSOMApp(QMainWindow):
         self.input_som_epochs.setRange(1, 1000)
         self.input_som_epochs.setValue(self.init_params.get("som_epochs", 50))
         layout.addRow("SOM Epochs:", self.input_som_epochs)
+
+        # CHANGED: Added Copyright label under SOM Epochs
+        self.copyright_label = QLabel("Copyright © Warsaw University of Technology, Waseda University")
+        self.copyright_label.setStyleSheet("color: #888888; font-style: italic; margin-top: 20px;")
+        layout.addRow("", self.copyright_label)
 
     def browse_file(self, line_edit, file_filter="CSV Files (*.csv);;All Files (*)"):
         """
