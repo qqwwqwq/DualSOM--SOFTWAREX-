@@ -180,7 +180,7 @@ Install the required Python packages using `pip`.
 
 ```bash
 pip install --upgrade pip
-pip install -r requirements.txt
+pip install -r config/requirements.txt
 ```
 
 ### 4. Verify Installation
