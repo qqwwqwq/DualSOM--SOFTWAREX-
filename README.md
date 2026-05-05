@@ -83,7 +83,13 @@ python prepare_mnist.py
 python main.py
 ```
 
-https://github.com/user-attachments/assets/1f9950aa-c22d-45c8-9df1-0c63c1a65b32
+
+
+https://github.com/user-attachments/assets/06ae1fd4-11b1-4001-b436-1df0a0b392f8
+
+
+
+
 
 ## <a id="network-architecture"></a>🕸️ Outline of Method
 
