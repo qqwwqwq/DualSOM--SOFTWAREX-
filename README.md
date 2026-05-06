@@ -1,6 +1,6 @@
 # DualSOM: Dual-mode software for clustering and classification using Self-Organising Map
 
-**Authors:** Xin He¹², Teresa Zielinska², Vibekananda Dutta¹², Takafumi Matsumaru¹, Robert Sitnik²
+**Authors:** Vibekananda Dutta¹², Teresa Zielinska², Xin He¹², Takafumi Matsumaru¹, Robert Sitnik²
 
 ¹ *Waseda University, Japan* ² *Warsaw University of Technology, Poland*
 
