@@ -1,4 +1,4 @@
-# DualSOM: Dual-mode software for clustering and classification using Self-Organising Maps and Sparse Autoencoders
+# DualSOM: Dual-mode software for clustering and classification using self-organising maps and sparse autoencoders
 
 **Authors:** Vibekananda Dutta¹², Teresa Zielinska², Xin He¹², Takafumi Matsumaru¹, Robert Sitnik²
 
