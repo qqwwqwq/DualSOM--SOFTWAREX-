@@ -1,8 +1,11 @@
 # DualSOM: Dual-mode software framework for clustering and classification using self-organising maps and sparse autoencoders
 
-**Authors:** Vibekananda Dutta¹², Teresa Zielinska², Xin He¹², Takafumi Matsumaru¹, Robert Sitnik²
+**Authors:** Vibekananda Dutta<sup>a,d</sup>, Xin He<sup>a</sup>, Teresa Zielinska<sup>b</sup>, Takafumi Matsumaru<sup>c</sup>, Robert Sitnik<sup>a</sup>
 
-¹ *Waseda University, Japan* ² *Warsaw University of Technology, Poland*
+<sup>a</sup> *Faculty of Mechatronics, Warsaw University of Technology, Warsaw, Poland*<br>
+<sup>b</sup> *Faculty of Power and Aeronautical Engineering, Warsaw University of Technology, Warsaw, Poland*<br>
+<sup>c</sup> *Graduate School of Information, Production, and Systems, Waseda University, Kitakyushu, Japan*<br>
+<sup>d</sup> *Waseda Institute for Advanced Study, Waseda University, Tokyo, Japan*
 
 ![Python](https://img.shields.io/badge/Python-%3E%3D3.7-3776AB?style=flat-square&logo=python&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-%3E%3D1.13.1-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)
