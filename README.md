@@ -79,6 +79,8 @@ The framework is domain-independent; however, it has been **demonstrated on huma
 Get the pipeline up and running immediately with default configurations:
 
 ```bash
+conda create -n dualsom python=3.7 -y
+conda activate dualsom
 git clone https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git
 cd DualSOM--SOFTWAREX-
 pip install -r config/requirements.txt
