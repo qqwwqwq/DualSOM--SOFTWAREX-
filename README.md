@@ -83,7 +83,10 @@ conda create -n dualsom python=3.7 -y
 conda activate dualsom
 git clone https://github.com/qqwwqwq/DualSOM--SOFTWAREX-.git
 cd DualSOM--SOFTWAREX-
+# CUDA-enabled installation
 pip install -r config/requirements.txt
+# CPU-only installation
+# pip install -r config/requirements_cpu.txt
 python prepare_mnist.py
 python main.py
 ```
