@@ -23,7 +23,7 @@ import argparse
 import json
 import os
 import sys
-
+import torch
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn import metrics
@@ -271,6 +271,44 @@ def read_parameters(json_path):
 
     return merged_params
 
+def validate_device(parameters):
+    """
+    Validates the requested computation device.
+
+    If CUDA is requested but unavailable, the execution device is
+    automatically switched to CPU.
+
+    Args:
+        parameters (dict): Pipeline configuration dictionary.
+
+    Returns:
+        dict: Updated configuration dictionary with a valid device.
+    """
+    requested_device = str(parameters.get('device', 'cpu')).lower()
+
+    if requested_device.startswith('cuda'):
+        if torch.cuda.is_available():
+            print(f">>> CUDA is available. Using device: {requested_device}")
+        else:
+            print(
+                "[WARNING] CUDA was requested but is not available. "
+                "Automatically falling back to CPU."
+            )
+            parameters['device'] = 'cpu'
+
+    elif requested_device == 'cpu':
+        print(">>> Using CPU for AutoEncoder computation.")
+
+    else:
+        print(
+            f"[WARNING] Unsupported device '{requested_device}'. "
+            "Automatically falling back to CPU."
+        )
+        parameters['device'] = 'cpu'
+
+    return parameters
+    
+
 def evaluate_and_print(y_true, y_pred, mode, dataset, stage_label):
     """
     Standardized evaluation logging module.
@@ -422,6 +460,10 @@ if __name__ == "__main__":
 
     create_default_params(args.config)
     parameters = read_parameters(args.config)
+
+    # Validate the requested hardware device and automatically
+    # fall back to CPU when CUDA is unavailable
+    parameters = validate_device(parameters)
 
     # Validate essential configuration keys
     required_keys = [
