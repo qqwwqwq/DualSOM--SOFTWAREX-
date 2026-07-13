@@ -158,20 +158,19 @@ DualSOM is designed as a flexible framework for human posture and activity recog
 * Optional labels for supervised classification mode
 
 ### 5. Notes
-* GPU acceleration is optional and is only required for efficient training on large datasets. The framework can run entirely on CPU by setting `"device": "cpu"` in `params.json`.
-  For CPU-only installation, replace the CUDA-specific PyTorch dependency in `requirements.txt`:
+* GPU acceleration is optional and is only required for efficient training on large datasets. The framework can run entirely on CPU.
+  For CPU-only installation, , use the dedicated CPU requirements file:
 
   ```text
-  --extra-index-url [https://download.pytorch.org/whl/cu117](https://download.pytorch.org/whl/cu117)
-  torch>=1.13.1+cu117
+  pip install -r config/requirements_cpu.txt
   ```
 
-  with the CPU version:
+  instead of the CUDA-enabled requirements file:
 
   ```text
-  --extra-index-url [https://download.pytorch.org/whl/cpu](https://download.pytorch.org/whl/cpu)
-  torch>=1.13.1
+  pip install -r config/requirements.txt
   ```
+  The CPU requirements file installs the CPU-compatible version of PyTorch and does not require CUDA.
 * The software is designed to be lightweight and can operate on moderate hardware for small to medium datasets.
 * Performance depends primarily on dataset size, latent dimensionality, and SOM grid configuration.
 
