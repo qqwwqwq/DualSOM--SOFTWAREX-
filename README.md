@@ -151,6 +151,7 @@ DualSOM is designed as a flexible framework for human posture and activity recog
 
 ### 3. Operating Systems
 * Linux (recommended)
+* Windows
 
 ### 4. Input Data Requirements
 * Tabular format (e.g., `.csv`)
