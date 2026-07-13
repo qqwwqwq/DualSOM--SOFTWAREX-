@@ -5,7 +5,7 @@
     "run_mode": "supervised",
     "_comment_run_mode": "Execution mode [Values: 'supervised', 'unsupervised']",
 
-    "device": "cuda",
+    "device": "cpu",
     "_comment_device": "Hardware acceleration target [Values: 'cuda', 'cpu']",
 
     "train_data_path": "Datas/MNIST/train_data.csv",
